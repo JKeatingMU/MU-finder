@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Fuse from 'fuse.js';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, X, ChevronDown, ChevronUp, Database, Layers, AlertCircle } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp, Database, Layers, AlertCircle, Heart } from 'lucide-react';
 
 interface Module {
   moduleCode: string;
@@ -111,7 +111,11 @@ const primaryTags = [
   },
 ];
 
-function ModuleCard({ mod }: { mod: IndexedModule }) {
+function ModuleCard({ mod, isSaved, onToggleSave }: {
+  mod: IndexedModule;
+  isSaved: boolean;
+  onToggleSave: (code: string) => void;
+}) {
   const [expanded, setExpanded] = useState(false);
   const los = formatLOs(mod.learningOutcomes);
   const fc = facultyColor(mod.facultyName);
@@ -151,11 +155,24 @@ function ModuleCard({ mod }: { mod: IndexedModule }) {
               </span>
             )}
           </div>
-          {mod.UG_PG && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-500 font-medium">
-              {mod.UG_PG}
-            </span>
-          )}
+          <div className="flex items-center gap-1.5">
+            {mod.UG_PG && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-500 font-medium">
+                {mod.UG_PG}
+              </span>
+            )}
+            <button
+              onClick={() => onToggleSave(mod.moduleCode)}
+              title={isSaved ? 'Remove from saved' : 'Save this module'}
+              className="p-1 rounded-lg transition-colors hover:bg-white/60"
+            >
+              <Heart
+                className="w-4 h-4 transition-colors"
+                style={{ color: isSaved ? '#6b1a2b' : '#cbd5e1' }}
+                fill={isSaved ? '#6b1a2b' : 'none'}
+              />
+            </button>
+          </div>
         </div>
 
 
@@ -262,6 +279,20 @@ export default function ModuleFinder() {
   const [deptFilter, setDeptFilter] = useState('');
   const [tagFilter, setTagFilter] = useState<'data' | 'digital' | ''>('');
   const [ugpgFilter, setUgpgFilter] = useState('Undergraduate');
+  const [favsOnly, setFavsOnly] = useState(false);
+  const [savedCodes, setSavedCodes] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('mu-module-favs') || '[]')); }
+    catch { return new Set(); }
+  });
+
+  const toggleSave = useCallback((code: string) => {
+    setSavedCodes(prev => {
+      const next = new Set(prev);
+      next.has(code) ? next.delete(code) : next.add(code);
+      localStorage.setItem('mu-module-favs', JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
   const [showCount, setShowCount] = useState(PAGE_SIZE);
 
   const [fontSize, setFontSize] = useState<string>(
@@ -343,14 +374,16 @@ export default function ModuleFinder() {
     setDeptFilter('');
     setTagFilter('');
     setUgpgFilter('');
+    setFavsOnly(false);
     setShowCount(PAGE_SIZE);
   }, []);
 
-  const filtersActive = query || facultyFilter || deptFilter || tagFilter || ugpgFilter;
+  const filtersActive = query || facultyFilter || deptFilter || tagFilter || ugpgFilter || favsOnly;
 
   const results = useMemo<IndexedModule[]>(() => {
     let pool: IndexedModule[] = indexedModules;
 
+    if (favsOnly) pool = pool.filter(m => savedCodes.has(m.moduleCode));
     if (facultyFilter) pool = pool.filter(m => m.facultyName === facultyFilter);
     if (deptFilter) pool = pool.filter(m => m.departmentName === deptFilter);
     if (tagFilter === 'data') pool = pool.filter(m => m.data);
@@ -376,7 +409,21 @@ export default function ModuleFinder() {
       const dc = a.departmentName.localeCompare(b.departmentName);
       return dc !== 0 ? dc : a.moduleCode.localeCompare(b.moduleCode);
     });
-  }, [indexedModules, fuse, query, facultyFilter, deptFilter, tagFilter, ugpgFilter]);
+  }, [indexedModules, fuse, query, facultyFilter, deptFilter, tagFilter, ugpgFilter, favsOnly, savedCodes]);
+
+  // Summary stats for saved modules
+  const savedModules = useMemo(
+    () => indexedModules.filter(m => savedCodes.has(m.moduleCode)),
+    [indexedModules, savedCodes]
+  );
+  const savedSummary = useMemo(() => {
+    if (!savedModules.length) return null;
+    const dataCount    = savedModules.filter(m => m.data).length;
+    const digitalCount = savedModules.filter(m => m.digital).length;
+    const faculties    = [...new Set(savedModules.map(m => facultyAbbr(m.facultyName)).filter(Boolean))];
+    const depts        = [...new Set(savedModules.map(m => m.departmentName).filter(Boolean))].sort();
+    return { dataCount, digitalCount, faculties, depts };
+  }, [savedModules]);
 
   if (loading) {
     return (
@@ -435,8 +482,25 @@ export default function ModuleFinder() {
           </p>
         </div>
 
-        {/* Font size widget */}
-        <div className="flex items-center gap-1 border border-slate-200 rounded-lg px-2 py-1 bg-white self-start">
+        {/* Saved toggle */}
+        <div className="flex items-center gap-2 self-start">
+          {(savedCodes.size > 0 || favsOnly) && (
+            <button
+              onClick={() => { setFavsOnly(f => !f); setShowCount(PAGE_SIZE); }}
+              className="flex items-center gap-1.5 text-sm font-semibold px-3 py-1.5 rounded-lg border transition-all"
+              style={
+                favsOnly
+                  ? { background: '#6b1a2b', color: '#fff', borderColor: 'transparent' }
+                  : { background: 'white', color: '#6b1a2b', borderColor: '#e2e8f0' }
+              }
+            >
+              <Heart className="w-4 h-4" fill={favsOnly ? '#fff' : '#6b1a2b'} />
+              Saved ({savedCodes.size})
+            </button>
+          )}
+
+          {/* Font size widget */}
+          <div className="flex items-center gap-1 border border-slate-200 rounded-lg px-2 py-1 bg-white self-start">
           <span className="text-xs text-slate-400 mr-1 hidden sm:inline">Text size</span>
           {FONT_SIZES.map((fs, i) => (
             <button
@@ -453,8 +517,49 @@ export default function ModuleFinder() {
               {fs.label}
             </button>
           ))}
+          </div>
         </div>
       </div>
+
+      {/* Saved summary panel */}
+      <AnimatePresence initial={false}>
+        {favsOnly && savedSummary && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="rounded-2xl border p-4 mb-4 text-sm"
+            style={{ background: '#fdf2f4', borderColor: '#f5c6ce' }}
+          >
+            <p className="font-semibold text-slate-800 mb-2">
+              {savedCodes.size} saved module{savedCodes.size !== 1 ? 's' : ''}
+            </p>
+            <div className="flex flex-wrap gap-4 text-slate-600">
+              <span>
+                <span className="font-medium" style={{ color: '#0369a1' }}>Data tagged:</span>{' '}
+                {savedSummary.dataCount}
+              </span>
+              <span>
+                <span className="font-medium" style={{ color: '#0e7490' }}>Digital tagged:</span>{' '}
+                {savedSummary.digitalCount}
+              </span>
+              {savedSummary.faculties.length > 0 && (
+                <span>
+                  <span className="font-medium text-slate-700">Faculties:</span>{' '}
+                  {savedSummary.faculties.join(', ')}
+                </span>
+              )}
+            </div>
+            {savedSummary.depts.length > 0 && (
+              <p className="mt-2 text-slate-500">
+                <span className="font-medium text-slate-600">Departments:</span>{' '}
+                {savedSummary.depts.join(' · ')}
+              </p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Search + filters */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-6 space-y-3">
@@ -576,7 +681,12 @@ export default function ModuleFinder() {
       {/* Module grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {visible.map(mod => (
-          <ModuleCard key={mod.moduleCode} mod={mod} />
+          <ModuleCard
+            key={mod.moduleCode}
+            mod={mod}
+            isSaved={savedCodes.has(mod.moduleCode)}
+            onToggleSave={toggleSave}
+          />
         ))}
       </div>
 

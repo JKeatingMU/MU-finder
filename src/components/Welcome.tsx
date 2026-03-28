@@ -126,21 +126,21 @@ export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, 
         transition={{ delay: 0.6 }}
         className="mt-10 text-sm text-slate-400"
       >
-        Or jump right into the{' '}
+        Or jump right into{' '}
         <button
           onClick={onOpenDirectory}
           className="font-medium underline underline-offset-2 hover:opacity-80 transition-opacity"
           style={{ color: '#6b1a2b' }}
         >
-          Programmes Directory
+          our Programmes Directory
         </button>
-        {' '}or browse the{' '}
+        {' '}or browse{' '}
         <button
           onClick={onOpenModules}
           className="font-medium underline underline-offset-2 hover:opacity-80 transition-opacity"
           style={{ color: '#6b1a2b' }}
         >
-          Module Catalogue
+          our Module Catalogue
         </button>
       </motion.p>
     </div>

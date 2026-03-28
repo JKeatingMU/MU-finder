@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MU Module Catalogue — Feature Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mu:       #6b1a2b;
+      --mu-light: #fdf2f4;
+      --mu-mid:   #f5c6ce;
+      --arts:     #7c3aed;
+      --science:  #0369a1;
+      --social:   #15803d;
+      --data:     #0369a1;
+      --digital:  #0e7490;
+      --slate:    #334155;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
+      --bg:       #f8fafc;
+      --radius:   8px;
+      --font:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--slate);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .doc-header {
+      background: var(--mu);
+      color: white;
+      padding: 2.5rem 2rem 2rem;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .doc-header .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .doc-header h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .doc-header .meta {
+      font-size: 0.85rem;
+      opacity: 0.82;
+      line-height: 1.6;
+    }
+    .doc-header .meta a { color: white; text-decoration: underline; opacity: 0.9; }
+
+    /* ── Layout ── */
+    .doc-body {
+      display: flex;
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+      gap: 2.5rem;
+      align-items: flex-start;
+    }
+
+    /* ── Sidebar ToC ── */
+    .toc {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 1.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+    .toc h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .toc ol { list-style: none; counter-reset: toc; }
+    .toc ol li { counter-increment: toc; margin-bottom: 0.25rem; }
+    .toc ol li::before { content: counter(toc) ". "; color: var(--mu); font-weight: 700; }
+    .toc a { color: var(--slate); text-decoration: none; }
+    .toc a:hover { color: var(--mu); }
+    .toc .sub { padding-left: 1.25rem; }
+    .toc .sub li::before { content: none; }
+    .toc .sub a { color: var(--muted); font-size: 0.77rem; }
+    .toc .sub a:hover { color: var(--mu); }
+
+    /* ── Main content ── */
+    main { flex: 1; min-width: 0; }
+    section { margin-bottom: 2.75rem; }
+
+    h2.section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1e293b;
+      border-bottom: 2px solid var(--mu);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h2.section-title .num {
+      background: var(--mu);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    p { margin-bottom: 0.8rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      padding-left: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    li { margin-bottom: 0.3rem; }
+    li:last-child { margin-bottom: 0; }
+
+    strong { color: #1e293b; }
+    a { color: var(--mu); }
+
+    /* ── Cards / callouts ── */
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 { margin-top: 0; }
+
+    .callout {
+      border-left: 4px solid var(--mu);
+      background: var(--mu-light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.85rem 1.1rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+    .callout.blue {
+      border-color: var(--science);
+      background: #eff6ff;
+    }
+    .callout.green {
+      border-color: var(--social);
+      background: #f0fdf4;
+    }
+
+    /* ── Tag pills ── */
+    .pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2em 0.65em;
+      border-radius: 999px;
+      margin-right: 0.3rem;
+    }
+    .pill-data    { background: #dbeafe; color: var(--data); }
+    .pill-digital { background: #cffafe; color: var(--digital); }
+
+    /* ── Faculty badges ── */
+    .fac-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .fac-card {
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--border);
+    }
+    .fac-card .abbr {
+      font-size: 1.1rem;
+      font-weight: 800;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      margin-bottom: 0.25rem;
+    }
+    .fac-card p { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead th {
+      background: var(--mu);
+      color: white;
+      text-align: left;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody td {
+      padding: 0.5rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    /* ── Code ── */
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82em;
+      background: #f1f5f9;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--mu);
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+    }
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      font-size: 0.83rem;
+    }
+
+    /* ── Status ── */
+    .status-pass  { color: #15803d; font-weight: 700; }
+    .status-note  { color: #b45309; font-weight: 700; }
+    .status-info  { color: var(--science); font-weight: 700; }
+
+    /* ── Footer ── */
+    .doc-footer {
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── Print ── */
+    @media print {
+      .toc { display: none; }
+      .doc-body { display: block; padding: 0; }
+      body { background: white; font-size: 13px; }
+      section { break-inside: avoid; }
+    }
+
+    @media (max-width: 700px) {
+      .toc { display: none; }
+      .doc-body { padding: 1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div class="label">Maynooth University · Feature Guide</div>
+  <h1>MU Module Catalogue</h1>
+  <p class="meta">
+    Built by <strong>Prof. John Keating</strong> · Associate Dean for Teaching and Learning (Faculty of Science &amp; Engineering)<br>
+    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · March 2026
+  </p>
+</header>
+
+<div class="doc-body">
+
+  <nav class="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#tagging">Data &amp; Digital Tagging</a></li>
+      <li><a href="#browsing">Browsing &amp; Filtering</a></li>
+      <li><a href="#search">Search</a></li>
+      <li><a href="#cards">Module Cards</a></li>
+      <li><a href="#saving">Saving Modules</a></li>
+      <li><a href="#codes">Module Code Convention</a></li>
+      <li><a href="#faculties">Faculty Abbreviations</a></li>
+      <li><a href="#data">Data Sources</a></li>
+      <li><a href="#admin">Admin: Updating the Catalogue</a></li>
+      <li><a href="#tech">Technical Stack</a></li>
+      <li><a href="#limitations">Known Limitations</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- 1. Overview -->
+    <section id="overview">
+      <h2 class="section-title"><span class="num">1</span> Overview</h2>
+      <p>
+        The MU Module Catalogue is a fully public, browser-based tool for exploring Maynooth
+        University's complete module offering. It requires no login, no server connection at
+        runtime, and works offline once loaded. It is part of the
+        <a href="https://jkeatingmu.github.io/MU-finder/">MU Finder</a> suite alongside the
+        MU Programme Finder.
+      </p>
+      <p>
+        The catalogue currently covers <strong>2,599 modules</strong> across
+        <strong>48 departments</strong> and three faculties, drawn directly from the MU
+        university database for Academic Year 2025.
+      </p>
+      <div class="callout">
+        <strong>Primary audiences:</strong> current and prospective students exploring MU's
+        curriculum; academic staff reviewing module offerings across departments; university
+        administrators and external stakeholders.
+      </div>
+
+      <h3>Key capabilities</h3>
+      <ul>
+        <li>Full-text search across module codes, names, content descriptions, and learning outcomes</li>
+        <li>Filter by faculty, department, level (Undergraduate / Postgraduate), and skill tags</li>
+        <li>Save modules to a personal shortlist (persisted locally, no login required)</li>
+        <li>View a summary of saved modules including Data/Digital skill coverage and departmental spread</li>
+        <li>Expand any module card to read the full content description and numbered learning outcomes</li>
+        <li>Accessible font size toggle (three sizes, persisted across sessions)</li>
+      </ul>
+    </section>
+
+    <!-- 2. Data & Digital Tagging -->
+    <section id="tagging">
+      <h2 class="section-title"><span class="num">2</span> Data &amp; Digital Tagging</h2>
+      <p>
+        Each module in the catalogue may carry one or both of two skill tags, representing the
+        university's audit of data and digital literacy content embedded across the full curriculum.
+      </p>
+
+      <div class="card">
+        <h3><span class="pill pill-data">Data</span></h3>
+        <p>
+          The module has been identified as containing meaningful data skills content — including
+          data literacy, statistical reasoning, data analysis, quantitative methods, or data
+          management. Tagged by department heads or delegated staff following review of the module
+          content description and learning outcomes.
+        </p>
+      </div>
+
+      <div class="card">
+        <h3><span class="pill pill-digital">Digital</span></h3>
+        <p>
+          The module has been identified as containing meaningful digital skills content — including
+          computing, software use, digital tools, information systems, coding, or digital
+          communication. Tagged by department heads or delegated staff.
+        </p>
+      </div>
+
+      <h3>Background</h3>
+      <p>
+        The tagging was conducted as a university-wide initiative to estimate the extent of data
+        and digital skills embedded in MU's full module catalogue. An initial automated pass using
+        AI (Gemini) analysed module learning outcomes and content descriptions to pre-tag modules.
+        This was followed by a human review pass — each department's Head of Department (or
+        delegated staff member) confirmed, corrected, or extended the tags using a bespoke
+        module management application built for this purpose.
+      </p>
+      <p>
+        Near-complete human tagging was achieved across the full module catalogue — described
+        internally as a significant institutional first.
+      </p>
+      <div class="callout green">
+        <strong>Note:</strong> Tags reflect the state of the catalogue at the time of export.
+        A module without a tag has not been positively identified as containing data or digital
+        content — it does not necessarily mean such content is absent.
+      </div>
+    </section>
+
+    <!-- 3. Browsing & Filtering -->
+    <section id="browsing">
+      <h2 class="section-title"><span class="num">3</span> Browsing &amp; Filtering</h2>
+      <p>
+        The catalogue defaults to showing all <strong>Undergraduate</strong> modules on load,
+        sorted alphabetically by department then module code. Four filter controls are available
+        at the top of the catalogue:
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Filter</th><th>Options</th><th>Behaviour</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Faculty</strong></td>
+              <td>All Faculties · FAH · FSE · FSS (+ CIF, VPSL)</td>
+              <td>Restricts the department dropdown to departments within the selected faculty</td>
+            </tr>
+            <tr>
+              <td><strong>Department</strong></td>
+              <td>All Departments · [list]</td>
+              <td>Cascades from the faculty filter. Shows all 48 departments when no faculty is selected</td>
+            </tr>
+            <tr>
+              <td><strong>Level</strong></td>
+              <td>All Modules · Undergraduate · Postgraduate · Unknown</td>
+              <td>Defaults to Undergraduate. Select All Modules to see every level</td>
+            </tr>
+            <tr>
+              <td><strong>Data / Digital</strong></td>
+              <td>Toggle buttons</td>
+              <td>Show only modules tagged with the selected skill. Both can be active simultaneously via the search; only one toggle is active at a time</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        All filters combine — for example, selecting <em>Faculty of Science &amp; Engineering</em>
+        + <em>Postgraduate</em> + <em>Digital</em> returns only FSE postgraduate modules tagged
+        as containing digital skills content.
+      </p>
+      <p>
+        A <strong>Clear all</strong> link resets every filter and returns to the default
+        Undergraduate view.
+      </p>
+
+      <h3>Pagination</h3>
+      <p>
+        Results are shown 48 at a time. A <strong>Show more</strong> button at the bottom loads
+        the next 48. The result count displayed above the grid always reflects the total number
+        of matching modules, not just the visible ones.
+      </p>
+    </section>
+
+    <!-- 4. Search -->
+    <section id="search">
+      <h2 class="section-title"><span class="num">4</span> Search</h2>
+      <p>
+        The search box performs full-text fuzzy search across the currently filtered pool of
+        modules using <a href="https://www.fusejs.io/" target="_blank" rel="noopener">Fuse.js</a>.
+        Searching begins once at least 2 characters have been entered.
+      </p>
+
+      <h3>Fields searched</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Field</th><th>Weight</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Module code</td><td>High (3×)</td><td>e.g. <code>CS101</code>, <code>MA201</code></td></tr>
+            <tr><td>Module name</td><td>Medium (2×)</td><td>Full module title</td></tr>
+            <tr><td>Department name</td><td>Low (1×)</td><td>e.g. <code>Computer Science</code></td></tr>
+            <tr><td>Module content</td><td>Lower (0.5×)</td><td>Full content description</td></tr>
+            <tr><td>Learning outcomes</td><td>Lowest (0.3×)</td><td>All learning outcome text combined</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Search results are ranked by relevance score. Filters (faculty, department, level, tag)
+        apply <em>before</em> the search, so only the currently visible pool is searched.
+      </p>
+
+      <div class="callout blue">
+        <strong>Tip:</strong> Searching by module code prefix (e.g. <code>CS1</code>) is an
+        efficient way to find all first-year Computer Science modules. Searching by keyword
+        (e.g. <em>machine learning</em>, <em>clinical</em>, <em>sustainability</em>) searches
+        inside content descriptions and learning outcomes.
+      </div>
+    </section>
+
+    <!-- 5. Module Cards -->
+    <section id="cards">
+      <h2 class="section-title"><span class="num">5</span> Module Cards</h2>
+      <p>
+        Each module is displayed as a card in a responsive grid (3 columns on desktop,
+        2 on tablet, 1 on mobile). Cards are colour-tinted by faculty for quick visual
+        orientation.
+      </p>
+
+      <h3>Card layout (collapsed)</h3>
+      <ul>
+        <li><strong>Module code</strong> — bold monospace badge, faculty-coloured</li>
+        <li><strong>Faculty abbreviation</strong> — e.g. <code>FSE</code>, <code>FAH</code>, same colour as the code; hover to see the full faculty name</li>
+        <li><strong>Level badge</strong> — Undergraduate / Postgraduate, top right</li>
+        <li><strong>Save icon</strong> — heart icon, top right; click to save/unsave</li>
+        <li><strong>Module name</strong> — full title</li>
+        <li><strong>Department · Faculty</strong> — coloured faculty dot and short faculty name</li>
+        <li><strong>Intro snippet</strong> — first 160 characters of the module content description</li>
+        <li><strong>Skill tags</strong> — <span class="pill pill-data">Data</span> and/or <span class="pill pill-digital">Digital</span> shown only when the module is tagged; hover for a description of what the tag means</li>
+      </ul>
+
+      <h3>Card layout (expanded)</h3>
+      <p>
+        Click <strong>Full content &amp; learning outcomes</strong> at the bottom of any card
+        to expand it. The intro snippet is hidden when expanded to avoid duplication. The
+        expanded view shows:
+      </p>
+      <ul>
+        <li><strong>Module Content</strong> — the full content description</li>
+        <li><strong>Learning Outcomes</strong> — numbered list of all learning outcomes</li>
+      </ul>
+
+      <h3>Faculty colour coding</h3>
+      <div class="fac-grid">
+        <div class="fac-card" style="background:#faf7ff; border-color:#ddd6fe;">
+          <div class="abbr" style="color:#7c3aed;">FAH</div>
+          <p>Faculty of Arts &amp; Humanities — purple tint</p>
+        </div>
+        <div class="fac-card" style="background:#f0f7ff; border-color:#bfdbfe;">
+          <div class="abbr" style="color:#0369a1;">FSE</div>
+          <p>Faculty of Science &amp; Engineering — blue tint</p>
+        </div>
+        <div class="fac-card" style="background:#f0fdf6; border-color:#bbf7d0;">
+          <div class="abbr" style="color:#15803d;">FSS</div>
+          <p>Faculty of Social Sciences — green tint</p>
+        </div>
+        <div class="fac-card" style="background:#fafafa; border-color:#e2e8f0;">
+          <div class="abbr" style="color:#6b1a2b;">CIF / VPSL</div>
+          <p>Cross-institutional / VP Students — neutral</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Saving Modules -->
+    <section id="saving">
+      <h2 class="section-title"><span class="num">6</span> Saving Modules</h2>
+      <p>
+        Students can save modules to a personal shortlist by clicking the
+        <strong>heart icon</strong> (♥) on any module card. Saved modules persist in the
+        browser's local storage — no account or login is required.
+      </p>
+
+      <h3>Saved filter</h3>
+      <p>
+        Once one or more modules are saved, a <strong>Saved (N)</strong> button appears near
+        the top of the catalogue. Clicking it activates the saved filter, showing only saved
+        modules. All other filters (faculty, department, level, search) continue to apply
+        within the saved set.
+      </p>
+
+      <h3>Summary panel</h3>
+      <p>
+        When the saved filter is active, a summary panel appears above the results showing:
+      </p>
+      <ul>
+        <li>Total number of saved modules</li>
+        <li>How many are tagged <span class="pill pill-data">Data</span> and <span class="pill pill-digital">Digital</span></li>
+        <li>Which faculty abbreviations are represented</li>
+        <li>Which departments are represented</li>
+      </ul>
+      <p>
+        This gives students an at-a-glance view of the shape of their personal module shortlist —
+        useful when planning a programme of study or exploring skill coverage.
+      </p>
+
+      <div class="callout">
+        <strong>Privacy:</strong> Saved modules are stored only in the user's own browser via
+        <code>localStorage</code>. No data is sent to any server. Clearing browser data will
+        remove the saved list. The key used is <code>mu-module-favs</code>, separate from the
+        Programme Finder's saved programmes (<code>mu-favourites</code>).
+      </div>
+    </section>
+
+    <!-- 7. Module Code Convention -->
+    <section id="codes">
+      <h2 class="section-title"><span class="num">7</span> Module Code Convention</h2>
+      <p>
+        MU module codes follow a consistent naming convention: a letter prefix (typically a
+        department abbreviation) followed by a number. The <strong>first digit</strong> of the
+        number indicates the level and, for undergraduate modules, the year of study.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>First digit</th><th>Level</th><th>Year</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>1</strong></td><td>Undergraduate</td><td>Year 1</td><td><code>CS101</code>, <code>MA101</code></td></tr>
+            <tr><td><strong>2</strong></td><td>Undergraduate</td><td>Year 2</td><td><code>CS204</code>, <code>BI201</code></td></tr>
+            <tr><td><strong>3</strong></td><td>Undergraduate</td><td>Year 3</td><td><code>CS301</code>, <code>PH302</code></td></tr>
+            <tr><td><strong>4</strong></td><td>Undergraduate</td><td>Year 4</td><td><code>CS401</code>, <code>EN401</code></td></tr>
+            <tr><td><strong>6</strong></td><td>Postgraduate</td><td>—</td><td><code>CS601</code>, <code>MA601</code></td></tr>
+            <tr><td><strong>8</strong></td><td>Postgraduate</td><td>—</td><td><code>CS801</code>, <code>BI801</code></td></tr>
+            <tr><td>0, 5, 7, 9</td><td>Unknown</td><td>—</td><td>Requires manual review</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        This convention was used to bulk-tag the <code>UG_PG</code> field and <code>yearOfStudy</code>
+        field in the database for the 2,370 modules that previously had no level classification.
+        Approximately 87 modules with edge-case first digits remain classified as Unknown and
+        are available for review by administrators. Individual modules can be manually corrected
+        through the admin editing interface.
+      </p>
+    </section>
+
+    <!-- 8. Faculty Abbreviations -->
+    <section id="faculties">
+      <h2 class="section-title"><span class="num">8</span> Faculty Abbreviations</h2>
+      <p>
+        Maynooth University has three academic faculties. Two additional administrative groupings
+        appear in the module database for cross-institutional and student services modules.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Abbreviation</th><th>Full name</th><th>Type</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>FAH</strong></td><td>Faculty of Arts and Humanities</td><td>Faculty</td></tr>
+            <tr><td><strong>FSE</strong></td><td>Faculty of Science and Engineering</td><td>Faculty</td></tr>
+            <tr><td><strong>FSS</strong></td><td>Faculty of Social Sciences</td><td>Faculty</td></tr>
+            <tr><td><strong>CIF</strong></td><td>Cross Institutional Faculty</td><td>Administrative grouping</td></tr>
+            <tr><td><strong>VPSL</strong></td><td>Office of VP Students &amp; Learning</td><td>Administrative grouping</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        CIF and VPSL are not faculties in the academic sense but serve as module ownership
+        groupings in the university's module management system.
+      </p>
+    </section>
+
+    <!-- 9. Data Sources -->
+    <section id="data">
+      <h2 class="section-title"><span class="num">9</span> Data Sources</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Data</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Module codes, names, descriptions, learning outcomes</td><td>MU university database, Academic Year 2025 — 2,599 modules, 48 departments</td></tr>
+            <tr><td>Data / Digital skill tags</td><td>Human review by department heads / delegated staff, supported by AI pre-tagging (Gemini), via MU Module Management System</td></tr>
+            <tr><td>UG/PG classification</td><td>Derived from module code convention (first digit rule); ~87 exceptions classified as Unknown pending manual review</td></tr>
+            <tr><td>Year of study</td><td>Derived from module code first digit for UG modules</td></tr>
+            <tr><td>Faculty assignment</td><td>MU university database — module ownership records</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>What is excluded from the public catalogue</h3>
+      <p>The following fields are present in the internal module management system but are
+      intentionally excluded from the public catalogue:</p>
+      <ul>
+        <li><strong>Completed flag</strong> — an internal workflow marker indicating that a
+        department head has finished reviewing a module; not meaningful to public users</li>
+        <li><strong>Notes</strong> — free-text notes added during the tagging process, primarily
+        used during AI/human tagging coordination; not intended for public display</li>
+        <li><strong>Change log</strong> — audit trail of edits made in the management system</li>
+      </ul>
+    </section>
+
+    <!-- 10. Admin: Updating the Catalogue -->
+    <section id="admin">
+      <h2 class="section-title"><span class="num">10</span> Admin: Updating the Catalogue</h2>
+      <p>
+        The public catalogue is served as a static JSON file. It does not connect to the
+        database at runtime. To update the public catalogue after changes have been made in
+        the module management system:
+      </p>
+
+      <ol>
+        <li>Log into the MU Module Management System at <code>http://localhost:3002</code> as an Administrator.</li>
+        <li>Click <strong>Export for Public Finder</strong> in the button bar. A file named
+          <code>mu-modules-export-YYYY-MM-DD.json</code> will download.</li>
+        <li>Rename the file to <code>modules.json</code>.</li>
+        <li>Copy it to <code>/MU-finder/public/data/modules.json</code>, replacing the existing file.</li>
+        <li>Commit and push to GitHub:
+<pre><code>git add public/data/modules.json
+git commit -m "data: update module catalogue export"
+git push origin main</code></pre>
+        </li>
+        <li>GitHub Actions will automatically build and deploy to GitHub Pages within ~2 minutes.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Frequency:</strong> Modules only change annually (new academic year). The export
+        should be refreshed whenever significant tagging work has been completed, new tags have
+        been introduced, or the module database has been updated for a new year.
+      </div>
+
+      <h3>Export format</h3>
+      <p>The export JSON has the following top-level structure:</p>
+<pre><code>{
+  "generated": "2026-03-28T...",   // ISO timestamp of export
+  "totalModules": 2599,
+  "faculties": [...],              // sorted faculty name list
+  "index": [...],                  // per-department summary with counts
+  "modules": [...]                 // full module array
+}</code></pre>
+    </section>
+
+    <!-- 11. Technical Stack -->
+    <section id="tech">
+      <h2 class="section-title"><span class="num">11</span> Technical Stack</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Component</th><th>Technology</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Framework</td><td>React 19 + Vite + TypeScript</td></tr>
+            <tr><td>Styling</td><td>Tailwind CSS v4</td></tr>
+            <tr><td>Search</td><td>Fuse.js (client-side fuzzy search)</td></tr>
+            <tr><td>Animations</td><td>motion/react (Framer Motion)</td></tr>
+            <tr><td>Icons</td><td>lucide-react</td></tr>
+            <tr><td>Data</td><td>Static JSON file fetched at runtime (<code>public/data/modules.json</code>)</td></tr>
+            <tr><td>Persistence</td><td>localStorage (<code>mu-module-favs</code>, <code>mu-dir-font</code>)</td></tr>
+            <tr><td>Hosting</td><td>GitHub Pages (static, no server required)</td></tr>
+            <tr><td>CI/CD</td><td>GitHub Actions — auto-deploy on push to <code>main</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Data source (module management system)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Component</th><th>Technology</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Server</td><td>Node.js + Express</td></tr>
+            <tr><td>Database</td><td>MongoDB Atlas (<code>MU_transformed_modules</code>)</td></tr>
+            <tr><td>Auth</td><td>JWT (24h expiry)</td></tr>
+            <tr><td>Frontend</td><td>React 17 + Webpack</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 12. Known Limitations -->
+    <section id="limitations">
+      <h2 class="section-title"><span class="num">12</span> Known Limitations</h2>
+      <ul>
+        <li>Module data is from Academic Year 2025 and will need to be re-exported for each new year</li>
+        <li>Approximately 87 modules have a UG/PG classification of "Unknown" due to non-standard first digits in their module codes; these require manual review</li>
+        <li>The Data and Digital tags reflect the state at the time of export; changes made in the management system are not reflected until a new export is committed</li>
+        <li>The 4MB JSON file is loaded in full on first visit; on a slow connection this may take a moment. Subsequent visits are instant as the browser caches the file</li>
+        <li>Saved modules are stored in the local browser only — clearing browser data removes the saved list, and saves do not transfer between devices</li>
+        <li>The catalogue does not yet show which programmes each module belongs to; programme–module linking is a planned future phase</li>
+        <li>Additional tag types (e.g. Placement, Accredited) and admin module editing are planned for future development phases</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer class="doc-footer">
+  <p>© 2026 Maynooth University · MU Module Catalogue · Built by Prof. John Keating</p>
+</footer>
+
+</body>
+</html>
