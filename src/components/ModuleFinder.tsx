@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Fuse from 'fuse.js';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, ChevronDown, ChevronUp, Database, Layers, AlertCircle, Heart } from 'lucide-react';
+import { CS_BY_ID } from '../data/criticalSkills';
 
 interface Module {
   moduleCode: string;
@@ -19,6 +20,8 @@ interface Module {
   UG_PG: string;
   yearOfStudy: string;
   notes: string;
+  criticalSkills?: string[];
+  hidden?: boolean;
 }
 
 interface IndexedModule extends Module {
@@ -196,8 +199,8 @@ function ModuleCard({ mod, isSaved, onToggleSave }: {
           </p>
         )}
 
-        {/* Primary tags — only when true */}
-        {activePrimaryTags.length > 0 && (
+        {/* Primary tags + Skills pill */}
+        {(activePrimaryTags.length > 0 || (mod.criticalSkills && mod.criticalSkills.length > 0)) && (
           <div className="flex flex-wrap gap-1.5 pt-0.5">
             {activePrimaryTags.map(t => (
               <span
@@ -209,6 +212,15 @@ function ModuleCard({ mod, isSaved, onToggleSave }: {
                 {t.label}
               </span>
             ))}
+            {mod.criticalSkills && mod.criticalSkills.length > 0 && (
+              <span
+                title="This module has Critical Skills mapped to it — expand for details"
+                className="text-xs font-semibold px-2.5 py-1 rounded-full cursor-default"
+                style={{ background: '#f3e8ff', color: '#7e22ce' }}
+              >
+                Skills
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -254,10 +266,31 @@ function ModuleCard({ mod, isSaved, onToggleSave }: {
                   <ul className="space-y-1.5">
                     {los.map((lo, i) => (
                       <li key={i} className="text-sm text-slate-700 flex gap-2">
-                        <span className="text-slate-400 flex-shrink-0 mt-0.5">{i + 1}.</span>
+                        <span className="font-mono font-semibold text-slate-400 flex-shrink-0 mt-0.5 text-xs">LO{i + 1}</span>
                         <span className="leading-relaxed">{lo}</span>
                       </li>
                     ))}
+                  </ul>
+                </div>
+              )}
+              {mod.criticalSkills && mod.criticalSkills.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1.5">
+                    Critical Skills
+                  </p>
+                  <ul className="space-y-1.5">
+                    {mod.criticalSkills.map(id => {
+                      const skill = CS_BY_ID[id];
+                      return skill ? (
+                        <li key={id} className="text-sm text-slate-700 flex gap-2">
+                          <span className="font-mono font-semibold flex-shrink-0 mt-0.5 text-xs" style={{ color: '#7e22ce' }}>{skill.code}</span>
+                          <span className="leading-relaxed">
+                            <span className="font-medium">{skill.short}</span>
+                            <span className="text-slate-500"> — {skill.text}</span>
+                          </span>
+                        </li>
+                      ) : null;
+                    })}
                   </ul>
                 </div>
               )}
@@ -382,6 +415,10 @@ export default function ModuleFinder() {
 
   const results = useMemo<IndexedModule[]>(() => {
     let pool: IndexedModule[] = indexedModules;
+    const searching = query.trim().length >= 2;
+
+    // Hidden modules only appear when searching by code
+    if (!searching) pool = pool.filter(m => !m.hidden);
 
     if (favsOnly) pool = pool.filter(m => savedCodes.has(m.moduleCode));
     if (facultyFilter) pool = pool.filter(m => m.facultyName === facultyFilter);
@@ -390,7 +427,7 @@ export default function ModuleFinder() {
     if (tagFilter === 'digital') pool = pool.filter(m => m.digital);
     if (ugpgFilter) pool = pool.filter(m => m.UG_PG === ugpgFilter);
 
-    if (query.trim().length >= 2) {
+    if (searching) {
       const searchPool = new Fuse(pool, {
         keys: [
           { name: 'moduleCode', weight: 3 },
@@ -403,12 +440,12 @@ export default function ModuleFinder() {
         minMatchCharLength: 2,
       });
       return searchPool.search(query.trim()).map(r => r.item);
+    } else {
+      return [...pool].sort((a, b) => {
+        const dc = a.departmentName.localeCompare(b.departmentName);
+        return dc !== 0 ? dc : a.moduleCode.localeCompare(b.moduleCode);
+      });
     }
-
-    return [...pool].sort((a, b) => {
-      const dc = a.departmentName.localeCompare(b.departmentName);
-      return dc !== 0 ? dc : a.moduleCode.localeCompare(b.moduleCode);
-    });
   }, [indexedModules, fuse, query, facultyFilter, deptFilter, tagFilter, ugpgFilter, favsOnly, savedCodes]);
 
   // Summary stats for saved modules
@@ -475,7 +512,7 @@ export default function ModuleFinder() {
             <h2 className="text-2xl font-bold text-slate-900">Module Catalogue</h2>
           </div>
           <p className="text-slate-500 text-sm">
-            {exportData.totalModules.toLocaleString()} modules across {exportData.faculties.length} faculties
+            {exportData.totalModules.toLocaleString()} modules across 3 faculties
             {exportData.generated && (
               <> · Updated {new Date(exportData.generated).toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' })}</>
             )}
