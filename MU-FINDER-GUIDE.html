@@ -1,366 +1,820 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MU Programme Finder 2026 — Feature Guide</title>
   <style>
-      code{white-space: pre-wrap;}
-      span.smallcaps{font-variant: small-caps;}
-      span.underline{text-decoration: underline;}
-      div.column{display: inline-block; vertical-align: top; width: 50%;}
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mu:       #6b1a2b;
+      --mu-light: #fdf2f4;
+      --mu-mid:   #f5c6ce;
+      --arts:     #7c3aed;
+      --science:  #0369a1;
+      --social:   #15803d;
+      --slate:    #334155;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
+      --bg:       #f8fafc;
+      --radius:   8px;
+      --font:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--slate);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .doc-header {
+      background: var(--mu);
+      color: white;
+      padding: 2.5rem 2rem 2rem;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .doc-header .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .doc-header h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .doc-header .meta {
+      font-size: 0.85rem;
+      opacity: 0.82;
+      line-height: 1.6;
+    }
+    .doc-header .meta a { color: white; text-decoration: underline; opacity: 0.9; }
+
+    /* ── Layout ── */
+    .doc-body {
+      display: flex;
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+      gap: 2.5rem;
+      align-items: flex-start;
+    }
+
+    /* ── Sidebar ToC ── */
+    .toc {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 1.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+    .toc h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .toc ol { list-style: none; counter-reset: toc; }
+    .toc ol li { counter-increment: toc; margin-bottom: 0.25rem; }
+    .toc ol li::before { content: counter(toc) ". "; color: var(--mu); font-weight: 700; }
+    .toc a { color: var(--slate); text-decoration: none; }
+    .toc a:hover { color: var(--mu); }
+    .toc .sub { padding-left: 1.25rem; }
+    .toc .sub li::before { content: none; }
+    .toc .sub a { color: var(--muted); font-size: 0.77rem; }
+    .toc .sub a:hover { color: var(--mu); }
+
+    /* ── Main content ── */
+    main { flex: 1; min-width: 0; }
+
+    section { margin-bottom: 2.75rem; }
+
+    h2.section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1e293b;
+      border-bottom: 2px solid var(--mu);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h2.section-title .num {
+      background: var(--mu);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    p { margin-bottom: 0.8rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      padding-left: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    li { margin-bottom: 0.3rem; }
+    li:last-child { margin-bottom: 0; }
+
+    strong { color: #1e293b; }
+
+    a { color: var(--mu); }
+
+    /* ── Cards / callouts ── */
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 { margin-top: 0; }
+
+    .callout {
+      border-left: 4px solid var(--mu);
+      background: var(--mu-light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.85rem 1.1rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+
+    .callout.blue {
+      border-color: var(--science);
+      background: #eff6ff;
+    }
+
+    /* ── Pathway cards ── */
+    .pathway-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .pathway-card {
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      border: 1px solid var(--border);
+    }
+    .pathway-card .pathway-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .pathway-card p { font-size: 0.85rem; margin-bottom: 0; }
+
+    /* ── Tables ── */
+    .table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead th {
+      background: var(--mu);
+      color: white;
+      text-align: left;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody td {
+      padding: 0.5rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    /* ── Code ── */
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82em;
+      background: #f1f5f9;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--mu);
+    }
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      margin: 0.75rem 0;
+    }
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      font-size: 0.83rem;
+    }
+
+    /* ── Security table ── */
+    .status-pass  { color: #15803d; font-weight: 700; }
+    .status-note  { color: #b45309; font-weight: 700; }
+    .status-info  { color: var(--science); font-weight: 700; }
+    .dot {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .dot-pass { background: #15803d; }
+    .dot-note { background: #b45309; }
+    .dot-info { background: var(--science); }
+
+    /* ── Deployment context boxes ── */
+    .deploy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .deploy-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .deploy-card .dc-head {
+      padding: 0.75rem 1.1rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .deploy-card .dc-body {
+      padding: 1rem 1.1rem;
+      font-size: 0.875rem;
+    }
+    .deploy-card .dc-body ul { margin-bottom: 0; }
+
+    /* ── Footer ── */
+    .doc-footer {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--muted);
+      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      background: white;
+    }
+
+    /* ── Print ── */
+    @media print {
+      body { background: white; font-size: 13px; }
+      .toc { display: none; }
+      .doc-body { padding: 0; gap: 0; }
+      main { padding: 1rem 0; }
+      h2.section-title { page-break-after: avoid; }
+      h3 { page-break-after: avoid; }
+      .card, .callout, .deploy-card { page-break-inside: avoid; }
+      pre { white-space: pre-wrap; }
+      a { color: inherit; text-decoration: none; }
+    }
+
+    @media (max-width: 760px) {
+      .toc { display: none; }
+      .doc-body { padding: 1rem; }
+    }
   </style>
-  <style>
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-  </style>
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
-  <![endif]-->
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">MU Programme Finder 2026 — Feature Guide</h1>
-</header>
-<h1 id="mu-programme-finder-2026-feature-guide">MU Programme Finder 2026 — Feature Guide</h1>
-<p><strong>Maynooth University · Open Day Tool</strong> Built by Prof. John Keating, Department of Computer Science, Maynooth University Contact: john.keating@mu.ie</p>
-<hr />
-<h2 id="overview">Overview</h2>
-<p>MU Programme Finder is a browser-based progressive web app (PWA) that helps prospective students explore the 55 MU undergraduate programmes for 2026. It requires no login, no server, and no personal data. It works fully offline once loaded and can be installed to a device home screen.</p>
-<p>The app covers all three faculties: - <strong>Faculty of Arts, Celtic Studies &amp; Philosophy</strong> — 5 programmes - <strong>Faculty of Science &amp; Engineering</strong> — 23 programmes - <strong>Faculty of Social Sciences</strong> — 27 programmes</p>
-<p>Designed for use at Open Days (iPad kiosk), on the MU website, and as a standalone download.</p>
-<hr />
-<h2 id="the-three-pathways">The Three Pathways</h2>
-<h3 id="personality-profile">1. Personality Profile</h3>
-<p>A psychometric-style quiz that maps a student’s cognitive interests and strengths onto MU programmes.</p>
-<p><strong>Flow:</strong> 1. Student selects a faculty (Arts / Science &amp; Engineering / Social Sciences) 2. Answers 9–12 Likert-scale statements (Strongly Disagree → Strongly Agree) 3. Results screen shows a personalised strength profile bar chart, descriptions of top strengths, and all faculty programmes ranked by match percentage</p>
-<p><strong>Question sets:</strong> - <strong>Arts</strong> — 9 questions across Creative, Humanities, and Language categories - <strong>Science &amp; Engineering</strong> — 12 questions across Scientific, Quantitative, Computing, and Creative - <strong>Social Sciences</strong> — 12 questions across Social, Business, Language, and Quantitative</p>
-<p><strong>The 8 strength categories:</strong></p>
-<table>
-<colgroup>
-<col style="width: 37%"></col>
-<col style="width: 62%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th>Category</th>
-<th>What it measures</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><strong>Creative</strong></td>
-<td>Artistic expression, design thinking, original making</td>
-</tr>
-<tr class="even">
-<td><strong>Humanities</strong></td>
-<td>Culture, history, philosophy, critical interpretation</td>
-</tr>
-<tr class="odd">
-<td><strong>Language</strong></td>
-<td>Communication, writing, debate, cross-cultural exchange</td>
-</tr>
-<tr class="even">
-<td><strong>Scientific</strong></td>
-<td>Natural world curiosity — biology, chemistry, physics, environment</td>
-</tr>
-<tr class="odd">
-<td><strong>Quantitative</strong></td>
-<td>Mathematics, statistics, data, logical modelling</td>
-</tr>
-<tr class="even">
-<td><strong>Computing</strong></td>
-<td>Software, algorithms, digital systems, coding</td>
-</tr>
-<tr class="odd">
-<td><strong>Social</strong></td>
-<td>People-centred motivation — wellbeing, rights, community</td>
-</tr>
-<tr class="even">
-<td><strong>Business</strong></td>
-<td>Strategy, markets, organisations, entrepreneurship</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Match score formula:</strong> Each course is tagged with a primary and optional secondary category. The match score is calculated as:</p>
-<pre><code>matchScore = (primaryScore + secondaryScore) / ((primaryQuestions + secondaryQuestions) × 5) × 100</code></pre>
-<p>where scores are the sum of Likert responses for that category, and the denominator is the theoretical maximum.</p>
-<hr />
-<h3 id="subject-explorer">2. Subject Explorer</h3>
-<p>Calculates a student’s estimated CAO points from their Leaving Certificate subjects and grades, then shows all MU programmes sorted by achievability.</p>
-<p><strong>Flow:</strong> 1. Student selects up to 7 LC subjects from a grouped list (Languages, Mathematics, Sciences, Technology &amp; Design, Business &amp; Social, Humanities &amp; Other) 2. Selects a grade for each (Higher H1–H7 / Ordinary O1–O6 / Foundation F1–F2 for Maths and Irish) 3. App calculates CAO points (best 6 subjects + Higher Maths bonus) and displays all 55 programmes with status indicators</p>
-<p><strong>Points calculation:</strong></p>
-<table>
-<thead>
-<tr class="header">
-<th>Grade</th>
-<th>Points</th>
-<th>Grade</th>
-<th>Points</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>H1</td>
-<td>100</td>
-<td>O1</td>
-<td>56</td>
-</tr>
-<tr class="even">
-<td>H2</td>
-<td>88</td>
-<td>O2</td>
-<td>46</td>
-</tr>
-<tr class="odd">
-<td>H3</td>
-<td>77</td>
-<td>O3</td>
-<td>37</td>
-</tr>
-<tr class="even">
-<td>H4</td>
-<td>66</td>
-<td>O4</td>
-<td>28</td>
-</tr>
-<tr class="odd">
-<td>H5</td>
-<td>56</td>
-<td>O5</td>
-<td>20</td>
-</tr>
-<tr class="even">
-<td>H6</td>
-<td>46</td>
-<td>O6</td>
-<td>12</td>
-</tr>
-<tr class="odd">
-<td>H7</td>
-<td>37</td>
-<td>F1</td>
-<td>28</td>
-</tr>
-<tr class="even">
-<td></td>
-<td></td>
-<td>F2</td>
-<td>20</td>
-</tr>
-</tbody>
-</table>
-<p>Higher Mathematics H6 or above: <strong>+25 bonus points</strong></p>
-<p><strong>Status indicators:</strong> - <strong>You qualify</strong> (green) — estimated points ≥ 2025 entry requirement - <strong>Close</strong> (amber) — within 40 points of the requirement - <strong>Aim higher</strong> (grey) — more than 40 points below - <strong>Open entry</strong> (blue) — no numeric threshold (e.g. new courses, portfolio-based entry)</p>
-<blockquote>
-<p>Points shown are 2025 Round 1 (last round) figures. Entry requirements change year to year.</p>
-</blockquote>
-<p><strong>Faculty suggestion:</strong> Based on the subjects selected, the app infers which faculty the student’s profile most closely aligns with (e.g. Biology + Chemistry + Physics → Science &amp; Engineering).</p>
-<hr />
-<h3 id="career-finder">3. Career Finder</h3>
-<p>Students browse or search 37 career paths across 8 groups and see the MU programmes most relevant to each career.</p>
-<p><strong>Career groups:</strong> - Technology &amp; Computing - Science &amp; Research - Healthcare &amp; Wellbeing - Business &amp; Finance - Education &amp; Social Work - Arts, Media &amp; Communication - Humanities &amp; Culture - Engineering &amp; Design</p>
-<p><strong>How matching works:</strong> Each career is tagged with a primary and optional secondary strength category. Courses are scored: - Course primary = career primary → 70 points - Course secondary = career primary → 40 points - Course primary = career secondary → +30 points - Course secondary = career secondary → +15 points - Capped at 100%</p>
-<p>Results show all programmes with a score &gt; 0, sorted by relevance.</p>
-<hr />
-<h2 id="programme-directory">Programme Directory</h2>
-<p>A browsable, searchable directory of all 55 MU 2026 undergraduate programmes.</p>
-<p><strong>Features:</strong> - <strong>Search</strong> — by programme title, CAO code, or keyword in description - <strong>Faculty filter</strong> — All / Arts / Science &amp; Engineering / Social Sciences - <strong>Sort</strong> — by CAO code, title A–Z, points high–low, points low–high - <strong>Read more / Show less</strong> — inline expand of the programme description - <strong>Full summary</strong> — opens a modal with the complete prospectus description - <strong>CAO points chip</strong> — faculty-coloured, with tooltip confirming “2025 Round 1 (last round)” - <strong>MU page link</strong> — direct link to the programme’s page on maynoothuniversity.ie - <strong>Category pills</strong> — strength categories tagged to each programme - <strong>AI summary badge</strong> — shown where the programme description was AI-generated (prospectus text was not parseable for 5 programmes) - <strong>Accessibility font toggle</strong> — three text sizes (small / normal / large), persisted across sessions</p>
-<hr />
-<h2 id="data-sources">Data Sources</h2>
-<table>
-<colgroup>
-<col style="width: 42%"></col>
-<col style="width: 57%"></col>
-</colgroup>
-<thead>
-<tr class="header">
-<th>Data</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Programme titles, codes, descriptions</td>
-<td>MU Prospectus 2026 (PDF)</td>
-</tr>
-<tr class="even">
-<td>CAO points</td>
-<td>CAO Handbook 2026, Round 1 (last round)</td>
-</tr>
-<tr class="odd">
-<td>Programme URLs</td>
-<td>maynoothuniversity.ie (verified manually)</td>
-</tr>
-<tr class="even">
-<td>Strength category tags</td>
-<td>Manually assigned by author</td>
-</tr>
-<tr class="odd">
-<td>5 AI-generated summaries</td>
-<td>Claude (Anthropic) — used where prospectus text could not be parsed</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Programmes with AI-generated summaries:</strong> MH101, MH201, MH304, MH503, MH804</p>
-<p>All data is baked into the app at build time. No API calls are made at runtime.</p>
-<hr />
-<h2 id="progressive-web-app-pwa">Progressive Web App (PWA)</h2>
-<p>The app is a fully installable PWA. Students and staff can:</p>
-<ol type="1">
-<li>Open the app in a browser (Chrome, Safari, Edge, Firefox)</li>
-<li>Use the browser’s “Add to Home Screen” / “Install” option</li>
-<li>The app installs like a native app — works offline, no app store required</li>
-</ol>
-<p><strong>PWA manifest:</strong> <code>public/manifest.json</code> <strong>Service worker:</strong> <code>public/service-worker.js</code> (pre-caches the app shell for offline use) <strong>Theme colour:</strong> MU maroon <code>#6b1a2b</code></p>
-<hr />
-<h2 id="technical-stack">Technical Stack</h2>
-<table>
-<thead>
-<tr class="header">
-<th>Component</th>
-<th>Technology</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Framework</td>
-<td>React 19 + Vite + TypeScript</td>
-</tr>
-<tr class="even">
-<td>Styling</td>
-<td>Tailwind CSS v4</td>
-</tr>
-<tr class="odd">
-<td>Animations</td>
-<td>motion/react (Framer Motion)</td>
-</tr>
-<tr class="even">
-<td>Charts</td>
-<td>Recharts</td>
-</tr>
-<tr class="odd">
-<td>Icons</td>
-<td>lucide-react</td>
-</tr>
-<tr class="even">
-<td>Build output</td>
-<td>Static files (HTML + JS + CSS) — deployable anywhere</td>
-</tr>
-</tbody>
-</table>
-<p><strong>To run locally:</strong></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">cd</span> MU-finder</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">npm</span> install</span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="ex">npm</span> run dev        <span class="co"># development server at http://localhost:3000</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="ex">npm</span> run build      <span class="co"># production build to dist/</span></span></code></pre></div>
-<p><strong>To deploy:</strong> Copy the <code>dist/</code> folder to any static web host (MU web server, Netlify, Vercel, GitHub Pages, etc.). No server-side processing required.</p>
-<hr />
-<h2 id="updating-content">Updating Content</h2>
-<h3 id="adding-or-editing-programmes">Adding or editing programmes</h3>
-<p>Edit <code>/src/data/courses.ts</code>. Each programme entry follows this structure:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">{</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a>  id<span class="op">:</span> <span class="st">&#39;mh101&#39;</span><span class="op">,</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a>  code<span class="op">:</span> <span class="st">&#39;MH101&#39;</span><span class="op">,</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a>  title<span class="op">:</span> <span class="st">&#39;The Maynooth Bachelor of Arts Degree&#39;</span><span class="op">,</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>  description<span class="op">:</span> <span class="st">&#39;Short preview (shown in cards)&#39;</span><span class="op">,</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>  fullSummary<span class="op">:</span> <span class="st">&#39;Full prospectus text (shown in modal and expanded view)&#39;</span><span class="op">,</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>  primaryCategory<span class="op">:</span> <span class="st">&#39;Humanities&#39;</span><span class="op">,</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>  secondaryCategory<span class="op">:</span> <span class="st">&#39;Language&#39;</span><span class="op">,</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>  faculty<span class="op">:</span> <span class="st">&#39;arts&#39;</span><span class="op">,</span></span>
-<span id="cb3-10"><a href="#cb3-10"></a>  points<span class="op">:</span> <span class="st">&#39;300&#39;</span><span class="op">,</span></span>
-<span id="cb3-11"><a href="#cb3-11"></a>  url<span class="op">:</span> <span class="st">&#39;https://www.maynoothuniversity.ie/arts&#39;</span><span class="op">,</span></span>
-<span id="cb3-12"><a href="#cb3-12"></a>  aiSummary<span class="op">:</span> <span class="kw">false</span><span class="op">,</span></span>
-<span id="cb3-13"><a href="#cb3-13"></a><span class="op">}</span></span></code></pre></div>
-<p>Alternatively, edit <code>/MU-programmes/programmes.json</code> and regenerate <code>courses.ts</code> by running:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="ex">node</span> /tmp/gen-courses.mjs</span></code></pre></div>
-<h3 id="updating-quiz-questions">Updating quiz questions</h3>
-<p>Edit <code>/src/data/questions.ts</code>. Questions are grouped by faculty (<code>artsQuestions</code>, <code>scienceQuestions</code>, <code>socialQuestions</code>). Each question maps to one of the 8 strength categories.</p>
-<h3 id="adding-careers">Adding careers</h3>
-<p>Edit <code>/src/data/careers.ts</code>. Each career requires a <code>group</code>, <code>primaryCategory</code>, and optionally <code>secondaryCategory</code>.</p>
-<h3 id="updating-lc-subjects">Updating LC subjects</h3>
-<p>Edit <code>/src/data/lcSubjects.ts</code>. The <code>facultyHint</code> field controls which faculty is suggested when a student selects that subject.</p>
-<hr />
-<h2 id="accessibility">Accessibility</h2>
-<ul>
-<li><strong>Font size toggle</strong> — available in the Programme Directory (3 sizes, persisted to localStorage)</li>
-<li><strong>Keyboard navigable</strong> — all interactive elements are focusable</li>
-<li><strong>Touch-optimised</strong> — large tap targets throughout, suitable for iPad kiosk use</li>
-<li><strong>No motion preference</strong> — animations are provided by Framer Motion; can be disabled via OS-level <code>prefers-reduced-motion</code></li>
-<li><strong>Colour contrast</strong> — faculty and category colours selected for reasonable contrast on white backgrounds</li>
-</ul>
-<hr />
-<h2 id="known-limitations">Known Limitations</h2>
-<ul>
-<li>CAO points data is from 2025 and will need to be updated annually</li>
-<li>5 programme descriptions are AI-generated and should be replaced with official prospectus text when available</li>
-<li>The PWA service worker caches the app shell but not external programme pages on mu.ie</li>
-<li>The MU logo is loaded from the MU CDN; an offline fallback local copy would be needed for fully offline kiosk use</li>
-<li>The Froebel sub-programmes (MH001–MH004) share a single URL due to the way the Froebel department page is structured on mu.ie</li>
-</ul>
-<hr />
-<p><em>Last updated: March 2026</em></p>
+
+<!-- ── Header ── -->
+<div class="doc-header">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="label">Maynooth University &mdash; Internal Document</div>
+    <h1>MU Programme Finder 2026</h1>
+    <div class="meta">
+      Feature Guide &amp; Technical Reference<br>
+      Prof. John Keating &middot; Department of Computer Science &middot;
+      <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a><br>
+      Last updated: March 2026
+    </div>
+  </div>
+</div>
+
+<!-- ── Body ── -->
+<div class="doc-body">
+
+  <!-- Sidebar -->
+  <nav class="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#pathways">The Three Pathways</a>
+        <ul class="sub">
+          <li><a href="#personality">Personality Profile</a></li>
+          <li><a href="#subjects">Subject Explorer</a></li>
+          <li><a href="#careers">Career Finder</a></li>
+        </ul>
+      </li>
+      <li><a href="#directory">Programme Directory</a></li>
+      <li><a href="#favourites">Saving &amp; Comparing</a></li>
+      <li><a href="#deployment">Deployment</a></li>
+      <li><a href="#pwa">Progressive Web App</a></li>
+      <li><a href="#data">Data Sources</a></li>
+      <li><a href="#tech">Technical Stack</a></li>
+      <li><a href="#updating">Updating Content</a></li>
+      <li><a href="#security">Security Review</a></li>
+      <li><a href="#accessibility">Accessibility</a></li>
+      <li><a href="#limitations">Known Limitations</a></li>
+    </ol>
+  </nav>
+
+  <!-- Main -->
+  <main>
+
+    <!-- 1. Overview -->
+    <section id="overview">
+      <h2 class="section-title"><span class="num">1</span> Overview</h2>
+      <p>
+        MU Programme Finder is a browser-based progressive web app (PWA) that helps prospective
+        students explore the 55 MU undergraduate programmes for 2026. It requires no login, no
+        server, and collects no personal data. It works fully offline once loaded and can be
+        installed to a device home screen.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Faculty</th><th>Programmes</th></tr></thead>
+          <tbody>
+            <tr><td>Faculty of Arts, Celtic Studies &amp; Philosophy</td><td>5</td></tr>
+            <tr><td>Faculty of Science &amp; Engineering</td><td>23</td></tr>
+            <tr><td>Faculty of Social Sciences</td><td>27</td></tr>
+            <tr><td><strong>Total</strong></td><td><strong>55</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. The Three Pathways -->
+    <section id="pathways">
+      <h2 class="section-title"><span class="num">2</span> The Three Pathways</h2>
+      <p>The app offers three independent routes into the programme data, accommodating students at different stages of decision-making.</p>
+
+      <div class="pathway-grid">
+        <div class="pathway-card" style="border-color:#f5c6ce;background:#fdf2f4;">
+          <div class="pathway-label" style="color:var(--mu);">Pathway 1</div>
+          <strong>Personality Profile</strong>
+          <p>For students who are unsure what to study — maps interests and cognitive strengths to programmes.</p>
+        </div>
+        <div class="pathway-card" style="border-color:#bae6fd;background:#eff6ff;">
+          <div class="pathway-label" style="color:var(--science);">Pathway 2</div>
+          <strong>Subject Explorer</strong>
+          <p>For students who know their LC subjects — calculates estimated CAO points and shows achievability.</p>
+        </div>
+        <div class="pathway-card" style="border-color:#bbf7d0;background:#f0fdf4;">
+          <div class="pathway-label" style="color:var(--social);">Pathway 3</div>
+          <strong>Career Finder</strong>
+          <p>For students who know what career they want — browses 37 paths and maps them to MU programmes.</p>
+        </div>
+      </div>
+
+      <!-- 2.1 Personality Profile -->
+      <h3 id="personality">2.1 Personality Profile</h3>
+      <p>A psychometric-style quiz that maps a student's cognitive interests and strengths onto MU programmes.</p>
+      <p><strong>Flow:</strong></p>
+      <ol>
+        <li>Student selects a faculty (Arts / Science &amp; Engineering / Social Sciences)</li>
+        <li>Answers 9&ndash;12 Likert-scale statements (Strongly Disagree &rarr; Strongly Agree)</li>
+        <li>Results screen shows a personalised strength profile bar chart, descriptions of top strengths, and all faculty programmes ranked by match percentage</li>
+      </ol>
+      <p><strong>Question sets:</strong></p>
+      <ul>
+        <li><strong>Arts</strong> &mdash; 9 questions across Creative, Humanities, and Language</li>
+        <li><strong>Science &amp; Engineering</strong> &mdash; 12 questions across Scientific, Quantitative, Computing, and Creative</li>
+        <li><strong>Social Sciences</strong> &mdash; 12 questions across Social, Business, Language, and Quantitative</li>
+      </ul>
+      <p><strong>The 8 strength categories:</strong></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Category</th><th>What it measures</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Creative</strong></td><td>Artistic expression, design thinking, original making</td></tr>
+            <tr><td><strong>Humanities</strong></td><td>Culture, history, philosophy, critical interpretation</td></tr>
+            <tr><td><strong>Language</strong></td><td>Communication, writing, debate, cross-cultural exchange</td></tr>
+            <tr><td><strong>Scientific</strong></td><td>Natural world curiosity &mdash; biology, chemistry, physics, environment</td></tr>
+            <tr><td><strong>Quantitative</strong></td><td>Mathematics, statistics, data, logical modelling</td></tr>
+            <tr><td><strong>Computing</strong></td><td>Software, algorithms, digital systems, coding</td></tr>
+            <tr><td><strong>Social</strong></td><td>People-centred motivation &mdash; wellbeing, rights, community</td></tr>
+            <tr><td><strong>Business</strong></td><td>Strategy, markets, organisations, entrepreneurship</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Match score formula:</strong></p>
+      <pre><code>matchScore = (primaryScore + secondaryScore)
+            / ((primaryQuestions + secondaryQuestions) &times; 5)
+            &times; 100</code></pre>
+      <p>A category is only declared a "strength" if it scores at least 2 points above the next highest category. Balanced profiles (all categories broadly equal) display a neutral message rather than falsely declaring a top strength.</p>
+
+      <!-- 2.2 Subject Explorer -->
+      <h3 id="subjects">2.2 Subject Explorer</h3>
+      <p>Calculates a student's estimated CAO points from their Leaving Certificate subjects and grades, then shows all MU programmes sorted by achievability.</p>
+      <p><strong>Flow:</strong></p>
+      <ol>
+        <li>Student selects up to 7 LC subjects from a grouped list (Languages, Mathematics, Sciences, Technology &amp; Design, Business &amp; Social, Humanities &amp; Other)</li>
+        <li>Selects a grade for each (Higher H1&ndash;H7 / Ordinary O1&ndash;O6 / Foundation F1&ndash;F2 for Maths and Irish)</li>
+        <li>App calculates CAO points (best 6 subjects + Higher Maths bonus) and displays all 55 programmes with status indicators</li>
+      </ol>
+      <p><strong>Points table:</strong></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Grade</th><th>Points</th><th>Grade</th><th>Points</th></tr></thead>
+          <tbody>
+            <tr><td>H1</td><td>100</td><td>O1</td><td>56</td></tr>
+            <tr><td>H2</td><td>88</td><td>O2</td><td>46</td></tr>
+            <tr><td>H3</td><td>77</td><td>O3</td><td>37</td></tr>
+            <tr><td>H4</td><td>66</td><td>O4</td><td>28</td></tr>
+            <tr><td>H5</td><td>56</td><td>O5</td><td>20</td></tr>
+            <tr><td>H6</td><td>46</td><td>O6</td><td>12</td></tr>
+            <tr><td>H7</td><td>37</td><td>F1</td><td>28</td></tr>
+            <tr><td></td><td></td><td>F2</td><td>20</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Higher Mathematics H6 or above: <strong>+25 bonus points</strong></p>
+      <p><strong>Status indicators:</strong></p>
+      <ul>
+        <li><strong style="color:var(--social);">You qualify</strong> &mdash; estimated points &ge; 2025 entry requirement</li>
+        <li><strong style="color:#b45309;">Close</strong> &mdash; within 40 points of the requirement</li>
+        <li><strong style="color:var(--muted);">Aim higher</strong> &mdash; more than 40 points below</li>
+        <li><strong style="color:var(--science);">Open entry</strong> &mdash; no numeric threshold</li>
+      </ul>
+      <div class="callout">Points shown are 2025 Round 1 (last round) figures. Entry requirements change year to year and should be verified at cao.ie.</div>
+
+      <!-- 2.3 Career Finder -->
+      <h3 id="careers">2.3 Career Finder</h3>
+      <p>Students browse or search 37 career paths across 8 groups and see the MU programmes most relevant to each career.</p>
+      <p><strong>Career groups:</strong> Technology &amp; Computing &middot; Science &amp; Research &middot; Healthcare &amp; Wellbeing &middot; Business &amp; Finance &middot; Education &amp; Social Work &middot; Arts, Media &amp; Communication &middot; Humanities &amp; Culture &middot; Engineering &amp; Design</p>
+      <p><strong>Matching logic:</strong></p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Match condition</th><th>Score</th></tr></thead>
+          <tbody>
+            <tr><td>Course primary = career primary</td><td>70 pts</td></tr>
+            <tr><td>Course secondary = career primary</td><td>40 pts</td></tr>
+            <tr><td>Course primary = career secondary</td><td>+30 pts</td></tr>
+            <tr><td>Course secondary = career secondary</td><td>+15 pts</td></tr>
+            <tr><td>Maximum</td><td>100 pts</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. Programme Directory -->
+    <section id="directory">
+      <h2 class="section-title"><span class="num">3</span> Programme Directory</h2>
+      <p>A browsable, searchable directory of all 55 MU 2026 undergraduate programmes, accessible directly from the Welcome screen.</p>
+      <ul>
+        <li><strong>Search</strong> &mdash; by programme title, CAO code, or keyword in description</li>
+        <li><strong>Faculty filter</strong> &mdash; All / Arts / Science &amp; Engineering / Social Sciences</li>
+        <li><strong>Sort</strong> &mdash; by CAO code, title A&ndash;Z, points high&ndash;low, points low&ndash;high</li>
+        <li><strong>Read more / Show less</strong> &mdash; inline expand of the programme description with CSS fade</li>
+        <li><strong>Full summary</strong> &mdash; opens a modal with the complete prospectus description</li>
+        <li><strong>CAO points chip</strong> &mdash; faculty-coloured, with tooltip confirming &ldquo;2025 Round 1 (last round)&rdquo;</li>
+        <li><strong>MU page link</strong> &mdash; direct link to the programme&rsquo;s page on maynoothuniversity.ie</li>
+        <li><strong>Category pills</strong> &mdash; strength categories tagged to each programme</li>
+        <li><strong>AI summary badge</strong> &mdash; shown where description was AI-generated (5 programmes)</li>
+        <li><strong>Accessibility font toggle</strong> &mdash; three text sizes (small / normal / large), persisted across sessions</li>
+      </ul>
+    </section>
+
+    <!-- 4. Saving & Comparing -->
+    <section id="favourites">
+      <h2 class="section-title"><span class="num">4</span> Saving &amp; Comparing</h2>
+      <p>A heart icon appears on the top-right of every programme card across all screens. Saved programmes persist across sessions via localStorage. The count is shown in the app header and links to the Programme Directory filtered to saved items.</p>
+
+      <h3>Programme Comparison</h3>
+      <p>Available when the Saved filter is active. Students select 2 or 3 saved programmes using the compare icon (alongside the heart). A sticky bar at the bottom shows the selection count; "Compare &rarr;" opens a side-by-side modal.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Row</th><th>Detail</th></tr></thead>
+          <tbody>
+            <tr><td><strong>CAO code &amp; title</strong></td><td>Sticky column headers with faculty-coloured top border</td></tr>
+            <tr><td><strong>Faculty</strong></td><td>Full faculty name in faculty colour</td></tr>
+            <tr><td><strong>CAO Points</strong></td><td>Large and prominent; &ldquo;2025 Round 1&rdquo; note shown</td></tr>
+            <tr><td><strong>Strength Areas</strong></td><td>Primary and secondary category pills</td></tr>
+            <tr><td><strong>Your Match %</strong></td><td>Only shown if the Personality Profile quiz was completed in the same session</td></tr>
+            <tr><td><strong>Related Careers</strong></td><td>Up to 5 career paths reverse-mapped from the programme&rsquo;s strength categories</td></tr>
+            <tr><td><strong>About</strong></td><td>Full prospectus summary (or AI-generated summary where applicable)</td></tr>
+            <tr><td><strong>MU Page</strong></td><td>Direct link to maynoothuniversity.ie</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 5. Deployment -->
+    <section id="deployment">
+      <h2 class="section-title"><span class="num">5</span> Deployment Contexts</h2>
+      <p>The app is a fully static build — no server, no database, no runtime dependencies. The compiled output (the <code>dist/</code> folder) can be copied to any web host or served directly from a file system.</p>
+
+      <div class="deploy-grid">
+        <div class="deploy-card">
+          <div class="dc-head" style="background:var(--mu);">iPad Kiosk &mdash; Open Day</div>
+          <div class="dc-body">
+            <ul>
+              <li>Install the PWA via Safari &rarr; Share &rarr; Add to Home Screen for a fullscreen, app-like experience</li>
+              <li>Enable iOS <strong>Guided Access</strong> (Settings &rarr; Accessibility &rarr; Guided Access) to lock the device to the app for the duration of the Open Day</li>
+              <li>Load the app over Wi-Fi before the event; the service worker caches the app shell for fully offline use thereafter</li>
+              <li>The MU logo is loaded from the MU CDN &mdash; a local fallback copy should be added to <code>public/</code> for fully offline kiosk use</li>
+              <li>No login, no personal data, no student-facing account required</li>
+              <li>Large touch targets and smooth animations are optimised for iPad use</li>
+            </ul>
+          </div>
+        </div>
+        <div class="deploy-card">
+          <div class="dc-head" style="background:var(--science);">MU Website &mdash; Admissions Pages</div>
+          <div class="dc-body">
+            <ul>
+              <li>The live app is available at: <a href="https://jkeatingmu.github.io/MU-finder/">jkeatingmu.github.io/MU-finder/</a></li>
+              <li>Can be linked directly from admissions or undergraduate study pages</li>
+              <li>Can be embedded in an <code>&lt;iframe&gt;</code> within the MU CMS if required</li>
+              <li>Can be self-hosted on the MU web server by copying the <code>dist/</code> folder &mdash; no server-side processing required</li>
+              <li>Fully mobile-responsive and tested on Chrome, Safari, Edge, and Firefox</li>
+              <li>Students can install the PWA from any HTTPS page (browser will prompt automatically on Android/Chrome; Share &rarr; Add to Home Screen on iOS Safari)</li>
+              <li>If self-hosting, update <code>base</code> in <code>vite.config.ts</code> to match the server path, then rebuild</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout blue">
+        <strong>Recommended for MU web team:</strong> self-host the <code>dist/</code> folder on the MU web server at a path such as <code>maynoothuniversity.ie/programme-finder/</code>. This removes the dependency on GitHub Pages and keeps the tool under the MU domain, which improves trust signals and allows a custom Content Security Policy to be set (see Security section).
+      </div>
+
+      <h3>Keeping it up to date</h3>
+      <p>Any change made in the codebase and pushed to the <code>main</code> branch of the GitHub repository (<a href="https://github.com/JKeatingMU/MU-finder">github.com/JKeatingMU/MU-finder</a>) triggers an automatic rebuild and redeploy via GitHub Actions. The live site updates within approximately 2 minutes. For MU self-hosted deployments, copy the freshly built <code>dist/</code> folder to the web server after each update.</p>
+    </section>
+
+    <!-- 6. PWA -->
+    <section id="pwa">
+      <h2 class="section-title"><span class="num">6</span> Progressive Web App</h2>
+      <p>The app is a fully installable PWA requiring no app store. Installation steps:</p>
+      <ol>
+        <li>Open the app URL in a browser</li>
+        <li>Use the browser&rsquo;s &ldquo;Add to Home Screen&rdquo; / &ldquo;Install&rdquo; option</li>
+        <li>The app installs like a native app and works offline</li>
+      </ol>
+      <ul>
+        <li><strong>PWA manifest:</strong> <code>public/manifest.json</code></li>
+        <li><strong>Service worker:</strong> <code>public/service-worker.js</code> &mdash; caches the app shell on install</li>
+        <li><strong>Theme colour:</strong> MU maroon <code>#6b1a2b</code></li>
+      </ul>
+    </section>
+
+    <!-- 7. Data Sources -->
+    <section id="data">
+      <h2 class="section-title"><span class="num">7</span> Data Sources</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Data</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td>Programme titles, codes, descriptions</td><td>MU Prospectus 2026 (PDF)</td></tr>
+            <tr><td>CAO points</td><td>CAO Handbook 2026, Round 1 (last round)</td></tr>
+            <tr><td>Programme URLs</td><td>maynoothuniversity.ie (verified manually)</td></tr>
+            <tr><td>Strength category tags</td><td>Manually assigned by author</td></tr>
+            <tr><td>5 AI-generated summaries</td><td>Claude (Anthropic) &mdash; used where prospectus text could not be parsed</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Programmes with AI-generated summaries:</strong> MH101, MH201, MH304, MH503, MH804</p>
+      <p>All data is baked into the app at build time. No API calls are made at runtime.</p>
+    </section>
+
+    <!-- 8. Technical Stack -->
+    <section id="tech">
+      <h2 class="section-title"><span class="num">8</span> Technical Stack</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Component</th><th>Technology</th></tr></thead>
+          <tbody>
+            <tr><td>Framework</td><td>React 19 + Vite 6 + TypeScript</td></tr>
+            <tr><td>Styling</td><td>Tailwind CSS v4</td></tr>
+            <tr><td>Animations</td><td>motion/react (Framer Motion)</td></tr>
+            <tr><td>Charts</td><td>Recharts</td></tr>
+            <tr><td>Icons</td><td>lucide-react</td></tr>
+            <tr><td>Hosting</td><td>GitHub Pages (static) / any static web host</td></tr>
+            <tr><td>CI/CD</td><td>GitHub Actions (auto-deploy on push to main)</td></tr>
+            <tr><td>Build output</td><td>Static HTML + JS + CSS &mdash; no server required</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Running locally</h3>
+      <pre><code>cd MU-finder
+npm install
+npm run dev        # development server at http://localhost:3000
+npm run build      # production build to dist/</code></pre>
+    </section>
+
+    <!-- 9. Updating Content -->
+    <section id="updating">
+      <h2 class="section-title"><span class="num">9</span> Updating Content</h2>
+
+      <h3>Adding or editing programmes</h3>
+      <p>Edit <code>/src/data/courses.ts</code>. Each entry follows this structure:</p>
+      <pre><code>{
+  id:                'mh101',
+  code:              'MH101',
+  title:             'The Maynooth Bachelor of Arts Degree',
+  description:       'Short preview (shown in cards)',
+  fullSummary:       'Full prospectus text (shown in modal)',
+  primaryCategory:   'Humanities',
+  secondaryCategory: 'Language',
+  faculty:           'arts',
+  points:            '300',
+  url:               'https://www.maynoothuniversity.ie/arts',
+  aiSummary:         false,
+}</code></pre>
+
+      <h3>Updating quiz questions</h3>
+      <p>Edit <code>/src/data/questions.ts</code>. Questions are grouped by faculty (<code>artsQuestions</code>, <code>scienceQuestions</code>, <code>socialQuestions</code>). Each question maps to one of the 8 strength categories.</p>
+
+      <h3>Adding careers</h3>
+      <p>Edit <code>/src/data/careers.ts</code>. Each career requires a <code>group</code>, <code>primaryCategory</code>, and optionally <code>secondaryCategory</code>.</p>
+
+      <h3>Updating LC subjects</h3>
+      <p>Edit <code>/src/data/lcSubjects.ts</code>. The <code>facultyHint</code> field controls which faculty is suggested when a student selects that subject.</p>
+
+      <h3>Updating CAO points</h3>
+      <p>Edit the <code>points</code> field in <code>/src/data/courses.ts</code> for each programme annually after CAO Round 1 results are published.</p>
+    </section>
+
+    <!-- 10. Security Review -->
+    <section id="security">
+      <h2 class="section-title"><span class="num">10</span> Security Review</h2>
+      <p>
+        The following review was conducted against the application source code and deployment configuration.
+        As a client-side-only static application with no user accounts and no server component, the attack
+        surface is significantly smaller than a typical web application. No significant vulnerabilities were
+        identified.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Area</th><th>Finding</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cross-Site Scripting (XSS)</strong></td>
+              <td>All user input (search field) is used only for string comparison (<code>.toLowerCase().includes()</code>) and is never rendered as HTML. React JSX escapes all dynamic content by default. No <code>dangerouslySetInnerHTML</code> usage found.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>Data injection</strong></td>
+              <td>All programme, career, and question data is baked into the JavaScript bundle at build time from static TypeScript files. No runtime API calls are made and no external data is fetched or parsed.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>localStorage usage</strong></td>
+              <td>Three keys are written: saved programme IDs (<code>mu-favourites</code>), font size preference (<code>mu-dir-font</code>), and a help-seen flag (<code>mu-help-seen</code>). No personally identifiable information is stored. Data never leaves the device.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>External links</strong></td>
+              <td>All links to external pages (maynoothuniversity.ie, mu.ie) use <code>target="_blank" rel="noopener noreferrer"</code>, preventing tab-napping and referrer leakage.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>External image resource</strong></td>
+              <td>The MU logo is loaded from the MU CDN (<code>maynoothuniversity.ie</code>) using <code>referrerPolicy="no-referrer"</code>. This creates a soft dependency on an external domain; a locally hosted copy is recommended for kiosk use.</td>
+              <td><span class="dot dot-note"></span><span class="status-note">Note</span></td>
+            </tr>
+            <tr>
+              <td><strong>HTTPS</strong></td>
+              <td>Enforced by GitHub Pages. The service worker will not register on non-HTTPS origins (browser restriction). Self-hosted deployments must be served over HTTPS.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>Service worker</strong></td>
+              <td>Caches the app shell only (<code>index.html</code>, <code>manifest.json</code>). No sensitive data is cached. Old cache versions are deleted on activation. The service worker scope is correctly scoped to the app path.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>GDPR / Data Protection</strong></td>
+              <td>No personal data is collected, transmitted, or stored server-side. No cookies, no analytics, no tracking. localStorage data is functional only and remains on the user&rsquo;s device. No DPIA or consent mechanism is required for this use pattern.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>Content Security Policy (CSP)</strong></td>
+              <td>GitHub Pages does not support custom HTTP response headers, so no CSP is currently set. This is a common limitation of static hosting. If self-hosted on the MU web server, a CSP header should be configured to restrict script and style sources to the application origin.</td>
+              <td><span class="dot dot-note"></span><span class="status-note">Recommend</span></td>
+            </tr>
+            <tr>
+              <td><strong>Dependency security</strong></td>
+              <td>All dependencies (React 19, Vite 6, Tailwind CSS v4, Framer Motion, Recharts, lucide-react) are well-maintained, widely-used open source libraries with active security response processes. <code>npm audit</code> should be run periodically, particularly before annual content updates.</td>
+              <td><span class="dot dot-info"></span><span class="status-info">Maintain</span></td>
+            </tr>
+            <tr>
+              <td><strong>No authentication surface</strong></td>
+              <td>The application has no login, no user accounts, and no privileged operations. There is no authentication or authorisation surface to attack.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+            <tr>
+              <td><strong>No server-side code</strong></td>
+              <td>The application is entirely client-side. There is no backend, no database, no API server, and no shell execution surface. Server-side vulnerability classes (SQL injection, command injection, SSRF, etc.) do not apply.</td>
+              <td><span class="dot dot-pass"></span><span class="status-pass">Pass</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Overall assessment</h3>
+      <p>
+        MU Programme Finder 2026 presents a <strong>low security risk profile</strong>. Its architecture as a
+        fully static, client-side application with no user accounts and no runtime data fetching eliminates the
+        majority of common web application vulnerability classes. No critical or high-severity issues were
+        identified.
+      </p>
+      <p>Two items are noted for action:</p>
+      <ol>
+        <li><strong>CSP header</strong> &mdash; configure if/when the app is moved to MU self-hosting</li>
+        <li><strong>MU logo</strong> &mdash; add a local fallback image to <code>public/</code> for fully offline kiosk use</li>
+      </ol>
+      <div class="callout">
+        This review was conducted by inspection of the application source code and build configuration. It is not a formal penetration test. For formal accreditation, a third-party penetration test should be commissioned if the app is deployed in contexts handling sensitive student data.
+      </div>
+    </section>
+
+    <!-- 11. Accessibility -->
+    <section id="accessibility">
+      <h2 class="section-title"><span class="num">11</span> Accessibility</h2>
+      <ul>
+        <li><strong>Font size toggle</strong> &mdash; available in the Programme Directory (3 sizes, persisted to localStorage)</li>
+        <li><strong>Keyboard navigable</strong> &mdash; all interactive elements are focusable</li>
+        <li><strong>Touch-optimised</strong> &mdash; large tap targets throughout, suitable for iPad kiosk use</li>
+        <li><strong>Reduced motion</strong> &mdash; animations respect the OS-level <code>prefers-reduced-motion</code> setting via Framer Motion</li>
+        <li><strong>Colour contrast</strong> &mdash; faculty and category colours selected for reasonable contrast on white backgrounds</li>
+        <li><strong>Help system</strong> &mdash; persistent help button in the header; first-visit tip on the Welcome screen</li>
+      </ul>
+    </section>
+
+    <!-- 12. Known Limitations -->
+    <section id="limitations">
+      <h2 class="section-title"><span class="num">12</span> Known Limitations</h2>
+      <ul>
+        <li>CAO points data is from 2025 and must be updated annually after Round 1 results are published</li>
+        <li>5 programme descriptions (MH101, MH201, MH304, MH503, MH804) are AI-generated and should be replaced with official prospectus text when available</li>
+        <li>The PWA service worker caches the app shell but not external programme pages on mu.ie</li>
+        <li>The MU logo is loaded from the MU CDN; a locally hosted copy is needed for fully offline kiosk use</li>
+        <li>The Froebel sub-programmes (MH001&ndash;MH004) share a single URL due to the structure of the Froebel department page on mu.ie</li>
+        <li>GitHub Pages does not support custom HTTP headers &mdash; a Content Security Policy requires self-hosting</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<div class="doc-footer">
+  MU Programme Finder 2026 &mdash; Internal Feature Guide &middot;
+  Prof. John Keating, Maynooth University &middot;
+  <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> &middot;
+  March 2026
+</div>
+
 </body>
 </html>

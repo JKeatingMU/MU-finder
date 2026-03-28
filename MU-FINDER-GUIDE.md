@@ -174,6 +174,31 @@ All data is baked into the app at build time. No API calls are made at runtime.
 
 ---
 
+## Deployment Contexts
+
+The compiled `dist/` folder is fully static and can be hosted anywhere.
+
+### iPad Kiosk — Open Day
+
+- Install the PWA via Safari → Share → Add to Home Screen for a fullscreen experience
+- Enable iOS **Guided Access** (Settings → Accessibility → Guided Access) to lock the device to the app
+- Load the app over Wi-Fi before the event; the service worker caches the app shell for offline use
+- The MU logo is loaded from the MU CDN — add a local copy to `public/` for fully offline kiosk use
+- No login, no personal data, no student-facing account required
+
+### MU Website — Admissions Pages
+
+- Live URL: `https://jkeatingmu.github.io/MU-finder/`
+- Can be linked directly from admissions or undergraduate study pages
+- Can be embedded in an `<iframe>` within the MU CMS
+- Can be self-hosted on the MU web server by copying the `dist/` folder (no server required)
+- Fully mobile-responsive; tested on Chrome, Safari, Edge, and Firefox
+- If self-hosting, update `base` in `vite.config.ts` to match the server path, then rebuild
+
+> **Recommended:** self-host on `maynoothuniversity.ie/programme-finder/` to remove the GitHub Pages dependency and allow a Content Security Policy to be set.
+
+---
+
 ## Progressive Web App (PWA)
 
 The app is a fully installable PWA. Students and staff can:
@@ -249,6 +274,31 @@ Edit `/src/data/careers.ts`. Each career requires a `group`, `primaryCategory`, 
 ### Updating LC subjects
 
 Edit `/src/data/lcSubjects.ts`. The `facultyHint` field controls which faculty is suggested when a student selects that subject.
+
+---
+
+## Security Review
+
+The following review was conducted against the application source code and deployment configuration. No significant vulnerabilities were identified.
+
+| Area | Finding | Status |
+|------|---------|--------|
+| **XSS** | User input (search field) is used only for string comparison, never rendered as HTML. React escapes all dynamic content by default. | ✅ Pass |
+| **Data injection** | All data is baked into the JS bundle at build time. No runtime API calls or external data parsing. | ✅ Pass |
+| **localStorage** | Stores saved programme IDs, font preference, and a help-seen flag only. No PII. Data never leaves the device. | ✅ Pass |
+| **External links** | All use `rel="noopener noreferrer"` — no tab-napping or referrer leakage. | ✅ Pass |
+| **External image** | MU logo loaded from MU CDN with `referrerPolicy="no-referrer"`. Local fallback recommended for kiosk use. | ⚠️ Note |
+| **HTTPS** | Enforced by GitHub Pages. Service worker will not register on non-HTTPS origins. | ✅ Pass |
+| **Service worker** | Caches app shell only. No sensitive data cached. Old caches deleted on activation. | ✅ Pass |
+| **GDPR** | No personal data collected, transmitted, or stored server-side. No cookies, no analytics. No DPIA required. | ✅ Pass |
+| **Content Security Policy** | GitHub Pages does not support custom headers; no CSP is currently set. Configure if self-hosted on MU web server. | ⚠️ Recommend |
+| **Dependencies** | React 19, Vite 6, Tailwind v4, Framer Motion, Recharts, lucide-react — all well-maintained. Run `npm audit` periodically. | ℹ️ Maintain |
+| **Authentication surface** | None — no login, no user accounts, no privileged operations. | ✅ Pass |
+| **Server-side code** | None — fully client-side. SQL injection, command injection, SSRF etc. do not apply. | ✅ Pass |
+
+**Overall:** Low security risk profile. Two items noted for action: (1) add a CSP header if self-hosted; (2) add a local MU logo fallback for offline kiosk use.
+
+> This review was conducted by source code inspection, not formal penetration testing. Commission a third-party pentest if the app is deployed in contexts handling sensitive student data.
 
 ---
 
