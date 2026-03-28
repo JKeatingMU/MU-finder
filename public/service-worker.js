@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mu-finder-v1';
+const CACHE_NAME = 'mu-finder-v2';
 const urlsToCache = [
   './',
   './index.html',
