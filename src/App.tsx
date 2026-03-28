@@ -8,11 +8,12 @@ import Results from './components/Results';
 import SubjectExplorer from './components/SubjectExplorer';
 import CareerFinder from './components/CareerFinder';
 import ProgrammeDirectory from './components/ProgrammeDirectory';
+import ModuleFinder from './components/ModuleFinder';
 import HelpModal from './components/HelpModal';
 import { facultyQuestions } from './data/questions';
 import { Faculty } from './types';
 
-type Screen = 'welcome' | 'faculty' | 'quiz' | 'results' | 'subjects' | 'careers' | 'directory';
+type Screen = 'welcome' | 'faculty' | 'quiz' | 'results' | 'subjects' | 'careers' | 'directory' | 'modules';
 
 function loadFavourites(): Set<string> {
   try { return new Set(JSON.parse(localStorage.getItem('mu-favourites') || '[]')); }
@@ -39,6 +40,7 @@ export default function App() {
   const handleStartSubjects  = () => setScreen('subjects');
   const handleStartCareers   = () => setScreen('careers');
   const handleOpenDirectory  = () => setScreen('directory');
+  const handleOpenModules    = () => setScreen('modules');
 
   const handleFacultySelect = (f: Faculty) => {
     setFaculty(f);
@@ -119,7 +121,7 @@ export default function App() {
                 ← Change faculty
               </button>
             )}
-            {(screen === 'subjects' || screen === 'careers' || screen === 'directory') && (
+            {(screen === 'subjects' || screen === 'careers' || screen === 'directory' || screen === 'modules') && (
               <button
                 onClick={handleRestart}
                 className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors"
@@ -135,7 +137,7 @@ export default function App() {
         <AnimatePresence mode="wait">
           {screen === 'welcome' && (
             <motion.div key="welcome" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
-              <Welcome onStartQuiz={handleStartQuiz} onStartSubjects={handleStartSubjects} onStartCareers={handleStartCareers} onOpenDirectory={handleOpenDirectory} />
+              <Welcome onStartQuiz={handleStartQuiz} onStartSubjects={handleStartSubjects} onStartCareers={handleStartCareers} onOpenDirectory={handleOpenDirectory} onOpenModules={handleOpenModules} />
             </motion.div>
           )}
           {screen === 'faculty' && (
@@ -179,6 +181,11 @@ export default function App() {
                 quizQuestions={currentQuestions}
                 quizFaculty={faculty}
               />
+            </motion.div>
+          )}
+          {screen === 'modules' && (
+            <motion.div key="modules" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
+              <ModuleFinder />
             </motion.div>
           )}
         </AnimatePresence>

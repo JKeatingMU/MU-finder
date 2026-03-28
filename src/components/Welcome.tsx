@@ -7,6 +7,7 @@ interface WelcomeProps {
   onStartSubjects: () => void;
   onStartCareers: () => void;
   onOpenDirectory: () => void;
+  onOpenModules: () => void;
 }
 
 const pathways = [
@@ -46,7 +47,7 @@ function useFirstVisitTip() {
   return { visible, dismiss };
 }
 
-export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, onOpenDirectory }: WelcomeProps) {
+export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, onOpenDirectory, onOpenModules }: WelcomeProps) {
   const handlers = { quiz: onStartQuiz, subjects: onStartSubjects, careers: onStartCareers };
   const tip = useFirstVisitTip();
 
@@ -131,7 +132,15 @@ export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, 
           className="font-medium underline underline-offset-2 hover:opacity-80 transition-opacity"
           style={{ color: '#6b1a2b' }}
         >
-          Maynooth University Programmes Directory
+          Programmes Directory
+        </button>
+        {' '}or browse the{' '}
+        <button
+          onClick={onOpenModules}
+          className="font-medium underline underline-offset-2 hover:opacity-80 transition-opacity"
+          style={{ color: '#6b1a2b' }}
+        >
+          Module Catalogue
         </button>
       </motion.p>
     </div>
