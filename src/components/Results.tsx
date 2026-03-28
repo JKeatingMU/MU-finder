@@ -55,7 +55,23 @@ export default function Results({ answers, questions, faculty, onRestart, favour
       .sort((a, b) => b.value - a.value);
   }, [answers, questions]);
 
-  const topCategories = scores.slice(0, 2).map(s => s.name as StrengthCategory);
+  // Only declare a category a "strength" if it's meaningfully above the next one.
+  // With 3 questions per category on a 1–5 scale, a gap of ≥2 points means at least
+  // one extra "Agree" vs "Neutral" answer — a genuine signal.
+  const GAP = 2;
+  const topCategories: StrengthCategory[] = [];
+  if (scores.length > 0) {
+    const first = scores[0];
+    const secondVal = scores[1]?.value ?? 0;
+    if (first.value - secondVal >= GAP) {
+      topCategories.push(first.name as StrengthCategory);
+      // Only add second if it too clears the bar above the third
+      if (scores[1] && scores[1].value - (scores[2]?.value ?? 0) >= GAP) {
+        topCategories.push(scores[1].name as StrengthCategory);
+      }
+    }
+  }
+  const isBalanced = topCategories.length === 0;
 
   // Questions per category (for max score)
   const qPerCat = useMemo(() => {
@@ -91,20 +107,27 @@ export default function Results({ answers, questions, faculty, onRestart, favour
         className="text-center mb-10"
       >
         <h2 className="text-3xl font-bold text-slate-900 mb-3">Your Strength Profile</h2>
-        <p className="text-slate-600 max-w-2xl mx-auto">
-          Based on your answers, your strongest areas are{' '}
-          <span className="font-semibold" style={{ color: CAT_COLORS[topCategories[0]] }}>
-            {topCategories[0]}
-          </span>
-          {topCategories[1] && (
-            <>
-              {' '}and{' '}
-              <span className="font-semibold" style={{ color: CAT_COLORS[topCategories[1]] }}>
-                {topCategories[1]}
-              </span>
-            </>
-          )}.
-        </p>
+        {isBalanced ? (
+          <p className="text-slate-600 max-w-2xl mx-auto">
+            Your responses are broadly balanced across all areas — no single strength stands out yet.
+            Browse all the programmes below or try a different pathway to explore further.
+          </p>
+        ) : (
+          <p className="text-slate-600 max-w-2xl mx-auto">
+            Based on your answers, your strongest {topCategories.length === 1 ? 'area is' : 'areas are'}{' '}
+            <span className="font-semibold" style={{ color: CAT_COLORS[topCategories[0]] }}>
+              {topCategories[0]}
+            </span>
+            {topCategories[1] && (
+              <>
+                {' '}and{' '}
+                <span className="font-semibold" style={{ color: CAT_COLORS[topCategories[1]] }}>
+                  {topCategories[1]}
+                </span>
+              </>
+            )}.
+          </p>
+        )}
       </motion.div>
 
       {/* Profile chart */}
@@ -126,21 +149,23 @@ export default function Results({ answers, questions, faculty, onRestart, favour
         </ResponsiveContainer>
       </div>
 
-      {/* Top category descriptions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-        {topCategories.slice(0, 2).map(cat => (
-          <div key={cat} className="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5">
-            <div className="flex items-center gap-2 mb-2">
-              <span
-                className="w-3 h-3 rounded-full flex-shrink-0"
-                style={{ background: CAT_COLORS[cat] }}
-              />
-              <span className="font-bold text-slate-900">{cat}</span>
+      {/* Top category descriptions — only shown when there's a genuine signal */}
+      {!isBalanced && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+          {topCategories.map(cat => (
+            <div key={cat} className="bg-white rounded-2xl border border-slate-100 shadow-sm px-6 py-5">
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{ background: CAT_COLORS[cat] }}
+                />
+                <span className="font-bold text-slate-900">{cat}</span>
+              </div>
+              <p className="text-sm text-slate-600 leading-relaxed">{CAT_DESCRIPTIONS[cat]}</p>
             </div>
-            <p className="text-sm text-slate-600 leading-relaxed">{CAT_DESCRIPTIONS[cat]}</p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Course cards */}
       <motion.div
