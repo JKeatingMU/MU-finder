@@ -1,7 +1,7 @@
 # MU Programme Finder 2026 — Feature Guide
 
 **Maynooth University · Open Day Tool**
-Built by Prof. John Keating, Department of Computer Science, Maynooth University
+Built by Prof. John Keating, Associate Dean for Teaching and Learning (Faculty of Science & Engineering), Maynooth University
 Contact: john.keating@mu.ie
 
 ---
