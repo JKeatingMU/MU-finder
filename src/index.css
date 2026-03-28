@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme {
+  --color-mu-maroon: #6b1a2b;
+  --color-mu-maroon-dark: #4e1220;
+  --color-mu-maroon-light: #8c2238;
+  --color-mu-gold: #c9a84c;
+  --color-faculty-arts: #7c3aed;
+  --color-faculty-science: #0369a1;
+  --color-faculty-social: #15803d;
+}

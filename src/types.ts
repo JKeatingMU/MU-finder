@@ -1,4 +1,14 @@
-export type StrengthCategory = 'Analytical' | 'Creative' | 'Social' | 'Practical' | 'Leadership';
+export type StrengthCategory =
+  | 'Creative'
+  | 'Humanities'
+  | 'Language'
+  | 'Scientific'
+  | 'Quantitative'
+  | 'Computing'
+  | 'Social'
+  | 'Business';
+
+export type Faculty = 'arts' | 'science' | 'social';
 
 export interface Question {
   id: number;
@@ -9,15 +19,16 @@ export interface Question {
 export interface Course {
   id: string;
   code: string;
+  subCode?: string;
   title: string;
   description: string;
   primaryCategory: StrengthCategory;
   secondaryCategory?: StrengthCategory;
-  points?: number; // Approximate CAO points for context
-  url?: string; // Link to MU course page
-  careers?: string[];
-  skills?: string[];
-  relatedSubjects?: string[];
+  faculty: Faculty;
+  points?: string;
+  url?: string;
+  fullSummary?: string;
+  aiSummary?: boolean;
 }
 
 export interface UserResult {

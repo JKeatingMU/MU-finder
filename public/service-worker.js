@@ -1,8 +1,8 @@
-const CACHE_NAME = 'mu-future-v1';
+const CACHE_NAME = 'mu-finder-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json',
 ];
 
 self.addEventListener('install', (event) => {

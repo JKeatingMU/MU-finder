@@ -60,7 +60,8 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
         </div>
         <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
           <motion.div 
-            className="h-full bg-red-600"
+            className="h-full"
+            style={{ background: '#6b1a2b' }}
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.5 }}

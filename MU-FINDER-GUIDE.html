@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>MU Programme Finder 2026 — Feature Guide</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style>
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">MU Programme Finder 2026 — Feature Guide</h1>
+</header>
+<h1 id="mu-programme-finder-2026-feature-guide">MU Programme Finder 2026 — Feature Guide</h1>
+<p><strong>Maynooth University · Open Day Tool</strong> Built by Prof. John Keating, Department of Computer Science, Maynooth University Contact: john.keating@mu.ie</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>MU Programme Finder is a browser-based progressive web app (PWA) that helps prospective students explore the 55 MU undergraduate programmes for 2026. It requires no login, no server, and no personal data. It works fully offline once loaded and can be installed to a device home screen.</p>
+<p>The app covers all three faculties: - <strong>Faculty of Arts, Celtic Studies &amp; Philosophy</strong> — 5 programmes - <strong>Faculty of Science &amp; Engineering</strong> — 23 programmes - <strong>Faculty of Social Sciences</strong> — 27 programmes</p>
+<p>Designed for use at Open Days (iPad kiosk), on the MU website, and as a standalone download.</p>
+<hr />
+<h2 id="the-three-pathways">The Three Pathways</h2>
+<h3 id="personality-profile">1. Personality Profile</h3>
+<p>A psychometric-style quiz that maps a student’s cognitive interests and strengths onto MU programmes.</p>
+<p><strong>Flow:</strong> 1. Student selects a faculty (Arts / Science &amp; Engineering / Social Sciences) 2. Answers 9–12 Likert-scale statements (Strongly Disagree → Strongly Agree) 3. Results screen shows a personalised strength profile bar chart, descriptions of top strengths, and all faculty programmes ranked by match percentage</p>
+<p><strong>Question sets:</strong> - <strong>Arts</strong> — 9 questions across Creative, Humanities, and Language categories - <strong>Science &amp; Engineering</strong> — 12 questions across Scientific, Quantitative, Computing, and Creative - <strong>Social Sciences</strong> — 12 questions across Social, Business, Language, and Quantitative</p>
+<p><strong>The 8 strength categories:</strong></p>
+<table>
+<colgroup>
+<col style="width: 37%"></col>
+<col style="width: 62%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Category</th>
+<th>What it measures</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Creative</strong></td>
+<td>Artistic expression, design thinking, original making</td>
+</tr>
+<tr class="even">
+<td><strong>Humanities</strong></td>
+<td>Culture, history, philosophy, critical interpretation</td>
+</tr>
+<tr class="odd">
+<td><strong>Language</strong></td>
+<td>Communication, writing, debate, cross-cultural exchange</td>
+</tr>
+<tr class="even">
+<td><strong>Scientific</strong></td>
+<td>Natural world curiosity — biology, chemistry, physics, environment</td>
+</tr>
+<tr class="odd">
+<td><strong>Quantitative</strong></td>
+<td>Mathematics, statistics, data, logical modelling</td>
+</tr>
+<tr class="even">
+<td><strong>Computing</strong></td>
+<td>Software, algorithms, digital systems, coding</td>
+</tr>
+<tr class="odd">
+<td><strong>Social</strong></td>
+<td>People-centred motivation — wellbeing, rights, community</td>
+</tr>
+<tr class="even">
+<td><strong>Business</strong></td>
+<td>Strategy, markets, organisations, entrepreneurship</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Match score formula:</strong> Each course is tagged with a primary and optional secondary category. The match score is calculated as:</p>
+<pre><code>matchScore = (primaryScore + secondaryScore) / ((primaryQuestions + secondaryQuestions) × 5) × 100</code></pre>
+<p>where scores are the sum of Likert responses for that category, and the denominator is the theoretical maximum.</p>
+<hr />
+<h3 id="subject-explorer">2. Subject Explorer</h3>
+<p>Calculates a student’s estimated CAO points from their Leaving Certificate subjects and grades, then shows all MU programmes sorted by achievability.</p>
+<p><strong>Flow:</strong> 1. Student selects up to 7 LC subjects from a grouped list (Languages, Mathematics, Sciences, Technology &amp; Design, Business &amp; Social, Humanities &amp; Other) 2. Selects a grade for each (Higher H1–H7 / Ordinary O1–O6 / Foundation F1–F2 for Maths and Irish) 3. App calculates CAO points (best 6 subjects + Higher Maths bonus) and displays all 55 programmes with status indicators</p>
+<p><strong>Points calculation:</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>Grade</th>
+<th>Points</th>
+<th>Grade</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>H1</td>
+<td>100</td>
+<td>O1</td>
+<td>56</td>
+</tr>
+<tr class="even">
+<td>H2</td>
+<td>88</td>
+<td>O2</td>
+<td>46</td>
+</tr>
+<tr class="odd">
+<td>H3</td>
+<td>77</td>
+<td>O3</td>
+<td>37</td>
+</tr>
+<tr class="even">
+<td>H4</td>
+<td>66</td>
+<td>O4</td>
+<td>28</td>
+</tr>
+<tr class="odd">
+<td>H5</td>
+<td>56</td>
+<td>O5</td>
+<td>20</td>
+</tr>
+<tr class="even">
+<td>H6</td>
+<td>46</td>
+<td>O6</td>
+<td>12</td>
+</tr>
+<tr class="odd">
+<td>H7</td>
+<td>37</td>
+<td>F1</td>
+<td>28</td>
+</tr>
+<tr class="even">
+<td></td>
+<td></td>
+<td>F2</td>
+<td>20</td>
+</tr>
+</tbody>
+</table>
+<p>Higher Mathematics H6 or above: <strong>+25 bonus points</strong></p>
+<p><strong>Status indicators:</strong> - <strong>You qualify</strong> (green) — estimated points ≥ 2025 entry requirement - <strong>Close</strong> (amber) — within 40 points of the requirement - <strong>Aim higher</strong> (grey) — more than 40 points below - <strong>Open entry</strong> (blue) — no numeric threshold (e.g. new courses, portfolio-based entry)</p>
+<blockquote>
+<p>Points shown are 2025 Round 1 (last round) figures. Entry requirements change year to year.</p>
+</blockquote>
+<p><strong>Faculty suggestion:</strong> Based on the subjects selected, the app infers which faculty the student’s profile most closely aligns with (e.g. Biology + Chemistry + Physics → Science &amp; Engineering).</p>
+<hr />
+<h3 id="career-finder">3. Career Finder</h3>
+<p>Students browse or search 37 career paths across 8 groups and see the MU programmes most relevant to each career.</p>
+<p><strong>Career groups:</strong> - Technology &amp; Computing - Science &amp; Research - Healthcare &amp; Wellbeing - Business &amp; Finance - Education &amp; Social Work - Arts, Media &amp; Communication - Humanities &amp; Culture - Engineering &amp; Design</p>
+<p><strong>How matching works:</strong> Each career is tagged with a primary and optional secondary strength category. Courses are scored: - Course primary = career primary → 70 points - Course secondary = career primary → 40 points - Course primary = career secondary → +30 points - Course secondary = career secondary → +15 points - Capped at 100%</p>
+<p>Results show all programmes with a score &gt; 0, sorted by relevance.</p>
+<hr />
+<h2 id="programme-directory">Programme Directory</h2>
+<p>A browsable, searchable directory of all 55 MU 2026 undergraduate programmes.</p>
+<p><strong>Features:</strong> - <strong>Search</strong> — by programme title, CAO code, or keyword in description - <strong>Faculty filter</strong> — All / Arts / Science &amp; Engineering / Social Sciences - <strong>Sort</strong> — by CAO code, title A–Z, points high–low, points low–high - <strong>Read more / Show less</strong> — inline expand of the programme description - <strong>Full summary</strong> — opens a modal with the complete prospectus description - <strong>CAO points chip</strong> — faculty-coloured, with tooltip confirming “2025 Round 1 (last round)” - <strong>MU page link</strong> — direct link to the programme’s page on maynoothuniversity.ie - <strong>Category pills</strong> — strength categories tagged to each programme - <strong>AI summary badge</strong> — shown where the programme description was AI-generated (prospectus text was not parseable for 5 programmes) - <strong>Accessibility font toggle</strong> — three text sizes (small / normal / large), persisted across sessions</p>
+<hr />
+<h2 id="data-sources">Data Sources</h2>
+<table>
+<colgroup>
+<col style="width: 42%"></col>
+<col style="width: 57%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Programme titles, codes, descriptions</td>
+<td>MU Prospectus 2026 (PDF)</td>
+</tr>
+<tr class="even">
+<td>CAO points</td>
+<td>CAO Handbook 2026, Round 1 (last round)</td>
+</tr>
+<tr class="odd">
+<td>Programme URLs</td>
+<td>maynoothuniversity.ie (verified manually)</td>
+</tr>
+<tr class="even">
+<td>Strength category tags</td>
+<td>Manually assigned by author</td>
+</tr>
+<tr class="odd">
+<td>5 AI-generated summaries</td>
+<td>Claude (Anthropic) — used where prospectus text could not be parsed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Programmes with AI-generated summaries:</strong> MH101, MH201, MH304, MH503, MH804</p>
+<p>All data is baked into the app at build time. No API calls are made at runtime.</p>
+<hr />
+<h2 id="progressive-web-app-pwa">Progressive Web App (PWA)</h2>
+<p>The app is a fully installable PWA. Students and staff can:</p>
+<ol type="1">
+<li>Open the app in a browser (Chrome, Safari, Edge, Firefox)</li>
+<li>Use the browser’s “Add to Home Screen” / “Install” option</li>
+<li>The app installs like a native app — works offline, no app store required</li>
+</ol>
+<p><strong>PWA manifest:</strong> <code>public/manifest.json</code> <strong>Service worker:</strong> <code>public/service-worker.js</code> (pre-caches the app shell for offline use) <strong>Theme colour:</strong> MU maroon <code>#6b1a2b</code></p>
+<hr />
+<h2 id="technical-stack">Technical Stack</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Technology</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Framework</td>
+<td>React 19 + Vite + TypeScript</td>
+</tr>
+<tr class="even">
+<td>Styling</td>
+<td>Tailwind CSS v4</td>
+</tr>
+<tr class="odd">
+<td>Animations</td>
+<td>motion/react (Framer Motion)</td>
+</tr>
+<tr class="even">
+<td>Charts</td>
+<td>Recharts</td>
+</tr>
+<tr class="odd">
+<td>Icons</td>
+<td>lucide-react</td>
+</tr>
+<tr class="even">
+<td>Build output</td>
+<td>Static files (HTML + JS + CSS) — deployable anywhere</td>
+</tr>
+</tbody>
+</table>
+<p><strong>To run locally:</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">cd</span> MU-finder</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">npm</span> install</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="ex">npm</span> run dev        <span class="co"># development server at http://localhost:3000</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="ex">npm</span> run build      <span class="co"># production build to dist/</span></span></code></pre></div>
+<p><strong>To deploy:</strong> Copy the <code>dist/</code> folder to any static web host (MU web server, Netlify, Vercel, GitHub Pages, etc.). No server-side processing required.</p>
+<hr />
+<h2 id="updating-content">Updating Content</h2>
+<h3 id="adding-or-editing-programmes">Adding or editing programmes</h3>
+<p>Edit <code>/src/data/courses.ts</code>. Each programme entry follows this structure:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">{</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>  id<span class="op">:</span> <span class="st">&#39;mh101&#39;</span><span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  code<span class="op">:</span> <span class="st">&#39;MH101&#39;</span><span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  title<span class="op">:</span> <span class="st">&#39;The Maynooth Bachelor of Arts Degree&#39;</span><span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  description<span class="op">:</span> <span class="st">&#39;Short preview (shown in cards)&#39;</span><span class="op">,</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  fullSummary<span class="op">:</span> <span class="st">&#39;Full prospectus text (shown in modal and expanded view)&#39;</span><span class="op">,</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  primaryCategory<span class="op">:</span> <span class="st">&#39;Humanities&#39;</span><span class="op">,</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>  secondaryCategory<span class="op">:</span> <span class="st">&#39;Language&#39;</span><span class="op">,</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  faculty<span class="op">:</span> <span class="st">&#39;arts&#39;</span><span class="op">,</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  points<span class="op">:</span> <span class="st">&#39;300&#39;</span><span class="op">,</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  url<span class="op">:</span> <span class="st">&#39;https://www.maynoothuniversity.ie/arts&#39;</span><span class="op">,</span></span>
+<span id="cb3-12"><a href="#cb3-12"></a>  aiSummary<span class="op">:</span> <span class="kw">false</span><span class="op">,</span></span>
+<span id="cb3-13"><a href="#cb3-13"></a><span class="op">}</span></span></code></pre></div>
+<p>Alternatively, edit <code>/MU-programmes/programmes.json</code> and regenerate <code>courses.ts</code> by running:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="ex">node</span> /tmp/gen-courses.mjs</span></code></pre></div>
+<h3 id="updating-quiz-questions">Updating quiz questions</h3>
+<p>Edit <code>/src/data/questions.ts</code>. Questions are grouped by faculty (<code>artsQuestions</code>, <code>scienceQuestions</code>, <code>socialQuestions</code>). Each question maps to one of the 8 strength categories.</p>
+<h3 id="adding-careers">Adding careers</h3>
+<p>Edit <code>/src/data/careers.ts</code>. Each career requires a <code>group</code>, <code>primaryCategory</code>, and optionally <code>secondaryCategory</code>.</p>
+<h3 id="updating-lc-subjects">Updating LC subjects</h3>
+<p>Edit <code>/src/data/lcSubjects.ts</code>. The <code>facultyHint</code> field controls which faculty is suggested when a student selects that subject.</p>
+<hr />
+<h2 id="accessibility">Accessibility</h2>
+<ul>
+<li><strong>Font size toggle</strong> — available in the Programme Directory (3 sizes, persisted to localStorage)</li>
+<li><strong>Keyboard navigable</strong> — all interactive elements are focusable</li>
+<li><strong>Touch-optimised</strong> — large tap targets throughout, suitable for iPad kiosk use</li>
+<li><strong>No motion preference</strong> — animations are provided by Framer Motion; can be disabled via OS-level <code>prefers-reduced-motion</code></li>
+<li><strong>Colour contrast</strong> — faculty and category colours selected for reasonable contrast on white backgrounds</li>
+</ul>
+<hr />
+<h2 id="known-limitations">Known Limitations</h2>
+<ul>
+<li>CAO points data is from 2025 and will need to be updated annually</li>
+<li>5 programme descriptions are AI-generated and should be replaced with official prospectus text when available</li>
+<li>The PWA service worker caches the app shell but not external programme pages on mu.ie</li>
+<li>The MU logo is loaded from the MU CDN; an offline fallback local copy would be needed for fully offline kiosk use</li>
+<li>The Froebel sub-programmes (MH001–MH004) share a single URL due to the way the Froebel department page is structured on mu.ie</li>
+</ul>
+<hr />
+<p><em>Last updated: March 2026</em></p>
+</body>
+</html>
