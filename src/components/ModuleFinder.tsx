@@ -806,6 +806,13 @@ export default function ModuleFinder() {
     return { dataCount, digitalCount, faculties, depts };
   }, [savedModules]);
 
+  // Module map keyed by code for ProgrammeBrowser lookups — must be before early returns
+  const moduleMapByCode = useMemo(() => {
+    const m: Record<string, { moduleCode: string; moduleName: string; data?: boolean; digital?: boolean; credits?: number; semester?: number | null; yearLong?: boolean; international?: boolean }> = {};
+    for (const mod of indexedModules) m[mod.moduleCode] = mod;
+    return m;
+  }, [indexedModules]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -844,13 +851,6 @@ export default function ModuleFinder() {
 
   const visible = results.slice(0, showCount);
   const hasMore = results.length > showCount;
-
-  // Module map keyed by code for ProgrammeBrowser lookups
-  const moduleMapByCode = useMemo(() => {
-    const m: Record<string, { moduleCode: string; moduleName: string; data?: boolean; digital?: boolean; credits?: number; semester?: number | null; yearLong?: boolean; international?: boolean }> = {};
-    for (const mod of indexedModules) m[mod.moduleCode] = mod;
-    return m;
-  }, [indexedModules]);
 
   // Handler: open module detail modal from programme browser
   function handleViewFromProgramme(code: string) {
