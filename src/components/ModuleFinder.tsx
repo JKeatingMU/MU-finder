@@ -219,8 +219,11 @@ function ModuleDetailModal({ mod, onClose, isSaved, onToggleSave }: {
                 </span>
               )}
               {mod.credits != null && mod.credits > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium">
-                  {mod.credits} cr
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium cursor-default"
+                  title="European Credit Transfer and Accumulation System (ECTS) — a standard measure of student workload across European higher education"
+                >
+                  {mod.credits} ECTS
                 </span>
               )}
               {mod.yearLong ? (
@@ -281,7 +284,11 @@ function ModuleDetailModal({ mod, onClose, isSaved, onToggleSave }: {
                 </span>
               ))}
               {mod.international && (
-                <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: '#e0f2fe', color: '#0369a1' }}>
+                <span
+                  className="text-xs font-semibold px-3 py-1 rounded-full cursor-default"
+                  style={{ background: '#e0f2fe', color: '#0369a1' }}
+                  title="An international module is a module available to short term, visiting international students registered with Maynooth University for either one semester or one academic year but who are not taking the full degree programme of study with Maynooth University."
+                >
                   International
                 </span>
               )}
