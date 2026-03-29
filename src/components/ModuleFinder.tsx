@@ -1,8 +1,36 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, type ReactNode, type CSSProperties } from 'react';
 import Fuse from 'fuse.js';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, X, ChevronDown, ChevronUp, Database, Layers, AlertCircle, Heart } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp, Database, Layers, AlertCircle, Heart, ExternalLink, Maximize2 } from 'lucide-react';
 import { CS_BY_ID } from '../data/criticalSkills';
+
+interface TLBreakdown {
+  lectures?: number;
+  labsPracticals?: number;
+  tutorials?: number;
+  plannedLearning?: number;
+  independentStudy?: number;
+  total?: number;
+}
+
+interface AssessmentComponent {
+  type: string;
+  options?: string;
+  weighting: number;
+  duration?: string;
+}
+
+interface Assessment {
+  graded?: boolean;
+  components?: AssessmentComponent[];
+  passStandard?: string;
+  capped?: boolean;
+}
+
+interface Supplementals {
+  permitted?: boolean;
+  details?: string[];
+}
 
 interface Module {
   moduleCode: string;
@@ -22,6 +50,14 @@ interface Module {
   notes: string;
   criticalSkills?: string[];
   hidden?: boolean;
+  credits?: number;
+  semester?: number | null;
+  yearLong?: boolean;
+  international?: boolean;
+  teachingAndLearning?: TLBreakdown;
+  assessment?: Assessment;
+  supplementals?: Supplementals;
+  timetableUrl?: string;
 }
 
 interface IndexedModule extends Module {
@@ -114,10 +150,298 @@ const primaryTags = [
   },
 ];
 
-function ModuleCard({ mod, isSaved, onToggleSave }: {
+function SectionHeading({ children }: { children: ReactNode }) {
+  return (
+    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+      {children}
+    </p>
+  );
+}
+
+function ModuleDetailModal({ mod, onClose, isSaved, onToggleSave }: {
+  mod: IndexedModule;
+  onClose: () => void;
+  isSaved: boolean;
+  onToggleSave: (code: string) => void;
+}) {
+  const los = formatLOs(mod.learningOutcomes);
+  const fc = facultyColor(mod.facultyName);
+  const activePrimaryTags = primaryTags.filter(t => mod[t.key]);
+  const tl = mod.teachingAndLearning;
+  const ass = mod.assessment;
+  const sup = mod.supplementals;
+
+  // Close on Escape
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [onClose]);
+
+  // Prevent body scroll
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const tlRows = tl ? [
+    { label: 'Lectures', value: tl.lectures },
+    { label: 'Labs / Practicals', value: tl.labsPracticals },
+    { label: 'Tutorials', value: tl.tutorials },
+    { label: 'Planned Learning', value: tl.plannedLearning },
+    { label: 'Independent Study', value: tl.independentStudy },
+  ].filter(r => r.value != null && r.value > 0) : [];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 p-4 overflow-y-auto"
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="bg-white rounded-2xl max-w-3xl w-full my-8 shadow-2xl">
+
+        {/* Header */}
+        <div className="flex items-start justify-between p-6 border-b border-slate-200" style={{ background: facultyCardBg(mod.facultyName) }}>
+          <div className="flex-1 min-w-0 pr-4">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span
+                className="font-mono font-bold text-sm px-2.5 py-1 rounded-lg"
+                style={{ background: fc + '18', color: fc }}
+              >
+                {mod.moduleCode}
+              </span>
+              {facultyAbbr(mod.facultyName) && (
+                <span
+                  className="font-bold text-sm px-2.5 py-1 rounded-lg"
+                  style={{ background: fc + '12', color: fc }}
+                  title={mod.facultyName}
+                >
+                  {facultyAbbr(mod.facultyName)}
+                </span>
+              )}
+              {mod.credits != null && mod.credits > 0 && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium">
+                  {mod.credits} cr
+                </span>
+              )}
+              {mod.yearLong ? (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium">Year-Long</span>
+              ) : mod.semester != null && mod.semester > 0 ? (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-medium">Sem {mod.semester}</span>
+              ) : null}
+              {mod.UG_PG && (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white border border-slate-200 text-slate-500 font-medium">
+                  {mod.UG_PG}
+                </span>
+              )}
+            </div>
+            <h2 className="text-xl font-bold text-slate-900 leading-snug">{mod.moduleName}</h2>
+            <p className="text-sm text-slate-500 mt-1">
+              {mod.departmentName}
+              {mod.facultyName && (
+                <> · <span style={{ color: fc }}>{shortFaculty(mod.facultyName)}</span></>
+              )}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => onToggleSave(mod.moduleCode)}
+              title={isSaved ? 'Remove from saved' : 'Save this module'}
+              className="p-1.5 rounded-lg hover:bg-white/60 transition-colors"
+            >
+              <Heart
+                className="w-5 h-5 transition-colors"
+                style={{ color: isSaved ? '#6b1a2b' : '#cbd5e1' }}
+                fill={isSaved ? '#6b1a2b' : 'none'}
+              />
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-white/60 transition-colors"
+              title="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="p-6 space-y-6">
+
+          {/* Tag badges */}
+          {(activePrimaryTags.length > 0 || mod.international || (mod.criticalSkills && mod.criticalSkills.length > 0)) && (
+            <div className="flex flex-wrap gap-2">
+              {activePrimaryTags.map(t => (
+                <span
+                  key={t.key}
+                  title={t.tooltip}
+                  className="text-xs font-semibold px-3 py-1 rounded-full"
+                  style={{ background: t.bg, color: t.color }}
+                >
+                  {t.label}
+                </span>
+              ))}
+              {mod.international && (
+                <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: '#e0f2fe', color: '#0369a1' }}>
+                  International
+                </span>
+              )}
+              {mod.criticalSkills && mod.criticalSkills.length > 0 && (
+                <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: '#f3e8ff', color: '#7e22ce' }}>
+                  Critical Skills
+                </span>
+              )}
+              {ass?.capped && (
+                <span className="text-xs font-semibold px-3 py-1 rounded-full" style={{ background: '#fef9c3', color: '#854d0e' }}>
+                  Capped
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Module content */}
+          {mod.moduleContent && (
+            <div>
+              <SectionHeading>Module Content</SectionHeading>
+              <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{mod.moduleContent}</p>
+            </div>
+          )}
+
+          {/* Learning outcomes */}
+          {los.length > 0 && (
+            <div>
+              <SectionHeading>Learning Outcomes</SectionHeading>
+              <ul className="space-y-2">
+                {los.map((lo, i) => (
+                  <li key={i} className="text-sm text-slate-700 flex gap-2">
+                    <span className="font-mono font-semibold text-slate-400 flex-shrink-0 text-xs mt-0.5">LO{i + 1}</span>
+                    <span className="leading-relaxed">{lo}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Critical skills */}
+          {mod.criticalSkills && mod.criticalSkills.length > 0 && (
+            <div>
+              <SectionHeading>Critical Skills</SectionHeading>
+              <ul className="space-y-2">
+                {mod.criticalSkills.map(id => {
+                  const skill = CS_BY_ID[id];
+                  return skill ? (
+                    <li key={id} className="text-sm text-slate-700 flex gap-2">
+                      <span className="font-mono font-semibold flex-shrink-0 text-xs mt-0.5" style={{ color: '#7e22ce' }}>{skill.code}</span>
+                      <span className="leading-relaxed">
+                        <span className="font-medium">{skill.short}</span>
+                        <span className="text-slate-500"> — {skill.text}</span>
+                      </span>
+                    </li>
+                  ) : null;
+                })}
+              </ul>
+            </div>
+          )}
+
+          {/* T&L breakdown */}
+          {tlRows.length > 0 && (
+            <div>
+              <SectionHeading>Teaching &amp; Learning</SectionHeading>
+              <table className="w-full text-sm border-collapse">
+                <tbody>
+                  {tlRows.map(r => (
+                    <tr key={r.label} className="border-b border-slate-100 last:border-0">
+                      <td className="py-1.5 text-slate-500 w-48">{r.label}</td>
+                      <td className="py-1.5 text-slate-700 font-medium">{r.value} hrs</td>
+                    </tr>
+                  ))}
+                  {tl?.total != null && tl.total > 0 && (
+                    <tr className="border-t-2 border-slate-200">
+                      <td className="py-1.5 text-slate-700 font-semibold">Total</td>
+                      <td className="py-1.5 text-slate-700 font-semibold">{tl.total} hrs</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Assessment */}
+          {ass && ass.components && ass.components.length > 0 && (
+            <div>
+              <SectionHeading>Assessment</SectionHeading>
+              {ass.graded != null && (
+                <p className="text-xs text-slate-500 mb-2">
+                  {ass.graded ? 'Graded module' : 'Ungraded module'}
+                  {ass.passStandard && ` · Pass standard: ${ass.passStandard}`}
+                  {ass.capped && ' · Capped assessment'}
+                </p>
+              )}
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200">
+                    <th className="py-1.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Type</th>
+                    <th className="py-1.5 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Details</th>
+                    <th className="py-1.5 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Weight</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ass.components.map((c, i) => (
+                    <tr key={i} className="border-b border-slate-100 last:border-0">
+                      <td className="py-1.5 text-slate-700 font-medium pr-4">{c.type}</td>
+                      <td className="py-1.5 text-slate-500 text-xs">
+                        {[c.options, c.duration].filter(Boolean).join(' · ')}
+                      </td>
+                      <td className="py-1.5 text-slate-700 font-medium text-right">{c.weighting}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Supplementals */}
+          {sup && sup.permitted != null && (
+            <div>
+              <SectionHeading>Supplemental Examinations</SectionHeading>
+              <p className="text-sm text-slate-700">
+                {sup.permitted ? 'Permitted' : 'Not permitted'}
+              </p>
+              {sup.permitted && sup.details && sup.details.length > 0 && (
+                <ul className="mt-1.5 space-y-1">
+                  {sup.details.map((d, i) => (
+                    <li key={i} className="text-sm text-slate-500">· {d}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {/* Timetable */}
+          {mod.timetableUrl && (
+            <div>
+              <SectionHeading>Timetable</SectionHeading>
+              <a
+                href={mod.timetableUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
+                style={{ color: '#6b1a2b' }}
+              >
+                View timetable <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ModuleCard({ mod, isSaved, onToggleSave, onViewDetails }: {
   mod: IndexedModule;
   isSaved: boolean;
   onToggleSave: (code: string) => void;
+  onViewDetails: (mod: IndexedModule) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const los = formatLOs(mod.learningOutcomes);
@@ -178,7 +502,6 @@ function ModuleCard({ mod, isSaved, onToggleSave }: {
           </div>
         </div>
 
-
         {/* Module name */}
         <h3 className="text-base font-semibold text-slate-900 leading-snug">
           {mod.moduleName}
@@ -225,17 +548,27 @@ function ModuleCard({ mod, isSaved, onToggleSave }: {
         )}
       </div>
 
-      {/* Expand toggle */}
-      <button
-        onClick={() => setExpanded(e => !e)}
-        className="w-full flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-slate-400 hover:text-slate-600 border-t border-slate-200 transition-colors rounded-b-2xl hover:bg-white/60"
-      >
-        {expanded ? (
-          <><ChevronUp className="w-3.5 h-3.5" /> Hide details</>
-        ) : (
-          <><ChevronDown className="w-3.5 h-3.5" /> Full content &amp; learning outcomes</>
-        )}
-      </button>
+      {/* Card footer: expand toggle + full details button */}
+      <div className="flex border-t border-slate-200 rounded-b-2xl overflow-hidden">
+        <button
+          onClick={() => setExpanded(e => !e)}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors hover:bg-white/60"
+        >
+          {expanded ? (
+            <><ChevronUp className="w-3.5 h-3.5" /> Hide</>
+          ) : (
+            <><ChevronDown className="w-3.5 h-3.5" /> Content &amp; LOs</>
+          )}
+        </button>
+        <div className="w-px bg-slate-200" />
+        <button
+          onClick={() => onViewDetails(mod)}
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 text-xs font-medium text-slate-400 hover:text-slate-600 transition-colors hover:bg-white/60"
+          title="View full module details"
+        >
+          <Maximize2 className="w-3.5 h-3.5" /> Full details
+        </button>
+      </div>
 
       {/* Expanded content */}
       <AnimatePresence initial={false}>
@@ -317,6 +650,8 @@ export default function ModuleFinder() {
     try { return new Set(JSON.parse(localStorage.getItem('mu-module-favs') || '[]')); }
     catch { return new Set(); }
   });
+
+  const [modalModule, setModalModule] = useState<IndexedModule | null>(null);
 
   const toggleSave = useCallback((code: string) => {
     setSavedCodes(prev => {
@@ -608,7 +943,7 @@ export default function ModuleFinder() {
             onChange={e => { setQuery(e.target.value); setShowCount(PAGE_SIZE); }}
             placeholder="Search by code, name, content or learning outcomes…"
             className="w-full pl-9 pr-9 py-2.5 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:border-transparent bg-slate-50"
-            style={{ '--tw-ring-color': '#6b1a2b' } as React.CSSProperties}
+            style={{ '--tw-ring-color': '#6b1a2b' } as CSSProperties}
           />
           {query && (
             <button
@@ -723,6 +1058,7 @@ export default function ModuleFinder() {
             mod={mod}
             isSaved={savedCodes.has(mod.moduleCode)}
             onToggleSave={toggleSave}
+            onViewDetails={setModalModule}
           />
         ))}
       </div>
@@ -738,6 +1074,16 @@ export default function ModuleFinder() {
             <span className="text-slate-400 ml-1.5">({(results.length - showCount).toLocaleString()} remaining)</span>
           </button>
         </div>
+      )}
+
+      {/* Detail modal */}
+      {modalModule && (
+        <ModuleDetailModal
+          mod={modalModule}
+          onClose={() => setModalModule(null)}
+          isSaved={savedCodes.has(modalModule.moduleCode)}
+          onToggleSave={toggleSave}
+        />
       )}
     </div>
   );
