@@ -304,7 +304,7 @@
   <h1>MU Module Catalogue</h1>
   <p class="meta">
     Built by <strong>Prof. John Keating</strong> · Associate Dean for Teaching and Learning (Faculty of Science &amp; Engineering)<br>
-    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · March 2026
+    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · March 2026 · <em>Updated 29 March 2026</em>
   </p>
 </header>
 
@@ -342,9 +342,10 @@
         MU Programme Finder.
       </p>
       <p>
-        The catalogue currently covers <strong>2,601 modules</strong> across
-        <strong>48 departments</strong> and three faculties, drawn directly from the MU
-        university database for Academic Year 2025.
+        The catalogue currently covers <strong>2,866 modules</strong> across
+        <strong>48 departments</strong> and three faculties. Module content descriptions,
+        learning outcomes, ECTS credits, assessment components, and teaching &amp; learning
+        data are drawn directly from the MU public course catalogue for Academic Year 2026.
       </p>
       <div class="callout">
         <strong>Primary audiences:</strong> current and prospective students exploring MU's
@@ -359,6 +360,8 @@
         <li>Save modules to a personal shortlist (persisted locally, no login required)</li>
         <li>View a summary of saved modules including Data/Digital skill coverage and departmental spread</li>
         <li>Expand any module card to read the full content description, numbered learning outcomes, and Critical Skills mappings where available</li>
+        <li>Open a <strong>Full Details</strong> modal for any module showing ECTS credits, semester, international availability, teaching &amp; learning hours breakdown, assessment components, supplemental/resit information, and a link to the official MU timetable</li>
+        <li>International modules are identified with a sky-blue badge — these are modules available to short-term, visiting international students</li>
         <li>Accessible font size toggle (three sizes, persisted across sessions)</li>
       </ul>
     </section>
@@ -527,17 +530,47 @@
         <li><span class="pill pill-skills">Skills</span> — a purple pill shown when the module has Critical Skills mapped to it; expand the card to see the full list</li>
       </ul>
 
-      <h3>Card layout (expanded)</h3>
+      <h3>Card layout (expanded — inline)</h3>
       <p>
-        Click <strong>Full content &amp; learning outcomes</strong> at the bottom of any card
-        to expand it. The intro snippet is hidden when expanded to avoid duplication. The
-        expanded view shows:
+        Click <strong>Content &amp; LOs</strong> at the bottom of any card to expand it inline.
+        The intro snippet is hidden when expanded to avoid duplication. The expanded view shows:
       </p>
       <ul>
         <li><strong>Module Content</strong> — the full content description</li>
         <li><strong>Learning Outcomes</strong> — listed as LO1, LO2, LO3… for easy reference</li>
         <li><strong>Critical Skills</strong> — where mapped, listed with their code (e.g. <code>CS1.1</code>), short name, and full description</li>
       </ul>
+
+      <h3>Full Details modal</h3>
+      <p>
+        Click the <strong>Full details</strong> button (grid icon) at the bottom of any card
+        to open a full-screen modal with the complete official module record. The modal shows:
+      </p>
+      <ul>
+        <li><strong>Header badges</strong> — ECTS credits (hover for an explanation of what ECTS means),
+          semester (1, 2, or Year-Long), International flag (sky-blue, hover for official MU definition),
+          and UG/PG level</li>
+        <li><strong>Skill tags</strong> — Data, Digital, Critical Skills, and Capped assessment flags where applicable</li>
+        <li><strong>Overview</strong> — the module description as published on the official MU course catalogue</li>
+        <li><strong>Learning Outcomes</strong> — numbered list</li>
+        <li><strong>Critical Skills</strong> — skill codes and names, where mapped</li>
+        <li><strong>Teaching &amp; Learning</strong> — breakdown of hours: lectures, labs/practicals, tutorials, planned online learning, independent study, and total</li>
+        <li><strong>Assessment</strong> — each component's type, options, weighting (%), and duration (minutes) where applicable; also shows pass standard and whether the overall result is capped</li>
+        <li><strong>Supplemental / Resit</strong> — whether supplemental assessment is permitted and any conditions</li>
+        <li><strong>Timetable</strong> — a link opens the official MU timetable page for the module in a new tab</li>
+      </ul>
+      <p>
+        The modal can be closed with the <strong>✕</strong> button, by pressing <strong>Escape</strong>,
+        or by clicking outside it.
+      </p>
+
+      <h3>International modules</h3>
+      <p>
+        A sky-blue <strong>International</strong> badge appears on cards and in the Full Details modal
+        for modules that are available to short-term, visiting international students at Maynooth University.
+        Hover the badge to read the official MU definition. This flag is drawn from the official MU
+        course catalogue.
+      </p>
 
       <h3>Faculty colour coding</h3>
       <div class="fac-grid">
@@ -746,7 +779,8 @@
             <tr><th>Data</th><th>Source</th></tr>
           </thead>
           <tbody>
-            <tr><td>Module codes, names, descriptions, learning outcomes</td><td>MU university database, Academic Year 2025 — 2,599 modules, 48 departments</td></tr>
+            <tr><td>Module codes, names, descriptions, learning outcomes</td><td>MU university database (original extract) + MU public course catalogue (Academic Year 2026) — 2,866 modules, 48 departments</td></tr>
+            <tr><td>ECTS credits, semester, assessment components, T&amp;L hours, supplementals, timetable URL, international flag</td><td>MU public course catalogue, scraped and decoded from <code>apps.maynoothuniversity.ie</code> for Academic Year 2026</td></tr>
             <tr><td>Data / Digital skill tags</td><td>Human review by department heads / delegated staff, supported by AI pre-tagging (Gemini), via MU Module Management System</td></tr>
             <tr><td>UG/PG classification</td><td>Derived from module code convention (first digit rule); ~87 exceptions classified as Unknown pending manual review</td></tr>
             <tr><td>Year of study</td><td>Derived from module code first digit for UG modules</td></tr>
@@ -851,12 +885,14 @@ git push origin main</code></pre>
     <section id="limitations">
       <h2 class="section-title"><span class="num">13</span> Known Limitations</h2>
       <ul>
-        <li>Module data is from Academic Year 2025 and will need to be re-exported for each new year</li>
+        <li>Module data is from Academic Year 2026; the catalogue will need to be re-exported for each new year</li>
+        <li>282 modules are present in the university database but could not be found on the official public course catalogue (likely retired or restructured codes); their content descriptions are sourced from the original database extract only</li>
         <li>Approximately 87 modules have a UG/PG classification of "Unknown" due to non-standard first digits in their module codes; these require manual review</li>
+        <li>265 modules newly added from programme structure data have no Faculty assignment yet — they show no faculty colour tinting until manually assigned in the management system</li>
         <li>The Data and Digital tags reflect the state at the time of export; changes made in the management system are not reflected until a new export is committed</li>
-        <li>The 4MB JSON file is loaded in full on first visit; on a slow connection this may take a moment. Subsequent visits are instant as the browser caches the file</li>
+        <li>The JSON file is loaded in full on first visit; on a slow connection this may take a moment. Subsequent visits are instant as the browser caches the file</li>
         <li>Saved modules are stored in the local browser only — clearing browser data removes the saved list, and saves do not transfer between devices</li>
-        <li>The catalogue does not yet show which programmes each module belongs to; programme–module linking is a planned future phase</li>
+        <li>The catalogue does not yet show which programmes each module belongs to; a Programme Browser showing the full programme → year → module structure is under active development</li>
         <li>Additional tag types (e.g. Placement, Accredited) and admin module editing are planned for future development phases</li>
       </ul>
     </section>
