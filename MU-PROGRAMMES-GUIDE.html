@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MU Programme Browser — Feature Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mu:       #6b1a2b;
+      --mu-light: #fdf2f4;
+      --mu-mid:   #f5c6ce;
+      --arts:     #7c3aed;
+      --science:  #0369a1;
+      --social:   #15803d;
+      --data:     #0369a1;
+      --digital:  #0e7490;
+      --skills:   #7e22ce;
+      --slate:    #334155;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
+      --bg:       #f8fafc;
+      --radius:   8px;
+      --font:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--slate);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .doc-header {
+      background: var(--mu);
+      color: white;
+      padding: 2.5rem 2rem 2rem;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .doc-header .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .doc-header h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .doc-header .meta {
+      font-size: 0.85rem;
+      opacity: 0.82;
+      line-height: 1.6;
+    }
+    .doc-header .meta a { color: white; text-decoration: underline; opacity: 0.9; }
+
+    .doc-body {
+      display: flex;
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+      gap: 2.5rem;
+      align-items: flex-start;
+    }
+
+    .toc {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 1.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+    .toc h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .toc ol { list-style: none; counter-reset: toc; }
+    .toc ol li { counter-increment: toc; margin-bottom: 0.25rem; }
+    .toc ol li::before { content: counter(toc) ". "; color: var(--mu); font-weight: 700; }
+    .toc a { color: var(--slate); text-decoration: none; }
+    .toc a:hover { color: var(--mu); }
+    .toc .sub { padding-left: 1.25rem; }
+    .toc .sub li::before { content: none; }
+    .toc .sub a { color: var(--muted); font-size: 0.77rem; }
+    .toc .sub a:hover { color: var(--mu); }
+
+    main { flex: 1; min-width: 0; }
+    section { margin-bottom: 2.75rem; }
+
+    h2.section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1e293b;
+      border-bottom: 2px solid var(--mu);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h2.section-title .num {
+      background: var(--mu);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    p { margin-bottom: 0.8rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      padding-left: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    li { margin-bottom: 0.3rem; }
+    li:last-child { margin-bottom: 0; }
+
+    strong { color: #1e293b; }
+    .doc-header strong { color: white; }
+    a { color: var(--mu); }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card h3 { margin-top: 0; }
+
+    .callout {
+      border-left: 4px solid var(--mu);
+      background: var(--mu-light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.85rem 1.1rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+    .callout.blue {
+      border-color: var(--science);
+      background: #eff6ff;
+    }
+    .callout.green {
+      border-color: var(--social);
+      background: #f0fdf4;
+    }
+    .callout.amber {
+      border-color: #d97706;
+      background: #fffbeb;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2em 0.65em;
+      border-radius: 999px;
+      margin-right: 0.3rem;
+    }
+    .pill-comp    { background: #dcfce7; color: #15803d; }
+    .pill-opt     { background: #f1f5f9; color: var(--muted); }
+    .pill-intl    { background: #e0f2fe; color: #0369a1; }
+
+    .fac-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .fac-card {
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      border: 1px solid var(--border);
+    }
+    .fac-card .abbr {
+      font-size: 1.1rem;
+      font-weight: 800;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      margin-bottom: 0.25rem;
+    }
+    .fac-card p { font-size: 0.82rem; color: var(--muted); margin: 0; }
+
+    .table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead th {
+      background: var(--mu);
+      color: white;
+      text-align: left;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody td {
+      padding: 0.5rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82em;
+      background: #f1f5f9;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--mu);
+    }
+
+    /* Flow diagram */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 1.25rem 0;
+    }
+    .flow-step {
+      background: var(--mu);
+      color: white;
+      padding: 0.6rem 1.1rem;
+      border-radius: var(--radius);
+      font-weight: 700;
+      font-size: 0.875rem;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 1.2rem;
+      padding: 0 0.5rem;
+    }
+
+    /* Mock programme card */
+    .mock-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      max-width: 320px;
+      margin-bottom: 0.75rem;
+    }
+    .mock-card .cao { font-family: monospace; font-size: 0.8rem; color: var(--mu); font-weight: 700; }
+    .mock-card .title { font-weight: 700; font-size: 0.95rem; color: #1e293b; margin: 0.2rem 0 0.4rem; }
+    .mock-card .fac-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+    .mock-card .meta { font-size: 0.78rem; color: var(--muted); }
+
+    /* Mock year tab */
+    .mock-tabs { display: flex; gap: 0.3rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .mock-tab {
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .mock-tab.active {
+      background: var(--mu);
+      color: white;
+      border-color: var(--mu);
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .status-pass  { color: #15803d; font-weight: 700; }
+    .status-note  { color: #b45309; font-weight: 700; }
+
+    .doc-footer {
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media print {
+      .toc { display: none; }
+      .doc-body { display: block; padding: 0; }
+      body { background: white; font-size: 13px; }
+      section { break-inside: avoid; }
+    }
+
+    @media (max-width: 700px) {
+      .toc { display: none; }
+      .doc-body { padding: 1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div class="label">Maynooth University · Feature Guide</div>
+  <h1>MU Programme Browser</h1>
+  <p class="meta">
+    Built by <strong>Prof. John Keating</strong> · Associate Dean for Teaching and Learning (Faculty of Science &amp; Engineering)<br>
+    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · March 2026
+  </p>
+</header>
+
+<div class="doc-body">
+
+  <nav class="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#coverage">Programme Coverage</a></li>
+      <li><a href="#flow">Navigation Flow</a></li>
+      <li><a href="#list">Programme List</a></li>
+      <li><a href="#modal">Programme Modal</a></li>
+      <li><a href="#variants">Multi-stream Programmes</a></li>
+      <li><a href="#modules">Module Rows</a></li>
+      <li><a href="#drilldown">Drilling into a Module</a></li>
+      <li><a href="#reverse">Module → Programmes</a></li>
+      <li><a href="#data">Data Sources</a></li>
+      <li><a href="#limitations">Known Limitations</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- 1. Overview -->
+    <section id="overview">
+      <h2 class="section-title"><span class="num">1</span> Overview</h2>
+      <p>
+        The MU Programme Browser is an extension of the
+        <a href="https://jkeatingmu.github.io/MU-finder/">MU Finder</a> that lets you explore
+        Maynooth University's undergraduate programmes as structured curricula — not just as
+        marketing descriptions. It shows the year-by-year module structure for each programme,
+        with direct links into the full module catalogue.
+      </p>
+      <p>
+        Where the Module Catalogue answers the question <em>"what modules exist?"</em>, the
+        Programme Browser answers <em>"what does a student in this programme actually study,
+        year by year?"</em>
+      </p>
+
+      <div class="callout">
+        <strong>Primary audiences:</strong> prospective students planning their studies;
+        current students reviewing their programme requirements; academic staff and administrators
+        cross-referencing module offerings with programme structures; Open Day visitors exploring
+        degree options.
+      </div>
+
+      <h3>Key capabilities</h3>
+      <ul>
+        <li>Browse all 45 undergraduate programmes across three faculties</li>
+        <li>View the full year-by-year module structure for each programme in a single modal</li>
+        <li>For programmes with multiple degree streams (e.g. Business &amp; Management, Law), switch between streams within the same modal</li>
+        <li>See at a glance which modules are compulsory and which are optional in each year</li>
+        <li>Click any module to open its full details without leaving the programme view</li>
+        <li>From any module, see which programmes it appears in and in which year</li>
+      </ul>
+    </section>
+
+    <!-- 2. Programme Coverage -->
+    <section id="coverage">
+      <h2 class="section-title"><span class="num">2</span> Programme Coverage</h2>
+      <p>
+        The Programme Browser covers all <strong>45 undergraduate CAO programmes</strong> offered
+        by Maynooth University, spanning 104 named degree qualifications (some CAO codes map to
+        multiple distinct degree streams — see <a href="#variants">Section 6</a>).
+      </p>
+
+      <div class="fac-grid">
+        <div class="fac-card" style="background:#faf7ff; border-color:#ddd6fe;">
+          <div class="abbr" style="color:#7c3aed;">FAH</div>
+          <p>Faculty of Arts &amp; Humanities<br>MH101, MH103, MH111…</p>
+        </div>
+        <div class="fac-card" style="background:#f0f7ff; border-color:#bfdbfe;">
+          <div class="abbr" style="color:#0369a1;">FSE</div>
+          <p>Faculty of Science &amp; Engineering<br>MH201, MH202, MH304…</p>
+        </div>
+        <div class="fac-card" style="background:#f0fdf6; border-color:#bbf7d0;">
+          <div class="abbr" style="color:#15803d;">FSS</div>
+          <p>Faculty of Social Sciences<br>MH001, MH107, MH501…</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Stat</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>CAO codes covered</td><td>45 undergraduate programmes</td></tr>
+            <tr><td>Named degree qualifications</td><td>104 (some CAO codes have multiple streams)</td></tr>
+            <tr><td>Unique module codes across all programmes</td><td>1,501</td></tr>
+            <tr><td>Academic year</td><td>2026</td></tr>
+            <tr><td>Data source</td><td>MU public course catalogue — <code>apps.maynoothuniversity.ie</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Postgraduate programmes are not included in this phase. The data is scraped from the
+        official MU course catalogue and will be refreshed annually.
+      </p>
+    </section>
+
+    <!-- 3. Navigation Flow -->
+    <section id="flow">
+      <h2 class="section-title"><span class="num">3</span> Navigation Flow</h2>
+      <p>
+        The Programme Browser follows a clear drill-down structure. Every step can be reversed
+        with a back button or by closing the modal:
+      </p>
+
+      <div class="flow">
+        <div class="flow-step">Programme list</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Select programme</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Programme modal<br><small style="font-weight:400">(year tabs)</small></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Click module</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">Module Detail modal<br><small style="font-weight:400">(stacked)</small></div>
+      </div>
+
+      <p>
+        The Module Detail modal opens <em>on top of</em> the Programme modal — closing it
+        returns you to the same year tab in the same programme you were viewing. You never
+        lose your place in the programme structure.
+      </p>
+    </section>
+
+    <!-- 4. Programme List -->
+    <section id="list">
+      <h2 class="section-title"><span class="num">4</span> Programme List</h2>
+      <p>
+        The Programme Browser is accessed from the <strong>Programmes</strong> tab in the
+        MU Finder header. It shows all 45 undergraduate programmes as browsable cards,
+        filterable by faculty.
+      </p>
+
+      <h3>Programme card</h3>
+      <p>Each card shows:</p>
+      <ul>
+        <li><strong>CAO code</strong> — e.g. <code>MH201</code>, <code>MH101</code></li>
+        <li><strong>Programme title</strong> — the official name (e.g. <em>Bachelor of Science</em>)</li>
+        <li><strong>Faculty</strong> — colour-coded dot and abbreviation (FAH / FSE / FSS)</li>
+        <li><strong>Number of degree streams</strong> — shown for multi-stream programmes (e.g. "20 streams" for MH404 Business)</li>
+        <li><strong>CAO points</strong> — 2025 entry points where available</li>
+      </ul>
+
+      <p>Example programme cards:</p>
+
+      <div class="mock-card">
+        <div class="cao">MH201</div>
+        <div class="title">Bachelor of Science</div>
+        <div class="meta"><span class="fac-dot" style="background:#0369a1;"></span>FSE · Faculty of Science &amp; Engineering · 1 stream</div>
+      </div>
+
+      <div class="mock-card">
+        <div class="cao">MH404</div>
+        <div class="title">BBS / BBA Business and Management</div>
+        <div class="meta"><span class="fac-dot" style="background:#0369a1;"></span>FSE · Faculty of Science &amp; Engineering · 20 streams</div>
+      </div>
+
+      <div class="mock-card">
+        <div class="cao">MH101</div>
+        <div class="title">Bachelor of Arts</div>
+        <div class="meta"><span class="fac-dot" style="background:#7c3aed;"></span>FAH · Faculty of Arts &amp; Humanities · 1 stream</div>
+      </div>
+    </section>
+
+    <!-- 5. Programme Modal -->
+    <section id="modal">
+      <h2 class="section-title"><span class="num">5</span> Programme Modal</h2>
+      <p>
+        Clicking a programme card opens a full-screen modal showing the complete year-by-year
+        module structure for that programme.
+      </p>
+
+      <h3>Modal header</h3>
+      <ul>
+        <li><strong>CAO code and programme title</strong></li>
+        <li><strong>Faculty badge</strong> — faculty name and colour</li>
+        <li><strong>Stream selector</strong> — for multi-stream programmes, a dropdown to switch between degree variants (see <a href="#variants">Section 6</a>)</li>
+        <li><strong>Total module count</strong> for the selected stream</li>
+      </ul>
+
+      <h3>Year tabs</h3>
+      <p>
+        The programme structure is divided into years. Click a year tab to view all modules
+        taught in that year:
+      </p>
+
+      <div class="mock-tabs">
+        <div class="mock-tab active">Year 1</div>
+        <div class="mock-tab">Year 2</div>
+        <div class="mock-tab">Year 3</div>
+        <div class="mock-tab">Year 4</div>
+      </div>
+
+      <p>
+        Tabs are generated dynamically based on the data — a three-year programme shows
+        three tabs; a four-year programme shows four. Year-long modules (spanning both
+        semesters) are clearly labelled.
+      </p>
+
+      <h3>Module table</h3>
+      <p>Each year tab shows a table of modules with the following columns:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Column</th><th>Description</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Status</strong></td>
+              <td>
+                <span class="pill pill-comp">Compulsory</span> — module is required for this programme<br>
+                <span class="pill pill-opt">Optional</span> — module is available but not required
+              </td>
+            </tr>
+            <tr><td><strong>Code</strong></td><td>Module code (e.g. <code>CS101</code>). Click to open the Module Detail modal for this module</td></tr>
+            <tr><td><strong>Module name</strong></td><td>Full title of the module. Click to open the Module Detail modal</td></tr>
+            <tr><td><strong>ECTS</strong></td><td>Credit value of the module (European Credit Transfer and Accumulation System)</td></tr>
+            <tr><td><strong>Semester</strong></td><td>1, 2, or Year-Long</td></tr>
+            <tr>
+              <td><strong>International</strong></td>
+              <td><span class="pill pill-intl">Intl</span> badge shown for modules available to visiting international students</td>
+            </tr>
+            <tr><td><strong>Details</strong></td><td>Button to open the full Module Detail modal</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout blue">
+        <strong>Tip:</strong> Compulsory and optional modules are listed in separate groups
+        within each year tab, making it easy to identify the core spine of the programme
+        versus the choice modules.
+      </div>
+    </section>
+
+    <!-- 6. Multi-stream Programmes -->
+    <section id="variants">
+      <h2 class="section-title"><span class="num">6</span> Multi-stream Programmes</h2>
+      <p>
+        Some CAO codes map to multiple named degree qualifications — for example, a student
+        who enters MH404 may graduate with any one of 20 different named Business degrees
+        depending on their chosen specialism. The Programme Browser handles this with a
+        <strong>stream selector</strong> dropdown at the top of the programme modal.
+      </p>
+
+      <h3>Examples of multi-stream CAO codes</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>CAO code</th><th>Title</th><th>Streams</th><th>Examples</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>MH404</code></td>
+              <td>Business and Management</td>
+              <td>20</td>
+              <td>BBS Business and Management, BBA with Placement, BBS International Business, BBS Marketing, BBA Entrepreneurship…</td>
+            </tr>
+            <tr>
+              <td><code>MH409</code></td>
+              <td>Business and Languages</td>
+              <td>14</td>
+              <td>BBA Business Management and French Studies, BBA Marketing and German Studies, BBA International Business and Spanish…</td>
+            </tr>
+            <tr>
+              <td><code>MH502</code></td>
+              <td>BCL Law (Combined Honours)</td>
+              <td>9</td>
+              <td>BCL Law and Arts, BCL Law and Business, BCL Law and Accounting, BCL Law and Criminology — each with standard, international, and placement variants</td>
+            </tr>
+            <tr>
+              <td><code>MH212</code></td>
+              <td>BSc Science (with Education)</td>
+              <td>3</td>
+              <td>Mathematics and Computer Science, Mathematics, Science</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        Selecting a stream from the dropdown updates the year tabs and module table to show
+        the structure for that specific degree. The CAO code and shared programme title remain
+        visible throughout.
+      </p>
+
+      <div class="callout">
+        <strong>Note on MH404 / MH409:</strong> The Business programmes in particular have
+        many streams due to the breadth of specialisms available (International Business,
+        Marketing, Global Cultures, placement year variants, and language combinations).
+        All streams share a common first-year structure; the divergence occurs in later years.
+      </div>
+    </section>
+
+    <!-- 7. Module Rows -->
+    <section id="modules">
+      <h2 class="section-title"><span class="num">7</span> Module Rows</h2>
+
+      <h3>Compulsory vs Optional</h3>
+      <p>
+        Within each year tab, modules are divided into two groups:
+      </p>
+      <ul>
+        <li><span class="pill pill-comp">Compulsory</span> — the student must take this module; it is a core requirement of the programme in this year</li>
+        <li><span class="pill pill-opt">Optional</span> — the module is listed as available within this programme in this year, but the student may select from a menu of options</li>
+      </ul>
+      <p>
+        This distinction is drawn directly from the official MU course structure data.
+        The compulsory/optional status may vary between streams of the same programme.
+      </p>
+
+      <h3>Modules not in the catalogue</h3>
+      <p>
+        In a small number of cases, a module listed in a programme structure may not yet have
+        a full entry in the MU module catalogue (282 modules could not be found on the official
+        public course pages — typically retired or recently restructured modules). In these cases,
+        the module code and name are shown but the "Full details" link is disabled.
+      </p>
+
+      <h3>Skill tag indicators</h3>
+      <p>
+        Where a module in the programme has been tagged with <strong>Data</strong> or
+        <strong>Digital</strong> skills, this is visible in the module row — giving programme
+        teams a quick view of the skill coverage embedded across their programme's year structure.
+      </p>
+    </section>
+
+    <!-- 8. Drilling into a Module -->
+    <section id="drilldown">
+      <h2 class="section-title"><span class="num">8</span> Drilling into a Module</h2>
+      <p>
+        Clicking a module code, module name, or the <strong>Full details</strong> button in
+        any programme year table opens the <strong>Module Detail modal</strong> — the same
+        modal available from the Module Catalogue — stacked on top of the Programme modal.
+      </p>
+      <p>The Module Detail modal shows the complete official module record:</p>
+      <ul>
+        <li>ECTS credits, semester, International flag, UG/PG level</li>
+        <li>Data / Digital / Critical Skills / Capped badges</li>
+        <li>Full overview (content description)</li>
+        <li>Numbered learning outcomes</li>
+        <li>Teaching &amp; Learning hours breakdown (lectures, labs, tutorials, independent study)</li>
+        <li>Assessment components (type, weighting, duration)</li>
+        <li>Supplemental / resit information</li>
+        <li>Link to the official MU timetable</li>
+        <li><strong>Appears in</strong> — a list of all programmes this module belongs to, with the year and compulsory/optional status in each (see <a href="#reverse">Section 9</a>)</li>
+      </ul>
+      <p>
+        Closing the Module Detail modal (✕ button, Escape, or backdrop click) returns you
+        to the same year tab in the Programme modal — your place in the programme structure
+        is preserved.
+      </p>
+    </section>
+
+    <!-- 9. Module → Programmes (Reverse Link) -->
+    <section id="reverse">
+      <h2 class="section-title"><span class="num">9</span> Module → Programmes (Reverse Link)</h2>
+      <p>
+        Every module detail modal includes an <strong>Appears in</strong> section at the bottom,
+        showing all the programmes that include this module in their official structure.
+      </p>
+      <p>For each programme entry, the following is shown:</p>
+      <ul>
+        <li>CAO code and programme title</li>
+        <li>Year in which the module appears (Year 1, Year 2, etc.)</li>
+        <li>Whether the module is compulsory or optional in that programme</li>
+      </ul>
+
+      <h3>Example</h3>
+      <p>
+        The module <code>CS101</code> might appear as:
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>CAO code</th><th>Programme</th><th>Year</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>MH201</code></td><td>Bachelor of Science</td><td>Year 1</td><td><span class="pill pill-comp">Compulsory</span></td></tr>
+            <tr><td><code>MH602</code></td><td>BSc Computer Science &amp; Software Engineering</td><td>Year 1</td><td><span class="pill pill-comp">Compulsory</span></td></tr>
+            <tr><td><code>MH601</code></td><td>BSc Computer Science (through Arts)</td><td>Year 1</td><td><span class="pill pill-comp">Compulsory</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        This reverse link is particularly useful for academic staff reviewing cross-programme
+        dependencies — for example, identifying modules that are compulsory in 10 or more
+        programmes (changes to these have wide impact) versus modules unique to a single stream.
+      </p>
+
+      <div class="callout green">
+        <strong>Cross-programme analysis use case:</strong> The module <code>ID001X</code>
+        (Introduction to Data Science, or similar) appears as compulsory in over 30 programmes.
+        Any change to its assessment or content would need to be coordinated across all affected
+        programmes. The "Appears in" section makes this dependency immediately visible.
+      </div>
+    </section>
+
+    <!-- 10. Data Sources -->
+    <section id="data">
+      <h2 class="section-title"><span class="num">10</span> Data Sources</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Data</th><th>Source</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Programme list (CAO codes, titles, faculties)</td>
+              <td>Scraped from MU undergraduate listings; titles verified against official MU course system (<code>apps.maynoothuniversity.ie</code>)</td>
+            </tr>
+            <tr>
+              <td>CAO code → qualification code mapping</td>
+              <td>MU course search form — POST search by CAO code returns qualification code(s). 45 CAO codes → 104 qualification codes.</td>
+            </tr>
+            <tr>
+              <td>Year-by-year module structure (per qualification code)</td>
+              <td>MU course catalogue — <code>TARGET=QS&amp;MODE=VIEW&amp;QUALIFICATION_CODE={code}&amp;YEAR=2026</code></td>
+            </tr>
+            <tr>
+              <td>Module details (credits, assessment, T&amp;L, etc.)</td>
+              <td>MU course catalogue — <code>TARGET=MODULE&amp;MODE=VIEW&amp;MODULE_CODE={code}&amp;YEAR=2026</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>
+        All programme structure data is for Academic Year 2026 and will be re-scraped annually.
+        The scraping pipeline is fully automated and runs in a single pass covering all 45 programmes.
+      </p>
+    </section>
+
+    <!-- 11. Known Limitations -->
+    <section id="limitations">
+      <h2 class="section-title"><span class="num">11</span> Known Limitations</h2>
+      <ul>
+        <li>Postgraduate programmes are not included in this phase</li>
+        <li>282 module codes appear in programme structures but could not be retrieved from the official course catalogue (likely retired or restructured codes); these show name and code only, with no detail modal</li>
+        <li>The 265 modules newly added from programme structure data (from departments AD, FN, NS, PD, SN) currently have no faculty assignment — they appear without faculty colour tinting until manually assigned</li>
+        <li>The compulsory/optional classification is sourced directly from the official MU course catalogue; inaccuracies in the source data will be reflected here</li>
+        <li>Programme structure data is static and reflects the state of the MU catalogue at the time of the last scrape; it does not update in real time</li>
+        <li>For programmes with very large numbers of optional modules (e.g. <code>MH101</code> Bachelor of Arts, which draws from the entire arts module catalogue), the optional module list may be long — filtering within the programme modal is planned for a future iteration</li>
+      </ul>
+    </section>
+
+  </main>
+</div>
+
+<footer class="doc-footer">
+  <p>© 2026 Maynooth University · MU Programme Browser · Built by Prof. John Keating</p>
+</footer>
+
+</body>
+</html>
