@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useCallback, type ReactNode, type CSSProperties } from 'react';
 import Fuse from 'fuse.js';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, X, ChevronDown, ChevronUp, Database, Layers, AlertCircle, Heart, ExternalLink, Maximize2 } from 'lucide-react';
+import { Search, X, ChevronDown, ChevronUp, Database, Layers, AlertCircle, Heart, ExternalLink, Maximize2, GraduationCap } from 'lucide-react';
 import { CS_BY_ID } from '../data/criticalSkills';
+import ProgrammeBrowser from './ProgrammeBrowser';
 
 interface TLBreakdown {
   lectures?: number;
@@ -644,6 +645,7 @@ function ModuleCard({ mod, isSaved, onToggleSave, onViewDetails }: {
 
 export default function ModuleFinder() {
   const [exportData, setExportData] = useState<ExportData | null>(null);
+  const [activeTab, setActiveTab] = useState<'modules' | 'programmes'>('modules');
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
@@ -843,8 +845,54 @@ export default function ModuleFinder() {
   const visible = results.slice(0, showCount);
   const hasMore = results.length > showCount;
 
+  // Module map keyed by code for ProgrammeBrowser lookups
+  const moduleMapByCode = useMemo(() => {
+    const m: Record<string, { moduleCode: string; moduleName: string; data?: boolean; digital?: boolean; credits?: number; semester?: number | null; yearLong?: boolean; international?: boolean }> = {};
+    for (const mod of indexedModules) m[mod.moduleCode] = mod;
+    return m;
+  }, [indexedModules]);
+
+  // Handler: open module detail modal from programme browser
+  function handleViewFromProgramme(code: string) {
+    const mod = indexedModules.find(m => m.moduleCode === code);
+    if (mod) setModalModule(mod);
+  }
+
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      {/* Tab switcher */}
+      <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab('modules')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            activeTab === 'modules' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          Modules
+        </button>
+        <button
+          onClick={() => setActiveTab('programmes')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            activeTab === 'programmes' ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          <GraduationCap className="w-4 h-4" />
+          Programmes
+        </button>
+      </div>
+
+      {/* Programme Browser */}
+      {activeTab === 'programmes' && (
+        <ProgrammeBrowser
+          moduleMap={moduleMapByCode}
+          onViewModuleDetails={handleViewFromProgramme}
+          moduleAppearances={null}
+        />
+      )}
+
+      {activeTab !== 'modules' ? null : <>
 
       {/* Page heading */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
@@ -1083,7 +1131,9 @@ export default function ModuleFinder() {
         </div>
       )}
 
-      {/* Detail modal */}
+      </> /* end modules tab */}
+
+      {/* Detail modal — available from both tabs */}
       {modalModule && (
         <ModuleDetailModal
           mod={modalModule}
