@@ -854,7 +854,7 @@ export default function ModuleFinder() {
             <h2 className="text-2xl font-bold text-slate-900">Module Catalogue</h2>
           </div>
           <p className="text-slate-500 text-sm">
-            {exportData.totalModules.toLocaleString()} modules across 3 faculties
+            {(exportData.totalModules ?? exportData.modules?.length ?? 0).toLocaleString()} modules across 3 faculties
             {exportData.generated && (
               <> · Updated {new Date(exportData.generated).toLocaleDateString('en-IE', { day: 'numeric', month: 'long', year: 'numeric' })}</>
             )}
@@ -1039,7 +1039,7 @@ export default function ModuleFinder() {
             ? 'No modules found'
             : results.length === exportData.totalModules
             ? `All ${results.length.toLocaleString()} modules`
-            : `${results.length.toLocaleString()} of ${exportData.totalModules.toLocaleString()} modules`}
+            : `${results.length.toLocaleString()} of ${(exportData.totalModules ?? exportData.modules?.length ?? 0).toLocaleString()} modules`}
         </p>
         {results.length > showCount && (
           <p className="text-xs text-slate-400">Showing {showCount.toLocaleString()}</p>
