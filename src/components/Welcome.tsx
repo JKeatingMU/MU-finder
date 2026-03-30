@@ -22,7 +22,7 @@ const pathways = [
   },
   {
     icon: BookOpen,
-    title: 'Subject Explorer',
+    title: 'Leaving Certificate Subject Explorer',
     description: 'Enter your Leaving Cert subjects and expected grades. We calculate your CAO points and show all programmes you can achieve.',
     cta: 'Enter My Subjects',
     color: '#0369a1',

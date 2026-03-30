@@ -21,7 +21,7 @@ const sections = [
     icon: BookOpen,
     color: '#0369a1',
     bg: '#eff6ff',
-    title: 'Subject Explorer',
+    title: 'Leaving Certificate Subject Explorer',
     steps: [
       'Select the Leaving Cert subjects you are taking (or expect to take).',
       'Choose a grade for each — Higher, Ordinary, or Foundation where available.',

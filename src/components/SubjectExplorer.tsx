@@ -245,7 +245,7 @@ export default function SubjectExplorer({ favourites, onToggleFavourite }: Subje
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-3">Subject Explorer</h2>
+        <h2 className="text-3xl font-bold text-slate-900 mb-3">Leaving Certificate Subject Explorer</h2>
         <p className="text-slate-500 max-w-xl mx-auto">
           Select your Leaving Cert subjects and expected grades. We'll calculate your CAO points and show matching MU programmes.
         </p>
