@@ -11,7 +11,7 @@ Contact: john.keating@mu.ie
 MU Programme Finder is a browser-based progressive web app (PWA) that helps prospective students explore the 55 MU undergraduate programmes for 2026. It requires no login, no server, and no personal data. It works fully offline once loaded and can be installed to a device home screen.
 
 The app covers all three faculties:
-- **Faculty of Arts, Celtic Studies & Philosophy** — 5 programmes
+- **Faculty of Arts and Humanities** — 5 programmes
 - **Faculty of Science & Engineering** — 23 programmes
 - **Faculty of Social Sciences** — 27 programmes
 

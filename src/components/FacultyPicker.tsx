@@ -9,7 +9,7 @@ interface FacultyPickerProps {
 const faculties: { id: Faculty; name: string; shortName: string; desc: string; count: number; color: string; icon: React.ReactNode }[] = [
   {
     id: 'arts',
-    name: 'Arts, Celtic Studies & Philosophy',
+    name: 'Arts and Humanities',
     shortName: 'Arts',
     desc: 'Literature, music, media, creative writing and humanities. Degrees that develop creativity, critical thinking and communication.',
     count: 5,

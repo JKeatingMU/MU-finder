@@ -16,7 +16,7 @@ const FACULTY_COLORS: Record<Faculty, string> = {
 };
 
 const FACULTY_LABELS: Record<Faculty, string> = {
-  arts:    'Arts, Celtic Studies & Philosophy',
+  arts:    'Arts and Humanities',
   science: 'Science & Engineering',
   social:  'Social Sciences',
 };

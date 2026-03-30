@@ -82,7 +82,7 @@ interface Props {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const FAC_CONFIG: Record<string, { abbr: string; colour: string; bg: string; border: string }> = {
-  'Faculty of Arts, Celtic Studies and Philosophy': { abbr: 'FAH', colour: '#7c3aed', bg: '#faf7ff', border: '#ddd6fe' },
+  'Faculty of Arts and Humanities': { abbr: 'FAH', colour: '#7c3aed', bg: '#faf7ff', border: '#ddd6fe' },
   'Faculty of Science and Engineering':             { abbr: 'FSE', colour: '#0369a1', bg: '#f0f7ff', border: '#bfdbfe' },
   'Faculty of Social Sciences':                     { abbr: 'FSS', colour: '#15803d', bg: '#f0fdf6', border: '#bbf7d0' },
 };
