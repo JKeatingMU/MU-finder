@@ -861,9 +861,8 @@ export default function ModuleFinder() {
   return (
     <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-      {/* Tab switcher — Programmes tab shown in dev only until feature is ready */}
-      {import.meta.env.DEV && (
-        <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-xl w-fit">
+      {/* Tab switcher */}
+      <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-xl w-fit">
           <button
             onClick={() => setActiveTab('modules')}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
@@ -883,10 +882,9 @@ export default function ModuleFinder() {
             Programmes
           </button>
         </div>
-      )}
 
       {/* Programme Browser */}
-      {import.meta.env.DEV && activeTab === 'programmes' && (
+      {activeTab === 'programmes' && (
         <ProgrammeBrowser
           moduleMap={moduleMapByCode}
           onViewModuleDetails={handleViewFromProgramme}

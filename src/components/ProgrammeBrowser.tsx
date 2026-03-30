@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, type ReactNode } from 'react';
-import { X, BookOpen, ChevronDown, ExternalLink, GraduationCap, AlertCircle } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { X, BookOpen, ChevronDown, ChevronUp, ExternalLink, GraduationCap, AlertCircle, Info } from 'lucide-react';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -12,11 +12,38 @@ interface ProgrammeModule {
   international?: boolean;
 }
 
+interface Subject {
+  subjectCode: string;
+  subjectName: string;
+  credits: number;
+  compulsory: boolean;
+  overview?: string;
+  modules: ProgrammeModule[];
+}
+
+interface Group {
+  label: string;
+  subjects: Subject[];
+}
+
+interface Pathway {
+  id: string;
+  name: string;
+  notes?: string[];
+  groups: Group[];
+}
+
+interface YearData {
+  notes?: string[];
+  groups?: Group[];      // years without pathway tabs
+  pathways?: Pathway[];  // years with pathway tabs (e.g. Double Major)
+}
+
 interface ProgrammeStream {
   qualCode: string;
   title: string;
   moduleCount: number;
-  years: Record<string, ProgrammeModule[]>;
+  years: Record<string, YearData>;
 }
 
 interface Programme {
@@ -35,15 +62,6 @@ interface ProgrammeData {
   programmes: Programme[];
 }
 
-interface ModuleAppearance {
-  qualCode: string;
-  caoCode: string;
-  programmeYear: number;
-  compulsory: boolean;
-  programmeTitle?: string;
-}
-
-// Module shape from modules.json (subset we need)
 interface ModuleInfo {
   moduleCode: string;
   moduleName: string;
@@ -56,9 +74,9 @@ interface ModuleInfo {
 }
 
 interface Props {
-  moduleMap: Record<string, ModuleInfo>;   // from modules.json, keyed by code
+  moduleMap: Record<string, ModuleInfo>;
   onViewModuleDetails: (code: string) => void;
-  moduleAppearances: Record<string, ModuleAppearance[]> | null;
+  moduleAppearances: Record<string, { qualCode: string; caoCode: string; programmeYear: number; compulsory: boolean; programmeTitle?: string }[]> | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -80,13 +98,281 @@ function semLabel(mod: ProgrammeModule): string {
   return '—';
 }
 
-// ── Section heading ──────────────────────────────────────────────────────────
+function countGroupModules(groups: Group[]): number {
+  return groups.reduce((n, g) => n + g.subjects.reduce((m, s) => m + s.modules.length, 0), 0);
+}
 
-function SH({ children }: { children: ReactNode }) {
+function yearModuleCount(yd: YearData): number {
+  if (yd.pathways) return yd.pathways.reduce((n, p) => n + countGroupModules(p.groups), 0);
+  return countGroupModules(yd.groups ?? []);
+}
+
+// ── Module Table ─────────────────────────────────────────────────────────────
+
+function ModuleTable({
+  mods,
+  moduleMap,
+  facColour,
+  onView,
+}: {
+  mods: ProgrammeModule[];
+  moduleMap: Record<string, ModuleInfo>;
+  facColour: string;
+  onView: (code: string) => void;
+}) {
   return (
-    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 mt-5 first:mt-0">
-      {children}
-    </h3>
+    <div className="rounded-xl border border-slate-100 overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-slate-50 text-xs text-slate-500 font-semibold">
+            <th className="text-left px-3 py-2 w-24">Code</th>
+            <th className="text-left px-3 py-2">Module</th>
+            <th className="text-center px-3 py-2 w-14">ECTS</th>
+            <th className="text-center px-3 py-2 w-20">Sem</th>
+            <th className="text-center px-3 py-2 w-16">Tags</th>
+            <th className="px-3 py-2 w-20"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {mods.map((mod, i) => {
+            const info = moduleMap[mod.moduleCode];
+            return (
+              <tr key={mod.moduleCode} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
+                <td className="px-3 py-2">
+                  <span
+                    className="font-mono text-xs font-bold cursor-pointer hover:underline"
+                    style={{ color: facColour }}
+                    onClick={() => onView(mod.moduleCode)}
+                  >
+                    {mod.moduleCode}
+                  </span>
+                </td>
+                <td className="px-3 py-2">
+                  <span
+                    className="text-slate-700 cursor-pointer hover:text-slate-900 hover:underline"
+                    onClick={() => onView(mod.moduleCode)}
+                  >
+                    {info?.moduleName ?? mod.moduleCode}
+                  </span>
+                  {mod.compulsory && (
+                    <span
+                      className="ml-1.5 text-xs font-semibold px-1.5 py-0.5 rounded"
+                      style={{ background: '#fef3c7', color: '#b45309' }}
+                      title="Required module — must be passed without compensation"
+                    >
+                      Req
+                    </span>
+                  )}
+                  {mod.international && (
+                    <span
+                      className="ml-1.5 text-xs font-semibold px-1.5 py-0.5 rounded"
+                      style={{ background: '#e0f2fe', color: '#0369a1' }}
+                      title="Available to international students"
+                    >
+                      Intl
+                    </span>
+                  )}
+                </td>
+                <td className="px-3 py-2 text-center text-slate-500">
+                  {mod.credits ?? info?.credits ?? '—'}
+                </td>
+                <td className="px-3 py-2 text-center text-slate-500 text-xs">
+                  {semLabel(mod)}
+                </td>
+                <td className="px-3 py-2 text-center">
+                  <span className="flex items-center justify-center gap-1">
+                    {info?.data && <span className="w-2 h-2 rounded-full bg-blue-500" title="Data skills" />}
+                    {info?.digital && <span className="w-2 h-2 rounded-full bg-cyan-500" title="Digital skills" />}
+                  </span>
+                </td>
+                <td className="px-3 py-2 text-right">
+                  {info ? (
+                    <button
+                      onClick={() => onView(mod.moduleCode)}
+                      className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
+                    >
+                      Details
+                    </button>
+                  ) : (
+                    <span className="text-xs text-slate-300">—</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ── Text rendering helpers ────────────────────────────────────────────────────
+
+// Render a paragraph that may contain inline " -item" bullet sequences
+function TextPara({ text, className }: { text: string; className?: string }) {
+  // Detect inline dash-bullets: "intro text: -item1. -item2."
+  const dashIdx = text.indexOf(' -');
+  if (dashIdx !== -1 && (text.match(/ -/g) ?? []).length >= 2) {
+    const intro = text.slice(0, dashIdx).trimEnd();
+    const bullets = text.slice(dashIdx)
+      .split(/ -/)
+      .map(s => s.trim().replace(/\.$/, ''))
+      .filter(Boolean);
+    return (
+      <div className={className}>
+        {intro && <p className="mb-1">{intro}</p>}
+        <ul className="list-disc pl-5 space-y-0.5">
+          {bullets.map((b, i) => <li key={i}>{b}</li>)}
+        </ul>
+      </div>
+    );
+  }
+  return <p className={className}>{text}</p>;
+}
+
+// ── Overview Panel ───────────────────────────────────────────────────────────
+
+function OverviewPanel({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const paras = text.split('\n\n');
+  const preview = paras[0];
+  const hasMore = paras.length > 1 || preview.length > 100;
+  const previewText = preview.length > 100 ? preview.slice(0, 100).trimEnd() + '…' : preview;
+
+  return (
+    <div className="px-4 py-4 bg-white border-b border-slate-100 text-sm text-slate-600" style={{ lineHeight: '1.8' }}>
+      {expanded ? (
+        paras.map((para, i) => (
+          <TextPara key={i} text={para} className={i > 0 ? 'mt-4' : undefined} />
+        ))
+      ) : (
+        <p>{previewText}</p>
+      )}
+      {hasMore && (
+        <button
+          onClick={() => setExpanded(e => !e)}
+          className="mt-2 text-xs font-semibold"
+          style={{ color: '#6b1a2b' }}
+        >
+          {expanded ? 'Less' : 'More'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── Subject Block ─────────────────────────────────────────────────────────────
+
+function SubjectBlock({
+  subject,
+  moduleMap,
+  facColour,
+  onView,
+}: {
+  subject: Subject;
+  moduleMap: Record<string, ModuleInfo>;
+  facColour: string;
+  onView: (code: string) => void;
+}) {
+  const [overviewOpen, setOverviewOpen] = useState(false);
+
+  return (
+    <div className="mb-5 rounded-xl border border-slate-200 overflow-hidden">
+      {/* Subject header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-100 gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="font-bold text-slate-800 text-sm">{subject.subjectName}</span>
+          {subject.subjectCode && (
+            <span className="font-mono text-xs text-slate-400">{subject.subjectCode}</span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {subject.credits > 0 && (
+            <span
+              className="text-xs font-semibold px-2 py-0.5 rounded-full"
+              style={{ background: `${facColour}18`, color: facColour }}
+            >
+              {subject.credits} ECTS
+            </span>
+          )}
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full"
+            style={
+              subject.compulsory
+                ? { background: '#fef3c7', color: '#b45309' }
+                : { background: '#f1f5f9', color: '#64748b' }
+            }
+          >
+            {subject.compulsory ? 'Compulsory' : 'Optional'}
+          </span>
+          {subject.overview && (
+            <button
+              onClick={() => setOverviewOpen(o => !o)}
+              className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-700 px-2 py-0.5 rounded-lg border border-slate-200 bg-white"
+              title="Subject overview"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              {overviewOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Subject overview */}
+      {overviewOpen && subject.overview && (
+        <OverviewPanel text={subject.overview} />
+      )}
+
+      {/* Module table */}
+      <div className="p-3">
+        {subject.modules.length === 0 ? (
+          <p className="text-xs text-slate-400 text-center py-2">No modules listed.</p>
+        ) : (
+          <ModuleTable
+            mods={subject.modules}
+            moduleMap={moduleMap}
+            facColour={facColour}
+            onView={onView}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Note Box ─────────────────────────────────────────────────────────────────
+
+function NoteBox({ title, notes }: { title: string; notes: string[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const LIMIT = 3;
+  const hasMore = notes.length > LIMIT;
+  const visible = expanded ? notes : notes.slice(0, LIMIT);
+
+  return (
+    <div className="mb-4 rounded-xl border px-4 py-3 text-sm" style={{ background: '#fffbeb', borderColor: '#fde68a' }}>
+      <div className="flex items-start gap-2">
+        <Info className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#b45309' }} />
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-amber-800 mb-1">{title}</p>
+          <ul className="space-y-1">
+            {visible.map((note, i) => (
+              <li key={i} className="text-amber-900">
+                <TextPara text={note} />
+              </li>
+            ))}
+          </ul>
+          {hasMore && (
+            <button
+              onClick={() => setExpanded(e => !e)}
+              className="mt-2 text-xs font-semibold"
+              style={{ color: '#b45309' }}
+            >
+              {expanded ? 'Less' : 'More'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -104,38 +390,43 @@ function ProgrammeModal({
   onViewModule: (code: string) => void;
 }) {
   const [streamIdx, setStreamIdx] = useState(0);
-  const [activeYear, setActiveYear] = useState('1');
 
   const stream = programme.streams[streamIdx];
   const years = Object.keys(stream.years).sort((a, b) => Number(a) - Number(b));
 
-  // Reset year tab when stream changes
-  function changeStream(idx: number) {
-    setStreamIdx(idx);
-    setActiveYear(Object.keys(programme.streams[idx].years).sort((a, b) => Number(a) - Number(b))[0] ?? '1');
-  }
+  const [activeYear, setActiveYear] = useState(() => years[0] ?? '1');
 
   useEffect(() => {
     setActiveYear(years[0] ?? '1');
   }, [streamIdx]); // eslint-disable-line
 
-  // Close on Escape
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', h);
     return () => window.removeEventListener('keydown', h);
   }, [onClose]);
 
-  // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, []);
 
+  const [activePathway, setActivePathway] = useState<string>('');
+
+  // Reset pathway when year changes
+  useEffect(() => {
+    const yd = stream.years[activeYear];
+    setActivePathway(yd?.pathways?.[0]?.id ?? '');
+  }, [activeYear, streamIdx]); // eslint-disable-line
+
   const fc = facConfig(programme.faculty);
-  const yearModules = stream.years[activeYear] ?? [];
-  const compulsory  = yearModules.filter(m => m.compulsory);
-  const optional    = yearModules.filter(m => !m.compulsory);
+  const yearData   = stream.years[activeYear];
+  const yearNotes  = yearData?.notes ?? [];
+  const hasPathways = !!yearData?.pathways?.length;
+  const currentPathway = hasPathways
+    ? (yearData.pathways!.find(p => p.id === activePathway) ?? yearData.pathways![0])
+    : null;
+  const groups = hasPathways ? (currentPathway?.groups ?? []) : (yearData?.groups ?? []);
 
   return (
     <div
@@ -167,17 +458,15 @@ function ProgrammeModal({
               <p className="text-sm text-slate-500 mt-0.5">{programme.faculty}</p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              {programme.url && (
-                <a
-                  href={programme.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                >
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  MU page
-                </a>
-              )}
+              <a
+                href={`https://apps.maynoothuniversity.ie/courses/?TARGET=QS&MODE=VIEW&QUALIFICATION_CODE=${stream.qualCode}&YEAR=2026&TARGET_SOURCE=CS`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                MU course finder
+              </a>
               <button
                 onClick={onClose}
                 className="p-1.5 rounded-lg hover:bg-white/70 text-slate-500"
@@ -195,7 +484,7 @@ function ProgrammeModal({
               <div className="relative">
                 <select
                   value={streamIdx}
-                  onChange={e => changeStream(Number(e.target.value))}
+                  onChange={e => setStreamIdx(Number(e.target.value))}
                   className="text-sm rounded-lg border border-slate-200 bg-white pl-3 pr-8 py-1.5 appearance-none font-medium text-slate-700 focus:outline-none focus:ring-2"
                   style={{ minWidth: '260px' }}
                 >
@@ -214,142 +503,90 @@ function ProgrammeModal({
         {/* Year tabs */}
         <div className="px-6 pt-4 pb-0 border-b border-slate-100">
           <div className="flex gap-1 flex-wrap">
-            {years.map(yr => (
-              <button
-                key={yr}
-                onClick={() => setActiveYear(yr)}
-                className={`px-4 py-2 text-sm font-semibold rounded-t-lg border-b-2 transition-colors ${
-                  activeYear === yr
-                    ? 'border-b-2 text-white'
-                    : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                }`}
-                style={activeYear === yr ? { borderBottomColor: fc.colour, backgroundColor: fc.colour } : {}}
-              >
-                Year {yr}
-                <span className={`ml-1.5 text-xs ${activeYear === yr ? 'text-white/70' : 'text-slate-400'}`}>
-                  ({(stream.years[yr] ?? []).length})
-                </span>
-              </button>
-            ))}
+            {years.map(yr => {
+              const count = yearModuleCount(stream.years[yr]);
+              return (
+                <button
+                  key={yr}
+                  onClick={() => setActiveYear(yr)}
+                  className={`px-4 py-2 text-sm font-semibold rounded-t-lg border-b-2 transition-colors ${
+                    activeYear === yr
+                      ? 'border-b-2 text-white'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                  }`}
+                  style={activeYear === yr ? { borderBottomColor: fc.colour, backgroundColor: fc.colour } : {}}
+                >
+                  Year {yr}
+                  <span className={`ml-1.5 text-xs ${activeYear === yr ? 'text-white/70' : 'text-slate-400'}`}>
+                    ({count})
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Module table */}
-        <div className="px-6 py-5 overflow-y-auto" style={{ maxHeight: '60vh' }}>
-          {yearModules.length === 0 ? (
+        {/* Pathway sub-tabs (Double Major / Major with Minor / etc.) */}
+        {hasPathways && yearData?.pathways && (
+          <div className="px-6 pt-3 pb-0 border-b border-slate-100 bg-slate-50/50">
+            <div className="flex gap-1 flex-wrap">
+              {yearData.pathways.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => setActivePathway(p.id)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-t-lg border-b-2 transition-colors ${
+                    (activePathway || yearData.pathways![0].id) === p.id
+                      ? 'text-white'
+                      : 'border-transparent text-slate-500 hover:text-slate-700 hover:bg-white'
+                  }`}
+                  style={(activePathway || yearData.pathways![0].id) === p.id
+                    ? { borderBottomColor: fc.colour, backgroundColor: fc.colour }
+                    : {}}
+                >
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Year / pathway content */}
+        <div className="px-6 py-5 overflow-y-auto" style={{ maxHeight: '55vh' }}>
+          {/* Year-level notes */}
+          {yearNotes.length > 0 && (
+            <NoteBox title={`Year ${activeYear} notes`} notes={yearNotes} />
+          )}
+
+          {/* Pathway-level notes */}
+          {hasPathways && currentPathway?.notes && currentPathway.notes.length > 0 && (
+            <NoteBox title={currentPathway.name} notes={currentPathway.notes} />
+          )}
+
+          {/* Groups → Subjects */}
+          {groups.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-8">No modules listed for this year.</p>
           ) : (
-            <>
-              {compulsory.length > 0 && (
-                <>
-                  <SH>Compulsory ({compulsory.length})</SH>
-                  <ModuleTable mods={compulsory} moduleMap={moduleMap} facColour={fc.colour} onView={onViewModule} />
-                </>
-              )}
-              {optional.length > 0 && (
-                <>
-                  <SH>Optional ({optional.length})</SH>
-                  <ModuleTable mods={optional} moduleMap={moduleMap} facColour={fc.colour} onView={onViewModule} />
-                </>
-              )}
-            </>
+            groups.map((group, gi) => (
+              <div key={group.label || gi}>
+                {group.label && (
+                  <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 mt-5 first:mt-0">
+                    Timetable group {group.label}
+                  </p>
+                )}
+                {group.subjects.map((subj, si) => (
+                  <SubjectBlock
+                    key={subj.subjectCode || `${group.label}-${subj.subjectName}-${si}`}
+                    subject={subj}
+                    moduleMap={moduleMap}
+                    facColour={fc.colour}
+                    onView={onViewModule}
+                  />
+                ))}
+              </div>
+            ))
           )}
         </div>
       </div>
-    </div>
-  );
-}
-
-// ── Module Table ─────────────────────────────────────────────────────────────
-
-function ModuleTable({
-  mods,
-  moduleMap,
-  facColour,
-  onView,
-}: {
-  mods: ProgrammeModule[];
-  moduleMap: Record<string, ModuleInfo>;
-  facColour: string;
-  onView: (code: string) => void;
-}) {
-  return (
-    <div className="rounded-xl border border-slate-100 overflow-hidden mb-4">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="bg-slate-50 text-xs text-slate-500 font-semibold">
-            <th className="text-left px-3 py-2 w-24">Code</th>
-            <th className="text-left px-3 py-2">Module</th>
-            <th className="text-center px-3 py-2 w-14">ECTS</th>
-            <th className="text-center px-3 py-2 w-20">Sem</th>
-            <th className="text-center px-3 py-2 w-16">Skills</th>
-            <th className="px-3 py-2 w-20"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {mods.map((mod, i) => {
-            const info = moduleMap[mod.moduleCode];
-            return (
-              <tr key={mod.moduleCode} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
-                <td className="px-3 py-2">
-                  <span
-                    className="font-mono text-xs font-bold cursor-pointer hover:underline"
-                    style={{ color: facColour }}
-                    onClick={() => onView(mod.moduleCode)}
-                  >
-                    {mod.moduleCode}
-                  </span>
-                </td>
-                <td className="px-3 py-2">
-                  <span
-                    className="text-slate-700 cursor-pointer hover:text-slate-900 hover:underline"
-                    onClick={() => onView(mod.moduleCode)}
-                  >
-                    {info?.moduleName ?? mod.moduleCode}
-                  </span>
-                  {mod.international && (
-                    <span
-                      className="ml-1.5 text-xs font-semibold px-1.5 py-0.5 rounded"
-                      style={{ background: '#e0f2fe', color: '#0369a1' }}
-                      title="Available to international students"
-                    >
-                      Intl
-                    </span>
-                  )}
-                </td>
-                <td className="px-3 py-2 text-center text-slate-500">
-                  {mod.credits ?? info?.credits ?? '—'}
-                </td>
-                <td className="px-3 py-2 text-center text-slate-500 text-xs">
-                  {semLabel(mod)}
-                </td>
-                <td className="px-3 py-2 text-center">
-                  <span className="flex items-center justify-center gap-1">
-                    {info?.data && (
-                      <span className="w-2 h-2 rounded-full bg-blue-500" title="Data skills" />
-                    )}
-                    {info?.digital && (
-                      <span className="w-2 h-2 rounded-full bg-cyan-500" title="Digital skills" />
-                    )}
-                  </span>
-                </td>
-                <td className="px-3 py-2 text-right">
-                  {info ? (
-                    <button
-                      onClick={() => onView(mod.moduleCode)}
-                      className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 transition-colors"
-                    >
-                      Details
-                    </button>
-                  ) : (
-                    <span className="text-xs text-slate-300">—</span>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
     </div>
   );
 }
@@ -388,14 +625,13 @@ function ProgrammeCard({ prog, onClick }: { prog: Programme; onClick: () => void
 
 // ── Main ProgrammeBrowser ─────────────────────────────────────────────────────
 
-export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails, moduleAppearances }: Props) {
-  const [progData, setProgData]           = useState<ProgrammeData | null>(null);
-  const [loading, setLoading]             = useState(true);
-  const [error, setError]                 = useState(false);
-  const [selectedProg, setSelectedProg]   = useState<Programme | null>(null);
-  const [facFilter, setFacFilter]         = useState('');
+export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails }: Props) {
+  const [progData, setProgData]         = useState<ProgrammeData | null>(null);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState(false);
+  const [selectedProg, setSelectedProg] = useState<Programme | null>(null);
+  const [facFilter, setFacFilter]       = useState('');
 
-  // Load programme-data.json on mount
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/programme-data.json`)
       .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
@@ -414,11 +650,6 @@ export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails, modul
       ? progData.programmes.filter(p => p.faculty === facFilter)
       : progData.programmes;
   }, [progData, facFilter]);
-
-  // Handler: open module details from within a programme modal
-  function handleViewModule(code: string) {
-    onViewModuleDetails(code);
-  }
 
   if (loading) {
     return (
@@ -440,7 +671,6 @@ export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails, modul
 
   return (
     <>
-      {/* Header */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -452,7 +682,6 @@ export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails, modul
           </p>
         </div>
 
-        {/* Faculty filter */}
         <select
           value={facFilter}
           onChange={e => setFacFilter(e.target.value)}
@@ -466,7 +695,6 @@ export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails, modul
         </select>
       </div>
 
-      {/* Programme grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {visible.map(prog => (
           <ProgrammeCard
@@ -481,13 +709,12 @@ export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails, modul
         <div className="text-center py-16 text-slate-400 text-sm">No programmes found.</div>
       )}
 
-      {/* Programme modal */}
       {selectedProg && (
         <ProgrammeModal
           programme={selectedProg}
           moduleMap={moduleMap}
           onClose={() => setSelectedProg(null)}
-          onViewModule={handleViewModule}
+          onViewModule={onViewModuleDetails}
         />
       )}
     </>

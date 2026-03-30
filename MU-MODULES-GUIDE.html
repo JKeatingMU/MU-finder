@@ -812,11 +812,29 @@
       </p>
 
       <ol>
-        <li>Log into the MU Module Management System at <code>http://localhost:3002</code> as an Administrator.</li>
-        <li>Click <strong>Export for Public Finder</strong> in the button bar. A file named
-          <code>mu-modules-export-YYYY-MM-DD.json</code> will download.</li>
-        <li>Rename the file to <code>modules.json</code>.</li>
-        <li>Copy it to <code>/MU-finder/public/data/modules.json</code>, replacing the existing file.</li>
+        <li>Ensure MongoDB is accessible (Atlas connection string in environment).</li>
+        <li>From the <code>mumodulesapp/</code> directory, run the direct export script:
+<pre><code>node -e "
+const { MongoClient } = require('mongodb');
+const fs = require('fs');
+const client = new MongoClient(process.env.MONGODB_URI);
+async function run() {
+  await client.connect();
+  const modules = await client.db('moduleDB')
+    .collection('MU_transformed_modules')
+    .find({}, { projection: { _id: 0 } }).toArray();
+  const out = {
+    generated: new Date().toISOString(),
+    totalModules: modules.length,
+    faculties: [...new Set(modules.map(m => m.facultyName).filter(Boolean))].sort(),
+    modules,
+  };
+  fs.writeFileSync('../public/data/modules.json', JSON.stringify(out));
+  console.log(modules.length + ' modules exported');
+  await client.close();
+}
+run();"</code></pre>
+        </li>
         <li>Commit and push to GitHub:
 <pre><code>git add public/data/modules.json
 git commit -m "data: update module catalogue export"
@@ -826,6 +844,11 @@ git push origin main</code></pre>
       </ol>
 
       <div class="callout">
+        <strong>Note:</strong> The admin app's <em>Export for Public Finder</em> button produces
+        a compatible file but omits the <code>totalModules</code> and <code>faculties</code> fields
+        required by the finder. Use the direct script above to ensure both fields are present.
+      </div>
+      <div class="callout">
         <strong>Frequency:</strong> Modules only change annually (new academic year). The export
         should be refreshed whenever significant tagging work has been completed, new tags have
         been introduced, or the module database has been updated for a new year.
@@ -834,10 +857,9 @@ git push origin main</code></pre>
       <h3>Export format</h3>
       <p>The export JSON has the following top-level structure:</p>
 <pre><code>{
-  "generated": "2026-03-28T...",   // ISO timestamp of export
-  "totalModules": 2599,
+  "generated": "2026-03-29T...",   // ISO timestamp of export
+  "totalModules": 2866,
   "faculties": [...],              // sorted faculty name list
-  "index": [...],                  // per-department summary with counts
   "modules": [...]                 // full module array
 }</code></pre>
     </section>
