@@ -106,7 +106,7 @@ export default function Results({ answers, questions, faculty, onRestart, favour
         transition={{ duration: 0.5 }}
         className="text-center mb-10"
       >
-        <h2 className="text-3xl font-bold text-slate-900 mb-3">Your Strength Profile</h2>
+        <h2 className="text-3xl font-bold text-slate-900 mb-3">Your Interests &amp; Strengths Profile</h2>
         {isBalanced ? (
           <p className="text-slate-600 max-w-2xl mx-auto">
             Your responses are broadly balanced across all areas — no single strength stands out yet.

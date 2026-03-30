@@ -10,11 +10,11 @@ const sections = [
     icon: Brain,
     color: '#6b1a2b',
     bg: '#fdf2f4',
-    title: 'Personality Profile',
+    title: 'Interests & Strengths Quiz',
     steps: [
       'Choose a faculty — Arts, Science & Engineering, or Social Sciences.',
       'Answer 9–12 short statements about what you enjoy and how you think.',
-      'Get a personalised strength profile and a ranked list of matching programmes.',
+      'Get a personalised interests profile and a ranked list of matching programmes.',
     ],
   },
   {
@@ -58,7 +58,7 @@ const sections = [
     steps: [
       'Tap the ♥ on any programme card to save it. Your saved programmes are remembered even if you close the app.',
       'Click "Saved (N)" in the header or on any results screen to filter to your saved list.',
-      'In the Saved view, tap the compare icon (⇄) on 2 or 3 cards, then hit "Compare →" for a side-by-side breakdown — points, strengths, related careers, and your quiz match if you took the Personality Profile.',
+      'In the Saved view, tap the compare icon (⇄) on 2 or 3 cards, then hit "Compare →" for a side-by-side breakdown — points, strengths, related careers, and your quiz match if you took the Interests &amp; Strengths Quiz.',
     ],
   },
 ];

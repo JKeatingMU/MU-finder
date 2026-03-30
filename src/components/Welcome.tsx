@@ -13,9 +13,9 @@ interface WelcomeProps {
 const pathways = [
   {
     icon: Brain,
-    title: 'Personality Profile',
-    description: 'Answer a short quiz about your interests and strengths. We match you with the programmes that suit you best.',
-    cta: 'Start Assessment',
+    title: 'Interests & Strengths Quiz',
+    description: 'Answer a short quiz about what you enjoy and how you think. We match you with the programmes that align with your academic interests.',
+    cta: 'Start Quiz',
     color: '#6b1a2b',
     bg: '#fdf2f4',
     key: 'quiz' as const,

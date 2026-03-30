@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MU Programme Finder — Pedagogical Rationale</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --mu:       #6b1a2b;
+    --mu-light: #fdf2f4;
+    --mu-mid:   #f5c6ce;
+    --blue:     #0369a1;
+    --blue-light: #eff6ff;
+    --green:    #15803d;
+    --green-light: #f0fdf4;
+    --slate-900: #0f172a;
+    --slate-700: #334155;
+    --slate-500: #64748b;
+    --slate-400: #94a3b8;
+    --slate-200: #e2e8f0;
+    --slate-100: #f1f5f9;
+    --slate-50:  #f8fafc;
+    --body: 'Georgia', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  html { font-size: 17px; }
+  body {
+    font-family: var(--body);
+    color: var(--slate-900);
+    background: #fff;
+    line-height: 1.75;
+    padding: 0 1rem 4rem;
+  }
+
+  /* ── Layout ── */
+  .page { max-width: 780px; margin: 0 auto; }
+
+  /* ── Cover ── */
+  .cover {
+    border-bottom: 4px solid var(--mu);
+    padding: 3.5rem 0 2.5rem;
+    margin-bottom: 3rem;
+  }
+  .cover-label {
+    font-family: var(--sans);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--mu);
+    margin-bottom: .6rem;
+  }
+  .cover h1 {
+    font-family: var(--sans);
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--slate-900);
+    line-height: 1.2;
+    margin-bottom: .8rem;
+  }
+  .cover-sub {
+    font-size: 1.05rem;
+    color: var(--slate-500);
+    max-width: 600px;
+  }
+  .cover-meta {
+    margin-top: 1.5rem;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    color: var(--slate-400);
+  }
+
+  /* ── Section headings ── */
+  h2 {
+    font-family: var(--sans);
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--slate-900);
+    margin: 2.8rem 0 .7rem;
+    padding-bottom: .35rem;
+    border-bottom: 2px solid var(--slate-200);
+  }
+  h3 {
+    font-family: var(--sans);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--slate-700);
+    margin: 1.6rem 0 .4rem;
+  }
+  p { margin-bottom: .85rem; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── Pathway cards ── */
+  .pathway-card {
+    border-radius: 12px;
+    border: 1px solid var(--slate-200);
+    padding: 1.5rem 1.6rem;
+    margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0 1.2rem;
+  }
+  .pathway-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-top: .15rem;
+    flex-shrink: 0;
+  }
+  .pathway-card h3 {
+    margin: 0 0 .25rem;
+    font-size: 1.05rem;
+    color: var(--slate-900);
+  }
+  .pathway-card p {
+    font-size: .92rem;
+    color: var(--slate-500);
+    margin: 0;
+  }
+  .card-mu   { background: var(--mu-light); border-color: var(--mu-mid); }
+  .card-blue { background: var(--blue-light); border-color: #bae6fd; }
+  .card-green { background: var(--green-light); border-color: #bbf7d0; }
+
+  /* ── Comparison table ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    margin: 1.2rem 0 1.8rem;
+  }
+  th {
+    background: var(--slate-50);
+    color: var(--slate-700);
+    font-weight: 700;
+    text-align: left;
+    padding: .6rem .9rem;
+    border: 1px solid var(--slate-200);
+  }
+  td {
+    padding: .55rem .9rem;
+    border: 1px solid var(--slate-200);
+    vertical-align: top;
+    color: var(--slate-700);
+    line-height: 1.5;
+  }
+  tr:nth-child(even) td { background: var(--slate-50); }
+
+  /* ── Callout boxes ── */
+  .callout {
+    border-radius: 10px;
+    padding: 1.1rem 1.3rem;
+    margin: 1.4rem 0;
+    font-size: .92rem;
+    line-height: 1.6;
+  }
+  .callout-key {
+    background: var(--mu-light);
+    border-left: 4px solid var(--mu);
+    color: var(--slate-700);
+  }
+  .callout-info {
+    background: var(--slate-50);
+    border-left: 4px solid var(--slate-400);
+    color: var(--slate-700);
+  }
+  .callout strong { color: var(--slate-900); }
+
+  /* ── Reference list ── */
+  .refs {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    color: var(--slate-600);
+    padding-left: 1.4rem;
+    line-height: 1.65;
+  }
+  .refs li { margin-bottom: .5rem; }
+
+  /* ── Tick list ── */
+  .ticks {
+    list-style: none;
+    padding: 0;
+    margin: .6rem 0 1rem;
+  }
+  .ticks li {
+    padding-left: 1.6rem;
+    position: relative;
+    font-size: .93rem;
+    color: var(--slate-700);
+    margin-bottom: .35rem;
+    font-family: var(--sans);
+  }
+  .ticks li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-weight: 700;
+  }
+  .cross li::before { content: '✗'; color: #dc2626; }
+
+  /* ── Footer ── */
+  footer {
+    margin-top: 4rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--slate-200);
+    font-family: var(--sans);
+    font-size: .78rem;
+    color: var(--slate-400);
+  }
+
+  @media print {
+    body { font-size: 12pt; }
+    .cover { padding-top: 2rem; }
+    h2 { page-break-after: avoid; }
+    .pathway-card { page-break-inside: avoid; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Cover -->
+  <header class="cover">
+    <p class="cover-label">Maynooth University — Open Day Tools</p>
+    <h1>MU Programme Finder<br>Pedagogical Rationale</h1>
+    <p class="cover-sub">
+      A note on the design philosophy, theoretical grounding, and academic defensibility
+      of the three guided pathways offered by the MU Programme Finder.
+    </p>
+    <p class="cover-meta">Prof. John Keating &middot; Maynooth University &middot; 2026</p>
+  </header>
+
+  <!-- 1. Purpose -->
+  <h2>1. Purpose and Context</h2>
+  <p>
+    The MU Programme Finder is a browser-based tool designed for use at Open Days and on the
+    Maynooth University website. It addresses a specific problem: an incoming student arrives
+    facing 55 undergraduate programmes across three faculties and, frequently, no clear basis
+    for choosing between them.
+  </p>
+  <p>
+    The tool does not make decisions for students. It surfaces information, structures
+    self-reflection, and opens conversations. No account is required; nothing is recorded;
+    no choice is locked in. It is a guided exploration environment, not a selection mechanism.
+  </p>
+  <p>
+    Three distinct pathways are offered, because students arrive with different starting
+    points. A student who already knows they want to be a data scientist needs a different
+    entry point from one who knows only their predicted Leaving Certificate grades, who in
+    turn needs something different from one who has no strong direction at all.
+  </p>
+
+  <!-- 2. Three pathways -->
+  <h2>2. The Three Pathways</h2>
+
+  <div class="pathway-card card-mu">
+    <div class="pathway-icon" style="background:#fdf2f4;">&#129504;</div>
+    <div>
+      <h3 style="color:#6b1a2b;">Pathway 1 &mdash; Interests &amp; Strengths Quiz</h3>
+      <p>
+        The student answers 9&ndash;12 short statements about what they enjoy and how they think.
+        The tool scores responses across eight academic interest categories and returns a ranked
+        list of programmes aligned with their profile.
+      </p>
+    </div>
+  </div>
+
+  <div class="pathway-card card-blue">
+    <div class="pathway-icon" style="background:#eff6ff;">&#128218;</div>
+    <div>
+      <h3 style="color:#0369a1;">Pathway 2 &mdash; Leaving Certificate Subject Explorer</h3>
+      <p>
+        The student selects their LC subjects and grades. The tool calculates estimated CAO
+        points and returns all 55 programmes sorted by achievability, showing which are within
+        reach, borderline, or beyond current points.
+      </p>
+    </div>
+  </div>
+
+  <div class="pathway-card card-green">
+    <div class="pathway-icon" style="background:#f0fdf4;">&#129517;</div>
+    <div>
+      <h3 style="color:#15803d;">Pathway 3 &mdash; Career Finder</h3>
+      <p>
+        The student selects a career or field from a curated list. The tool returns MU
+        programmes ranked by how closely each aligns with the skills and knowledge areas
+        relevant to that career. Where no direct match exists, broad entry degrees are
+        recommended.
+      </p>
+    </div>
+  </div>
+
+  <p>
+    Each pathway is independent and non-exclusive. A student may use all three.
+    The CAO points constraint from Pathway 2 always operates in the background: a student
+    who discovers an interest via Pathway 1 or 3 is returned programme cards that include
+    points thresholds, providing an immediate reality check.
+  </p>
+
+  <!-- 3. Interests quiz -->
+  <h2>3. The Interests &amp; Strengths Quiz — Theoretical Basis</h2>
+
+  <h3>3.1 What it is — and what it is not</h3>
+  <p>
+    The quiz is an <strong>academic interest inventory</strong>. It asks what kinds of
+    activities, problems, and ways of thinking a student enjoys. It does not measure
+    personality traits, infer psychological types, or claim to identify latent characteristics
+    the student is unaware of.
+  </p>
+  <p>
+    This distinction matters. The well-documented criticisms of tools such as the Myers–Briggs
+    Type Indicator (MBTI) — poor test-retest reliability, false binary categories, limited
+    predictive validity — apply to instruments that claim to measure stable personality
+    constructs. The Interests &amp; Strengths Quiz makes no such claim. It asks the student
+    to report, in the moment, what they enjoy. The student is the authority on that question.
+  </p>
+
+  <div class="callout callout-key">
+    <strong>The key distinction:</strong> measuring <em>interests</em> (what activities
+    engage and motivate you) is fundamentally different from measuring <em>personality</em>
+    (what kind of person you are). Interest inventories have a substantially stronger
+    empirical record for educational and vocational guidance purposes.
+  </div>
+
+  <h3>3.2 Theoretical foundation: Holland's Person–Environment Fit</h3>
+  <p>
+    The theoretical backbone of the quiz is <strong>Holland's Theory of Vocational
+    Personalities and Work Environments</strong> (Holland, 1959; 1997). Holland proposed
+    that individuals can be characterised by their interest profile across six broad types
+    (Realistic, Investigative, Artistic, Social, Enterprising, Conventional — the RIASEC
+    model), and that environments (including academic programmes) can be similarly
+    characterised. When an individual's interest profile is congruent with their environment,
+    outcomes improve: higher satisfaction, stronger persistence, and better performance.
+  </p>
+  <p>
+    Holland's framework underpins the Strong Interest Inventory (SII), one of the
+    most extensively validated psychometric instruments in existence, and the O*NET
+    occupational database used by career services worldwide. The eight interest categories
+    used in the MU quiz (Quantitative, Scientific, Computing, Creative, Language, Humanities,
+    Social, Business) are a domain-specific mapping that is consistent with the RIASEC
+    taxonomy and with the disciplinary structure of MU's three faculties.
+  </p>
+
+  <h3>3.3 Empirical support for interest-based guidance</h3>
+  <p>
+    Rounds and Su (2014) summarise decades of meta-analytic evidence: interest–occupation
+    congruence is a significant predictor of job satisfaction, and interest profiles are
+    among the most stable individual-difference measures from adolescence through early
+    adulthood — far more stable than many personality trait measures. Tracey and Robbins (2006)
+    specifically examine interest congruence and academic persistence, finding that students
+    in programmes congruent with their interest profiles have higher retention rates.
+  </p>
+  <p>
+    For the higher education context, Cabrera and La Nasa (2000) and Tinto's integration
+    theory (1987) both identify <em>academic fit</em> — the alignment between a student's
+    dispositions and their programme's intellectual culture — as a significant predictor of
+    persistence and completion. Using expressed interests as a proxy for fit is a reasonable
+    and empirically grounded approach.
+  </p>
+
+  <h3>3.4 Responding to common objections</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Objection</th>
+        <th>Does it apply here?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>MBTI and personality typing have poor reliability and limited validity</td>
+        <td>Not applicable. The quiz measures expressed interests, not personality types. There are no binary categories, no trait inference, no typology.</td>
+      </tr>
+      <tr>
+        <td>Profiling can create self-limiting beliefs ("I'm not a science person")</td>
+        <td>Mitigated by design. Results are framed as <em>suggestions for exploration</em>, not verdicts. The output is "these programmes are worth considering," not "you are this type."</td>
+      </tr>
+      <tr>
+        <td>High-stakes decisions should not be driven by a short quiz</td>
+        <td>Not applicable. The quiz does not make decisions. The student retains full agency over their CAO choice. Points requirements provide an independent reality check.</td>
+      </tr>
+      <tr>
+        <td>The quiz has not been psychometrically validated on a normed sample</td>
+        <td>Correct, and worth acknowledging. The appropriate bar for an open-day exploration tool is not the same as for a clinical instrument. The question is whether the tool is helpful and does not cause harm — both of which are satisfied.</td>
+      </tr>
+      <tr>
+        <td>Students may answer strategically (giving answers they think lead to a desired result)</td>
+        <td>Possible, but this undermines the tool's usefulness to the student themselves, not to the institution. The app has no selection function.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3.5 Irish secondary school context</h3>
+  <p>
+    Irish students arrive at third-level having engaged with various forms of interest and
+    aptitude assessment through their school guidance counsellors. Standardised instruments
+    such as differential aptitude tests and vocational interest surveys are in routine use
+    in Irish post-primary schools. The Interests &amp; Strengths Quiz is consistent with
+    this existing practice, and students are unlikely to find the format unfamiliar or
+    inappropriate.
+  </p>
+  <p>
+    Crucially, students who distrust quiz-based tools or who arrive with a clear direction
+    already in mind are not required to use Pathway 1. Pathways 2 and 3 are fully independent
+    alternatives.
+  </p>
+
+  <div class="callout callout-info">
+    <strong>Framing note for colleagues:</strong> The Interests &amp; Strengths Quiz is best
+    understood as a <em>structured conversation starter</em> — a way of externalising and
+    making explicit the informal self-reflection that students are already doing. At an Open Day,
+    where one-to-one guidance is not feasible at scale, it offers a systematic and repeatable
+    version of what a skilled guidance counsellor achieves in a 15-minute session.
+  </div>
+
+  <!-- 4. Subject Explorer -->
+  <h2>4. The Leaving Certificate Subject Explorer — Design Rationale</h2>
+  <p>
+    This pathway addresses a concrete, practical need: Irish students applying through the
+    CAO need to know whether they are likely to meet the points threshold for a given
+    programme. Many are unaware that their subject choices and grade expectations translate
+    directly into a points band, and that certain programmes have specific subject requirements
+    (e.g. Mathematics for Engineering, a language for some Arts programmes).
+  </p>
+  <p>
+    The Subject Explorer does two things: it estimates the student's likely CAO points from
+    self-reported grades, and it surfaces all 55 MU programmes sorted by how achievable they
+    are relative to that estimate. This is a purely informational tool — no interpretation,
+    no inference. Its defensibility is straightforward: it is a calculation engine and a
+    filter, grounded in the published CAO points data for 2025 entry.
+  </p>
+  <p>
+    Its pedagogical value lies in expanding the decision space rather than narrowing it.
+    Students frequently consider only three or four programmes and are unaware of others
+    well within their reach. By sorting 55 programmes by achievability, the tool surfaces
+    options the student may never have considered.
+  </p>
+
+  <!-- 5. Career Finder -->
+  <h2>5. The Career Finder — Design Rationale</h2>
+  <p>
+    A significant proportion of students, particularly those from backgrounds with limited
+    third-level exposure, approach programme choice primarily through the lens of career
+    outcome: "What do I need to study to become X?" The Career Finder addresses this
+    directly.
+  </p>
+  <p>
+    The tool maps 55 MU programmes against a curated set of career fields, grouped into
+    nine categories. Each programme is tagged with primary and secondary academic interest
+    categories; each career is tagged with the same taxonomy. Relevance is calculated from
+    category overlap.
+  </p>
+  <p>
+    Where no MU programme directly prepares for a specific career (medicine, library science,
+    veterinary), the tool makes this transparent rather than returning empty results. It
+    explains honestly that MU does not offer a programme in that field, and suggests the
+    broad entry degrees (BA MH101, BSc MH201) as foundational routes that keep multiple
+    career options open.
+  </p>
+
+  <div class="callout callout-info">
+    <strong>A note on career-driven programme choice:</strong> Some colleagues express
+    concern that framing a university degree primarily in terms of career outcomes
+    instrumentalises education in ways inconsistent with liberal arts values. This is a
+    legitimate and important concern. The Career Finder is offered as one of three
+    pathways, not the only one, and it does not claim that a degree's value is reducible
+    to its career destination. Students who find the career framing unhelpful can use
+    Pathways 1 or 2 instead. The tool serves students who arrive with career-oriented
+    questions; it does not impose a career-oriented framing on students who do not.
+  </div>
+
+  <!-- 6. Shared design principles -->
+  <h2>6. Shared Design Principles</h2>
+
+  <ul class="ticks">
+    <li><strong>No account, no data collection.</strong> Everything runs in the browser. No personal data is transmitted or stored server-side. This removes any concern about student data being used for institutional purposes beyond the student's intent.</li>
+    <li><strong>Non-exclusive pathways.</strong> A student who uses Pathway 1 and is unhappy with the results can immediately try Pathway 2 or 3. No pathway locks in a conclusion.</li>
+    <li><strong>Transparent scoring.</strong> Match percentages and category tags are shown directly on programme cards, so students can inspect and challenge the logic rather than receiving a black-box verdict.</li>
+    <li><strong>Points reality check.</strong> Every programme card shows the 2025 CAO points threshold, regardless of which pathway the student uses. This prevents aspirational results from being misleading.</li>
+    <li><strong>Human agency preserved.</strong> The tool never says "you should apply for this programme." It says "this programme is worth considering." The CAO form remains entirely the student's decision.</li>
+  </ul>
+
+  <!-- 7. References -->
+  <h2>7. Key References</h2>
+  <ol class="refs">
+    <li>Cabrera, A.F. &amp; La Nasa, S.M. (2000). <em>Understanding the college-choice process</em>. New Directions for Institutional Research, 107, 5–22.</li>
+    <li>Holland, J.L. (1959). A theory of vocational choice. <em>Journal of Counseling Psychology</em>, 6(1), 35–45.</li>
+    <li>Holland, J.L. (1997). <em>Making vocational choices: A theory of vocational personalities and work environments</em> (3rd ed.). Psychological Assessment Resources.</li>
+    <li>Rounds, J. &amp; Su, R. (2014). The nature and power of interests. <em>Current Directions in Psychological Science</em>, 23(2), 98–103.</li>
+    <li>Savickas, M.L. (2005). The theory and practice of career construction. In S.D. Brown &amp; R.W. Lent (Eds.), <em>Career Development and Counseling</em> (pp. 42–70). Wiley.</li>
+    <li>Tinto, V. (1987). <em>Leaving College: Rethinking the Causes and Cures of Student Attrition</em>. University of Chicago Press.</li>
+    <li>Tracey, T.J.G. &amp; Robbins, S.B. (2006). The interest–major congruence and college success relation: A longitudinal study. <em>Journal of Vocational Behavior</em>, 69(1), 64–89.</li>
+  </ol>
+
+  <footer>
+    MU Programme Finder &mdash; Internal Document &mdash; Maynooth University &middot; 2026 &mdash;
+    Tool available at: <a href="https://jkeatingmu.github.io/MU-finder/" style="color:var(--mu);">jkeatingmu.github.io/MU-finder</a>
+  </footer>
+
+</div>
+</body>
+</html>
