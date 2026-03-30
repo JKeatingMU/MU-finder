@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MU Admin App — Testing Guide</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mu:       #6b1a2b;
+      --mu-light: #fdf2f4;
+      --mu-mid:   #f5c6ce;
+      --science:  #0369a1;
+      --social:   #15803d;
+      --slate:    #334155;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
+      --bg:       #f8fafc;
+      --radius:   8px;
+      --font:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --mono:     'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--slate);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .doc-header {
+      background: var(--mu);
+      color: white;
+      padding: 2.5rem 2rem 2rem;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .doc-header .label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 0.5rem;
+    }
+    .doc-header h1 {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+    }
+    .doc-header .meta {
+      font-size: 0.85rem;
+      opacity: 0.82;
+      line-height: 1.6;
+    }
+    .doc-header .meta a { color: white; text-decoration: underline; opacity: 0.9; }
+
+    .doc-body {
+      display: flex;
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+      gap: 2.5rem;
+      align-items: flex-start;
+    }
+
+    .toc {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 1.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-size: 0.8rem;
+    }
+    .toc h2 {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .toc ol { list-style: none; counter-reset: toc; }
+    .toc ol li { counter-increment: toc; margin-bottom: 0.25rem; }
+    .toc ol li::before { content: counter(toc) ". "; color: var(--mu); font-weight: 700; }
+    .toc a { color: var(--slate); text-decoration: none; }
+    .toc a:hover { color: var(--mu); }
+
+    main { flex: 1; min-width: 0; }
+    section { margin-bottom: 2.75rem; }
+
+    h2.section-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1e293b;
+      border-bottom: 2px solid var(--mu);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    h2.section-title .num {
+      background: var(--mu);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 1.5rem 0 0.6rem;
+    }
+
+    p { margin-bottom: 0.8rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      padding-left: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    li { margin-bottom: 0.3rem; }
+    li:last-child { margin-bottom: 0; }
+
+    strong { color: #1e293b; }
+    .doc-header strong { color: white; }
+    a { color: var(--mu); }
+
+    .callout {
+      border-left: 4px solid var(--mu);
+      background: var(--mu-light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.85rem 1.1rem;
+      margin: 1rem 0;
+      font-size: 0.88rem;
+    }
+    .callout.blue {
+      border-color: var(--science);
+      background: #eff6ff;
+    }
+    .callout.green {
+      border-color: var(--social);
+      background: #f0fdf4;
+    }
+    .callout.amber {
+      border-color: #d97706;
+      background: #fffbeb;
+    }
+
+    .table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    thead th {
+      background: var(--mu);
+      color: white;
+      text-align: left;
+      padding: 0.55rem 0.85rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody td {
+      padding: 0.5rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 0.82em;
+      background: #f1f5f9;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+      color: var(--mu);
+    }
+
+    pre {
+      background: #1e293b;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      overflow-x: auto;
+      margin: 1rem 0;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    /* Comment lines in code blocks */
+    .cm  { color: #64748b; }
+    /* String / value highlight */
+    .s   { color: #86efac; }
+    /* Keyword */
+    .kw  { color: #93c5fd; }
+    /* Function name */
+    .fn  { color: #fde68a; }
+    /* Punctuation / operator */
+    .op  { color: #94a3b8; }
+
+    .layer-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2em 0.65em;
+      border-radius: 999px;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+    .badge-jest { background: #fef9c3; color: #92400e; }
+    .badge-pw   { background: #e0f2fe; color: #075985; }
+
+    .doc-footer {
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media print {
+      .toc { display: none; }
+      .doc-body { display: block; padding: 0; }
+      body { background: white; font-size: 13px; }
+      section { break-inside: avoid; }
+    }
+
+    @media (max-width: 700px) {
+      .toc { display: none; }
+      .doc-body { padding: 1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div class="label">Maynooth University · Feature Guide</div>
+  <h1>MU Admin App — Testing Guide</h1>
+  <p class="meta">
+    Built by <strong>Prof. John Keating</strong> · Associate Dean for Teaching and Learning (Faculty of Science &amp; Engineering)<br>
+    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · 30 March 2026
+  </p>
+</header>
+
+<div class="doc-body">
+
+  <nav class="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#layers">Two Testing Layers</a></li>
+      <li><a href="#structure">Project Structure</a></li>
+      <li><a href="#setup-jest">Setting Up Jest</a></li>
+      <li><a href="#api-tests">API Tests (Supertest)</a></li>
+      <li><a href="#setup-pw">Setting Up Playwright</a></li>
+      <li><a href="#e2e-tests">E2E Tests (Playwright)</a></li>
+      <li><a href="#running">Running the Tests</a></li>
+      <li><a href="#testdb">Test Database</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- 1. Overview -->
+    <section id="overview">
+      <h2 class="section-title"><span class="num">1</span> Overview</h2>
+      <p>
+        This guide documents the test suite for the <strong>MU Admin App</strong> —
+        the Node.js/Express/React management application used to tag Maynooth University
+        modules with Data, Digital, and Critical Skills classifications.
+      </p>
+      <p>
+        The test suite covers two layers:
+      </p>
+      <ul>
+        <li><strong>API tests</strong> using <a href="https://jestjs.io">Jest</a> and
+          <a href="https://github.com/ladjs/supertest">Supertest</a> — fast, headless tests
+          of the Express routes</li>
+        <li><strong>End-to-end (E2E) tests</strong> using
+          <a href="https://playwright.dev">Playwright</a> — browser-level tests of the
+          full application as a user experiences it</li>
+      </ul>
+
+      <div class="callout green">
+        <strong>Why both layers?</strong> API tests catch broken logic at the server level —
+        fast to run, easy to pinpoint failures. E2E tests catch what API tests can't: UI
+        rendering, browser state, user interaction sequences. Used together they give
+        confidence that a change hasn't broken anything a user would notice.
+      </div>
+    </section>
+
+    <!-- 2. Two Testing Layers -->
+    <section id="layers">
+      <h2 class="section-title"><span class="num">2</span> Two Testing Layers</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th><span class="layer-badge badge-jest">Jest</span> API Tests</th><th><span class="layer-badge badge-pw">Playwright</span> E2E Tests</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>What it tests</strong></td><td>Express routes in isolation</td><td>The full app in a real browser</td></tr>
+            <tr><td><strong>How it runs</strong></td><td>No browser, no server needed</td><td>Requires the app to be running</td></tr>
+            <tr><td><strong>Speed</strong></td><td>Very fast — milliseconds per test</td><td>Slower — seconds per test</td></tr>
+            <tr><td><strong>What it catches</strong></td><td>Wrong status codes, bad JSON, missing auth</td><td>UI bugs, interaction flows, visual regressions</td></tr>
+            <tr><td><strong>Language</strong></td><td>JavaScript (CommonJS)</td><td>TypeScript</td></tr>
+            <tr><td><strong>Config file</strong></td><td><code>jest.config.js</code></td><td><code>playwright.config.ts</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>What gets tested</h3>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Area</th><th>Layer</th><th>Scenarios</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Login</td>
+              <td><span class="layer-badge badge-jest">Jest</span> <span class="layer-badge badge-pw">Playwright</span></td>
+              <td>Valid credentials → JWT returned; wrong password → 401; UI shows error message</td>
+            </tr>
+            <tr>
+              <td>Module list</td>
+              <td><span class="layer-badge badge-jest">Jest</span> <span class="layer-badge badge-pw">Playwright</span></td>
+              <td>GET returns array; requires auth token; UI shows module rows after login</td>
+            </tr>
+            <tr>
+              <td>Tagging</td>
+              <td><span class="layer-badge badge-jest">Jest</span> <span class="layer-badge badge-pw">Playwright</span></td>
+              <td>PUT updates Data/Digital flags; persists to DB; tag toggle visible in UI after save</td>
+            </tr>
+            <tr>
+              <td>Export</td>
+              <td><span class="layer-badge badge-jest">Jest</span></td>
+              <td>GET /api/modules/export returns object with <code>totalModules</code> and <code>faculties</code> fields</td>
+            </tr>
+            <tr>
+              <td>Department filter</td>
+              <td><span class="layer-badge badge-pw">Playwright</span></td>
+              <td>Selecting a department shows only that department's modules</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 3. Project Structure -->
+    <section id="structure">
+      <h2 class="section-title"><span class="num">3</span> Project Structure</h2>
+      <p>All test files live under a <code>tests/</code> folder in the <code>mumodulesapp/</code> directory:</p>
+
+<pre><code>mumodulesapp/
+  tests/
+    api/
+      auth.test.js        <span class="cm">← login endpoint tests</span>
+      modules.test.js     <span class="cm">← GET, PUT, export tests</span>
+    e2e/
+      login.spec.ts       <span class="cm">← login/logout flow</span>
+      tagging.spec.ts     <span class="cm">← find module, tag it, save</span>
+      filters.spec.ts     <span class="cm">← department/faculty filter</span>
+  jest.config.js          <span class="cm">← Jest configuration</span>
+  playwright.config.ts    <span class="cm">← Playwright configuration</span>
+  .env.test               <span class="cm">← test DB credentials (not committed)</span></code></pre>
+
+      <div class="callout amber">
+        <strong>Never commit <code>.env.test</code></strong> — it contains your MongoDB Atlas
+        connection string. Add it to <code>.gitignore</code> alongside <code>.env</code>.
+      </div>
+    </section>
+
+    <!-- 4. Setting Up Jest -->
+    <section id="setup-jest">
+      <h2 class="section-title"><span class="num">4</span> Setting Up Jest</h2>
+
+      <h3>Installation</h3>
+<pre><code>cd mumodulesapp
+npm install --save-dev jest supertest</code></pre>
+
+      <p>
+        Babel is already configured in the project for Webpack, but Jest needs its own
+        transform config. Add <code>jest.config.js</code>:
+      </p>
+
+<pre><code><span class="cm">// jest.config.js</span>
+module.exports = {
+  testEnvironment: <span class="s">'node'</span>,
+  testMatch: [<span class="s">'**/tests/api/**/*.test.js'</span>],
+  setupFiles: [<span class="s">'dotenv/config'</span>],
+};</code></pre>
+
+      <p>
+        The <code>setupFiles</code> line loads <code>.env</code> before tests run. For the
+        test database, create <code>.env.test</code> and tell Jest to use it instead:
+      </p>
+
+<pre><code><span class="cm">// jest.config.js (with test env)</span>
+module.exports = {
+  testEnvironment: <span class="s">'node'</span>,
+  testMatch: [<span class="s">'**/tests/api/**/*.test.js'</span>],
+  setupFiles: [<span class="s">'&lt;rootDir&gt;/tests/loadTestEnv.js'</span>],
+};</code></pre>
+
+<pre><code><span class="cm">// tests/loadTestEnv.js</span>
+<span class="kw">const</span> dotenv = <span class="fn">require</span>(<span class="s">'dotenv'</span>);
+dotenv.<span class="fn">config</span>({ path: <span class="s">'.env.test'</span> });</code></pre>
+
+      <p>Add the test script to <code>package.json</code>:</p>
+
+<pre><code><span class="s">"test:api"</span>: <span class="s">"jest --testPathPattern=tests/api"</span>,</code></pre>
+    </section>
+
+    <!-- 5. API Tests -->
+    <section id="api-tests">
+      <h2 class="section-title"><span class="num">5</span> API Tests (Supertest)</h2>
+      <p>
+        Supertest lets you make HTTP requests to your Express app without starting a real
+        server. You import the Express <code>app</code> object and pass it to Supertest —
+        it handles binding to a temporary port automatically.
+      </p>
+
+      <div class="callout blue">
+        <strong>Key pattern:</strong> the Express app (<code>server.js</code>) connects to
+        MongoDB on startup. For tests, the connection string in <code>.env.test</code> points
+        to a separate <code>MU_test</code> database in Atlas, so test writes never touch
+        production data.
+      </div>
+
+      <h3>Auth tests — <code>tests/api/auth.test.js</code></h3>
+
+<pre><code><span class="kw">const</span> request = <span class="fn">require</span>(<span class="s">'supertest'</span>);
+<span class="kw">const</span> app     = <span class="fn">require</span>(<span class="s">'../../server'</span>);
+
+<span class="fn">describe</span>(<span class="s">'POST /api/auth/login'</span>, () => {
+
+  <span class="fn">it</span>(<span class="s">'returns a JWT for valid credentials'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> res = <span class="kw">await</span> request(app)
+      .<span class="fn">post</span>(<span class="s">'/api/auth/login'</span>)
+      .<span class="fn">send</span>({ username: <span class="s">'testadmin'</span>, password: <span class="s">'testpass123'</span> });
+
+    <span class="fn">expect</span>(res.statusCode).<span class="fn">toBe</span>(200);
+    <span class="fn">expect</span>(res.body).<span class="fn">toHaveProperty</span>(<span class="s">'token'</span>);
+  });
+
+  <span class="fn">it</span>(<span class="s">'returns 401 for wrong password'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> res = <span class="kw">await</span> request(app)
+      .<span class="fn">post</span>(<span class="s">'/api/auth/login'</span>)
+      .<span class="fn">send</span>({ username: <span class="s">'testadmin'</span>, password: <span class="s">'wrongpassword'</span> });
+
+    <span class="fn">expect</span>(res.statusCode).<span class="fn">toBe</span>(401);
+  });
+
+  <span class="fn">it</span>(<span class="s">'returns 400 when fields are missing'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> res = <span class="kw">await</span> request(app)
+      .<span class="fn">post</span>(<span class="s">'/api/auth/login'</span>)
+      .<span class="fn">send</span>({});
+
+    <span class="fn">expect</span>(res.statusCode).<span class="fn">toBe</span>(400);
+  });
+
+});</code></pre>
+
+      <h3>Module tests — <code>tests/api/modules.test.js</code></h3>
+
+<pre><code><span class="kw">const</span> request = <span class="fn">require</span>(<span class="s">'supertest'</span>);
+<span class="kw">const</span> app     = <span class="fn">require</span>(<span class="s">'../../server'</span>);
+
+<span class="kw">let</span> token;
+
+<span class="cm">// Log in once before all tests to get a JWT</span>
+<span class="fn">beforeAll</span>(<span class="kw">async</span> () => {
+  <span class="kw">const</span> res = <span class="kw">await</span> request(app)
+    .<span class="fn">post</span>(<span class="s">'/api/auth/login'</span>)
+    .<span class="fn">send</span>({ username: <span class="s">'testadmin'</span>, password: <span class="s">'testpass123'</span> });
+  token = res.body.token;
+});
+
+<span class="fn">describe</span>(<span class="s">'GET /api/modules'</span>, () => {
+
+  <span class="fn">it</span>(<span class="s">'returns an array of modules when authenticated'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> res = <span class="kw">await</span> request(app)
+      .<span class="fn">get</span>(<span class="s">'/api/modules'</span>)
+      .<span class="fn">set</span>(<span class="s">'Authorization'</span>, <span class="s">`Bearer <span class="op">${</span>token<span class="op">}</span>`</span>);
+
+    <span class="fn">expect</span>(res.statusCode).<span class="fn">toBe</span>(200);
+    <span class="fn">expect</span>(Array.<span class="fn">isArray</span>(res.body)).<span class="fn">toBe</span>(<span class="kw">true</span>);
+    <span class="fn">expect</span>(res.body.length).<span class="fn">toBeGreaterThan</span>(0);
+  });
+
+  <span class="fn">it</span>(<span class="s">'returns 401 without a token'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> res = <span class="kw">await</span> request(app).<span class="fn">get</span>(<span class="s">'/api/modules'</span>);
+    <span class="fn">expect</span>(res.statusCode).<span class="fn">toBe</span>(401);
+  });
+
+});
+
+<span class="fn">describe</span>(<span class="s">'GET /api/modules/export'</span>, () => {
+
+  <span class="fn">it</span>(<span class="s">'returns an object with totalModules and faculties'</span>, <span class="kw">async</span> () => {
+    <span class="kw">const</span> res = <span class="kw">await</span> request(app)
+      .<span class="fn">get</span>(<span class="s">'/api/modules/export'</span>)
+      .<span class="fn">set</span>(<span class="s">'Authorization'</span>, <span class="s">`Bearer <span class="op">${</span>token<span class="op">}</span>`</span>);
+
+    <span class="fn">expect</span>(res.statusCode).<span class="fn">toBe</span>(200);
+    <span class="fn">expect</span>(res.body).<span class="fn">toHaveProperty</span>(<span class="s">'totalModules'</span>);
+    <span class="fn">expect</span>(res.body).<span class="fn">toHaveProperty</span>(<span class="s">'faculties'</span>);
+    <span class="fn">expect</span>(<span class="kw">typeof</span> res.body.totalModules).<span class="fn">toBe</span>(<span class="s">'number'</span>);
+  });
+
+});</code></pre>
+
+      <h3>Reading a test</h3>
+      <p>Each test follows the same three-part pattern — sometimes called <strong>Arrange, Act, Assert</strong>:</p>
+      <ul>
+        <li><strong>Arrange</strong> — set up what's needed (e.g. <code>beforeAll</code> logs in to get a token)</li>
+        <li><strong>Act</strong> — make the HTTP request using Supertest</li>
+        <li><strong>Assert</strong> — check the response with <code>expect()</code></li>
+      </ul>
+      <p>
+        The <code>describe()</code> block groups related tests under a label (the route name).
+        Each <code>it()</code> block is one test case — the string is its human-readable name,
+        which appears in the test output when it passes or fails.
+      </p>
+    </section>
+
+    <!-- 6. Setting Up Playwright -->
+    <section id="setup-pw">
+      <h2 class="section-title"><span class="num">6</span> Setting Up Playwright</h2>
+
+      <h3>Installation</h3>
+<pre><code>npm install --save-dev @playwright/test
+npx playwright install   <span class="cm"># downloads Chromium, Firefox, WebKit</span></code></pre>
+
+      <p>Add <code>playwright.config.ts</code> in the <code>mumodulesapp/</code> root:</p>
+
+<pre><code><span class="kw">import</span> { defineConfig } <span class="kw">from</span> <span class="s">'@playwright/test'</span>;
+
+<span class="kw">export default</span> <span class="fn">defineConfig</span>({
+  testDir: <span class="s">'./tests/e2e'</span>,
+  use: {
+    baseURL: <span class="s">'http://localhost:3002'</span>,
+    headless: <span class="kw">true</span>,      <span class="cm">// false to watch the browser during development</span>
+    screenshot: <span class="s">'only-on-failure'</span>,
+  },
+});</code></pre>
+
+      <div class="callout amber">
+        <strong>The app must be running</strong> before Playwright tests start. Run
+        <code>npm start</code> in one terminal, then <code>npm run test:e2e</code> in another.
+        Playwright can also be configured to start and stop the server automatically using
+        the <code>webServer</code> option in the config — useful in CI.
+      </div>
+
+      <p>Add the test script to <code>package.json</code>:</p>
+<pre><code><span class="s">"test:e2e"</span>: <span class="s">"playwright test"</span>,</code></pre>
+    </section>
+
+    <!-- 7. E2E Tests -->
+    <section id="e2e-tests">
+      <h2 class="section-title"><span class="num">7</span> E2E Tests (Playwright)</h2>
+      <p>
+        Playwright tests describe user journeys. Each test opens a browser, navigates to a
+        URL, interacts with the page exactly as a user would — clicking, typing, waiting for
+        elements — and then asserts what should be visible.
+      </p>
+
+      <h3>Login flow — <code>tests/e2e/login.spec.ts</code></h3>
+
+<pre><code><span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="s">'@playwright/test'</span>;
+
+<span class="fn">test</span>(<span class="s">'valid credentials → module list is shown'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="s">'/'</span>);
+
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[name="username"]'</span>, <span class="s">'testadmin'</span>);
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[name="password"]'</span>, <span class="s">'testpass123'</span>);
+  <span class="kw">await</span> page.<span class="fn">click</span>(<span class="s">'button[type="submit"]'</span>);
+
+  <span class="cm">// After login the module list should appear</span>
+  <span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">locator</span>(<span class="s">'.module-list'</span>)).<span class="fn">toBeVisible</span>();
+});
+
+<span class="fn">test</span>(<span class="s">'wrong password → error message shown'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="s">'/'</span>);
+
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[name="username"]'</span>, <span class="s">'testadmin'</span>);
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[name="password"]'</span>, <span class="s">'wrongpassword'</span>);
+  <span class="kw">await</span> page.<span class="fn">click</span>(<span class="s">'button[type="submit"]'</span>);
+
+  <span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">locator</span>(<span class="s">'.error-message'</span>)).<span class="fn">toBeVisible</span>();
+  <span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">locator</span>(<span class="s">'.module-list'</span>)).<span class="fn">not</span>.<span class="fn">toBeVisible</span>();
+});</code></pre>
+
+      <h3>Module tagging — <code>tests/e2e/tagging.spec.ts</code></h3>
+
+<pre><code><span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="s">'@playwright/test'</span>;
+
+<span class="cm">// Log in before each test in this file</span>
+<span class="fn">test</span>.beforeEach(<span class="kw">async</span> ({ page }) => {
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="s">'/'</span>);
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[name="username"]'</span>, <span class="s">'testadmin'</span>);
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[name="password"]'</span>, <span class="s">'testpass123'</span>);
+  <span class="kw">await</span> page.<span class="fn">click</span>(<span class="s">'button[type="submit"]'</span>);
+  <span class="kw">await</span> page.<span class="fn">waitForSelector</span>(<span class="s">'.module-list'</span>);
+});
+
+<span class="fn">test</span>(<span class="s">'toggling Data tag and saving persists the change'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="cm">// Search for a specific test module by code</span>
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[placeholder="Search modules…"]'</span>, <span class="s">'CS101'</span>);
+  <span class="kw">await</span> page.<span class="fn">waitForSelector</span>(<span class="s">'.module-row'</span>);
+
+  <span class="cm">// Click the module row to open the edit form</span>
+  <span class="kw">await</span> page.<span class="fn">click</span>(<span class="s">'.module-row:first-child'</span>);
+
+  <span class="cm">// Toggle the Data checkbox</span>
+  <span class="kw">const</span> dataCheckbox = page.<span class="fn">locator</span>(<span class="s">'input[name="data"]'</span>);
+  <span class="kw">const</span> before = <span class="kw">await</span> dataCheckbox.<span class="fn">isChecked</span>();
+  <span class="kw">await</span> dataCheckbox.<span class="fn">click</span>();
+
+  <span class="cm">// Save</span>
+  <span class="kw">await</span> page.<span class="fn">click</span>(<span class="s">'button:has-text("Save")'</span>);
+
+  <span class="cm">// Reload and reopen the same module — check the value persisted</span>
+  <span class="kw">await</span> page.<span class="fn">reload</span>();
+  <span class="kw">await</span> page.<span class="fn">fill</span>(<span class="s">'input[placeholder="Search modules…"]'</span>, <span class="s">'CS101'</span>);
+  <span class="kw">await</span> page.<span class="fn">click</span>(<span class="s">'.module-row:first-child'</span>);
+
+  <span class="kw">await</span> <span class="fn">expect</span>(page.<span class="fn">locator</span>(<span class="s">'input[name="data"]'</span>))
+    .<span class="fn">toBeChecked</span>({ checked: !before });
+});</code></pre>
+
+      <h3>Department filter — <code>tests/e2e/filters.spec.ts</code></h3>
+
+<pre><code><span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="s">'@playwright/test'</span>;
+
+<span class="fn">test</span>(<span class="s">'selecting a department filters the module list'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="cm">// ... login beforeEach omitted for brevity</span>
+
+  <span class="kw">const</span> allModules = <span class="kw">await</span> page.<span class="fn">locator</span>(<span class="s">'.module-row'</span>).<span class="fn">count</span>();
+
+  <span class="cm">// Select "Computer Science" from the department dropdown</span>
+  <span class="kw">await</span> page.<span class="fn">selectOption</span>(<span class="s">'select[name="department"]'</span>, <span class="s">'Computer Science'</span>);
+
+  <span class="kw">const</span> filtered = <span class="kw">await</span> page.<span class="fn">locator</span>(<span class="s">'.module-row'</span>).<span class="fn">count</span>();
+  <span class="fn">expect</span>(filtered).<span class="fn">toBeLessThan</span>(allModules);
+
+  <span class="cm">// Every visible row should belong to CS</span>
+  <span class="kw">const</span> depts = <span class="kw">await</span> page.<span class="fn">locator</span>(<span class="s">'.module-row .dept-name'</span>).<span class="fn">allTextContents</span>();
+  depts.<span class="fn">forEach</span>(d => <span class="fn">expect</span>(d).<span class="fn">toBe</span>(<span class="s">'Computer Science'</span>));
+});</code></pre>
+
+      <h3>Reading a Playwright test</h3>
+      <p>Each test receives a <code>page</code> object — this is the browser tab. The key methods are:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Method</th><th>What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>page.goto(url)</code></td><td>Navigate to a URL (relative to <code>baseURL</code>)</td></tr>
+            <tr><td><code>page.fill(selector, value)</code></td><td>Type into an input field</td></tr>
+            <tr><td><code>page.click(selector)</code></td><td>Click a button or element</td></tr>
+            <tr><td><code>page.locator(selector)</code></td><td>Find an element (CSS selector or text)</td></tr>
+            <tr><td><code>page.waitForSelector(selector)</code></td><td>Pause until an element appears in the DOM</td></tr>
+            <tr><td><code>page.reload()</code></td><td>Reload the page (simulates a browser refresh)</td></tr>
+            <tr><td><code>expect(locator).toBeVisible()</code></td><td>Assert the element is visible on screen</td></tr>
+            <tr><td><code>expect(locator).toBeChecked()</code></td><td>Assert a checkbox is (or isn't) checked</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 8. Running the Tests -->
+    <section id="running">
+      <h2 class="section-title"><span class="num">8</span> Running the Tests</h2>
+
+      <h3>API tests only</h3>
+<pre><code>npm run test:api</code></pre>
+
+      <h3>E2E tests only</h3>
+<pre><code><span class="cm"># Terminal 1 — start the app</span>
+npm start
+
+<span class="cm"># Terminal 2 — run Playwright</span>
+npm run test:e2e</code></pre>
+
+      <h3>Watch mode (API tests during development)</h3>
+<pre><code>npx jest --watch --testPathPattern=tests/api</code></pre>
+
+      <h3>Run a single test file</h3>
+<pre><code>npx jest tests/api/auth.test.js
+npx playwright test tests/e2e/login.spec.ts</code></pre>
+
+      <h3>Playwright with a visible browser (useful for debugging)</h3>
+<pre><code>npx playwright test --headed</code></pre>
+
+      <h3>Playwright HTML report</h3>
+<pre><code>npx playwright show-report</code></pre>
+      <p>
+        After a Playwright run, an HTML report is generated in <code>playwright-report/</code>
+        showing which tests passed, failed, and any screenshots captured on failure.
+      </p>
+
+      <div class="callout green">
+        <strong>Tip:</strong> During development, run API tests in watch mode in one terminal
+        while working on a route. They re-run automatically on file save and give instant
+        feedback. Run Playwright manually when you want to verify the full UI flow.
+      </div>
+    </section>
+
+    <!-- 9. Test Database -->
+    <section id="testdb">
+      <h2 class="section-title"><span class="num">9</span> Test Database</h2>
+      <p>
+        Both test layers run against a real MongoDB Atlas database — not a mock. This is
+        intentional: mocking the database hides the kind of real integration bugs that only
+        appear when your code talks to an actual database (wrong field names, missing indexes,
+        type coercion issues).
+      </p>
+
+      <h3>Setup</h3>
+      <ol>
+        <li>Create a separate database in MongoDB Atlas — e.g. <code>MU_test</code></li>
+        <li>Seed it with a small set of representative modules and one test user account</li>
+        <li>Create <code>.env.test</code> in <code>mumodulesapp/</code> with the test connection string:</li>
+      </ol>
+
+<pre><code>MONGODB_URI=mongodb+srv://.../?retryWrites=true
+MONGODB_USER_DB_NAME=MU_test
+JWT_SECRET=test-secret-not-for-production
+JWT_EXPIRATION=1h
+PORT=3002</code></pre>
+
+      <h3>Test data considerations</h3>
+      <ul>
+        <li>The test database should contain enough modules to make filter tests meaningful (at least 2 departments with multiple modules each)</li>
+        <li>The test user (<code>testadmin</code>) should be seeded into the test database before the suite runs — or created in a <code>beforeAll</code> block</li>
+        <li>Tests that mutate data (e.g. tagging a module) should restore the original state in an <code>afterEach</code> block, so later tests see clean data</li>
+        <li>The production database (<code>MU_transformed_modules</code>) is never touched by any test run</li>
+      </ul>
+
+      <div class="callout amber">
+        <strong>Do not use the production connection string in <code>.env.test</code>.</strong>
+        Even a test that only reads data adds load to the production database, and any write
+        test could corrupt live module records.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="doc-footer">
+  <p>© 2026 Maynooth University · MU Admin App Testing Guide · Built by Prof. John Keating</p>
+</footer>
+
+</body>
+</html>

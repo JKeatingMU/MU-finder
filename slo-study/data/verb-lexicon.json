@@ -1,0 +1,129 @@
+{
+  "version": "1.0",
+  "date": "2026-03-30",
+  "description": "Tiered verb lexicon for D1 (verb observability) scoring in the SLO evaluation framework. Tier 0 = unobservable internal state; Tier 3 = precise, contextually specific observable performance. Based on Mager (1975) observability principle and Anderson & Krathwohl (2001) cognitive taxonomy.",
+  "tiers": {
+    "0": {
+      "label": "Unobservable",
+      "description": "Internal mental states that cannot be directly observed or assessed. Fundamental defect — an LO using these verbs cannot be evaluated.",
+      "verbs": [
+        "understand", "know", "appreciate", "learn", "grasp",
+        "be aware of", "be familiar with", "realise", "realize",
+        "recognise", "recognize",
+        "study", "cover", "explore",
+        "engage with", "gain insight into", "gain an understanding of",
+        "have an understanding of", "be introduced to",
+        "get to grips with", "develop an appreciation of",
+        "become familiar with", "have a knowledge of",
+        "be cognisant of", "be cognizant of",
+        "internalize", "internalise"
+      ]
+    },
+    "1": {
+      "label": "Weak observable",
+      "description": "Observable in principle but insufficiently specific to determine a clear assessment method. Common in Irish HE — often a legacy of pre-outcome-based curriculum writing.",
+      "verbs": [
+        "identify", "describe", "discuss", "explain", "list",
+        "name", "state", "define", "outline", "summarise", "summarize",
+        "present", "show", "indicate", "note", "recall", "report",
+        "recognise (in context)", "recognize (in context)",
+        "label", "reproduce", "restate", "repeat",
+        "illustrate (when not producing an illustration)",
+        "locate", "match", "select (passively)"
+      ]
+    },
+    "2": {
+      "label": "Clear observable",
+      "description": "Directly observable and assessable. A clear assessment method is implied. Represents solid LO writing.",
+      "verbs": [
+        "analyse", "analyze", "apply", "compare", "contrast",
+        "demonstrate", "evaluate", "classify", "differentiate",
+        "interpret", "solve", "calculate", "use", "examine",
+        "assess", "review", "test", "measure", "translate",
+        "predict", "model", "map", "distinguish", "relate",
+        "organise", "organize", "select (with criteria)",
+        "determine", "infer", "conclude", "implement (known method)",
+        "execute", "perform", "conduct", "complete",
+        "express", "represent", "diagram", "chart",
+        "categorise", "categorize", "rank", "order",
+        "compute", "estimate", "verify"
+      ]
+    },
+    "3": {
+      "label": "Precise / contextual",
+      "description": "Specifies a precise, contextually-situated performance. Typically implies both the action and the artefact or context. The LO almost writes its own assessment.",
+      "verbs": [
+        "design", "construct", "implement (novel solution)", "critique",
+        "formulate", "synthesise", "synthesize", "derive",
+        "develop", "create", "justify", "argue", "produce",
+        "build", "generate", "plan", "write (specific artefact)",
+        "debug", "deploy", "simulate", "validate", "prove",
+        "compose", "adapt", "optimise", "optimize",
+        "recommend (with justification)", "propose (with rationale)",
+        "evaluate and justify", "engineer", "architect",
+        "devise", "investigate (original question)",
+        "hypothesise", "hypothesize", "experiment",
+        "refactor", "prototype", "audit", "diagnose"
+      ]
+    }
+  },
+  "contextDependentVerbs": {
+    "description": "Verbs whose tier depends on usage context. Flag for LLM confirmation when detected.",
+    "verbs": {
+      "understand": {
+        "default": 0,
+        "exception": "If used as 'demonstrate an understanding of X by doing Y' where Y is Tier 2/3, score on Y not 'understand'"
+      },
+      "illustrate": {
+        "default": 1,
+        "exception": "If used as 'produce an illustration of X' or 'draw a diagram of X', treat as Tier 2"
+      },
+      "recognise": {
+        "default": 1,
+        "exception": "In clinical/diagnostic contexts ('recognise symptoms of X') where recognition IS the professional performance, treat as Tier 2"
+      },
+      "select": {
+        "default": 1,
+        "exception": "If selection requires applying criteria ('select an appropriate algorithm based on...'), treat as Tier 2"
+      },
+      "implement": {
+        "default": 2,
+        "exception": "If implementing a novel or self-designed solution, treat as Tier 3"
+      },
+      "investigate": {
+        "default": 2,
+        "exception": "If investigating an original or open-ended question, treat as Tier 3"
+      }
+    }
+  },
+  "compoundPatterns": {
+    "description": "Patterns that trigger D2 (behavioral singularity) compound flag regardless of verb tiers.",
+    "patterns": [
+      "verb, verb and verb",
+      "verb and verb",
+      "verb, explain and apply",
+      "name, describe and",
+      "identify, analyse and",
+      "understand and apply",
+      "know and be able to"
+    ]
+  },
+  "instructorCenteredPatterns": {
+    "description": "Sentence-opening patterns that trigger D3 (student-centeredness) flag.",
+    "patterns": [
+      "this module will",
+      "this course will",
+      "the module will",
+      "the course will",
+      "the aim of this module",
+      "this module introduces",
+      "this module covers",
+      "students will be introduced to",
+      "students will be provided with",
+      "students will be given",
+      "students will be exposed to",
+      "students will gain exposure to",
+      "the module aims to"
+    ]
+  }
+}

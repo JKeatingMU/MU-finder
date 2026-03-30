@@ -252,25 +252,28 @@
     /* Flow diagram */
     .flow {
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 0;
-      flex-wrap: wrap;
-      margin: 1.25rem 0;
+      margin: 1.25rem auto;
+      max-width: 220px;
     }
     .flow-step {
       background: var(--mu);
       color: white;
-      padding: 0.6rem 1.1rem;
+      padding: 0.5rem 1rem;
       border-radius: var(--radius);
       font-weight: 700;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
+      width: 100%;
+      text-align: center;
       print-color-adjust: exact;
       -webkit-print-color-adjust: exact;
     }
     .flow-arrow {
       color: var(--muted);
       font-size: 1.2rem;
-      padding: 0 0.5rem;
+      padding: 0.1rem 0;
     }
 
     /* Mock programme card */
@@ -339,7 +342,7 @@
   <h1>MU Programme Browser</h1>
   <p class="meta">
     Built by <strong>Prof. John Keating</strong> · Associate Dean for Teaching and Learning (Faculty of Science &amp; Engineering)<br>
-    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · March 2026
+    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · 30 March 2026
   </p>
 </header>
 
@@ -356,7 +359,7 @@
       <li><a href="#variants">Multi-stream Programmes</a></li>
       <li><a href="#modules">Module Rows</a></li>
       <li><a href="#drilldown">Drilling into a Module</a></li>
-      <li><a href="#reverse">Module → Programmes</a></li>
+      <li><a href="#reverse">Module → Programmes <em style="font-style:normal;color:var(--muted)">(planned)</em></a></li>
       <li><a href="#data">Data Sources</a></li>
       <li><a href="#limitations">Known Limitations</a></li>
     </ol>
@@ -394,7 +397,6 @@
         <li>For programmes with multiple degree streams (e.g. Business &amp; Management, Law), switch between streams within the same modal</li>
         <li>See at a glance which modules are compulsory and which are optional in each year</li>
         <li>Click any module to open its full details without leaving the programme view</li>
-        <li>From any module, see which programmes it appears in and in which year</li>
       </ul>
     </section>
 
@@ -430,7 +432,7 @@
           <tbody>
             <tr><td>CAO codes covered</td><td>45 undergraduate programmes</td></tr>
             <tr><td>Named degree qualifications</td><td>104 (some CAO codes have multiple streams)</td></tr>
-            <tr><td>Unique module codes across all programmes</td><td>1,501</td></tr>
+            <tr><td>Unique module codes across all programmes</td><td>1,496</td></tr>
             <tr><td>Academic year</td><td>2026</td></tr>
             <tr><td>Data source</td><td>MU public course catalogue — <code>apps.maynoothuniversity.ie</code></td></tr>
           </tbody>
@@ -447,26 +449,40 @@
     <section id="flow">
       <h2 class="section-title"><span class="num">3</span> Navigation Flow</h2>
       <p>
-        The Programme Browser follows a clear drill-down structure. Every step can be reversed
-        with a back button or by closing the modal:
+        The Programme Browser follows a clear drill-down structure that mirrors the official
+        MU course catalogue hierarchy. Every step can be reversed with a back button or by
+        closing the modal:
       </p>
 
       <div class="flow">
         <div class="flow-step">Programme list</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">Select programme</div>
-        <div class="flow-arrow">→</div>
+        <div class="flow-arrow">↓</div>
         <div class="flow-step">Programme modal<br><small style="font-weight:400">(year tabs)</small></div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">Click module</div>
-        <div class="flow-arrow">→</div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Study pathway<br><small style="font-weight:400">(if applicable)</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Subject blocks<br><small style="font-weight:400">(timetable groups)</small></div>
+        <div class="flow-arrow">↓</div>
+        <div class="flow-step">Module rows</div>
+        <div class="flow-arrow">↓</div>
         <div class="flow-step">Module Detail modal<br><small style="font-weight:400">(stacked)</small></div>
       </div>
 
       <p>
-        The Module Detail modal opens <em>on top of</em> the Programme modal — closing it
-        returns you to the same year tab in the same programme you were viewing. You never
-        lose your place in the programme structure.
+        The full hierarchy — scraped directly from <code>apps.maynoothuniversity.ie</code> — is:
+      </p>
+      <ul>
+        <li><strong>Programme</strong> — e.g. MH101 Bachelor of Arts</li>
+        <li><strong>Year</strong> — Year 1, Year 2, Year 3, Year 4</li>
+        <li><strong>Study Pathway</strong> (optional) — e.g. Double Major / Major with Minor / Single Major / Minor; only present in years where the programme offers a structural choice</li>
+        <li><strong>Timetable Group</strong> — groups of subjects that share scheduling; typically unlabelled where only one group exists</li>
+        <li><strong>Subject</strong> — a named academic area (department + credit total + compulsory/optional); each subject has an expandable overview and a module table</li>
+        <li><strong>Module</strong> — individual modules within the subject</li>
+      </ul>
+      <p>
+        The Module Detail modal opens <em>on top of</em> the Programme modal — closing it returns
+        you to the same year and pathway tab in the same programme. You never lose your place in
+        the structure.
       </p>
     </section>
 
@@ -476,7 +492,8 @@
       <p>
         The Programme Browser is accessed from the <strong>Programmes</strong> tab in the
         MU Finder header. It shows all 45 undergraduate programmes as browsable cards,
-        filterable by faculty.
+        filterable by faculty. Cards are sorted in ascending CAO code order
+        (MH001 → MH804).
       </p>
 
       <h3>Programme card</h3>
@@ -515,7 +532,8 @@
       <h2 class="section-title"><span class="num">5</span> Programme Modal</h2>
       <p>
         Clicking a programme card opens a full-screen modal showing the complete year-by-year
-        module structure for that programme.
+        module structure for that programme, faithfully mirroring the structure on the official
+        MU course catalogue.
       </p>
 
       <h3>Modal header</h3>
@@ -524,12 +542,13 @@
         <li><strong>Faculty badge</strong> — faculty name and colour</li>
         <li><strong>Stream selector</strong> — for multi-stream programmes, a dropdown to switch between degree variants (see <a href="#variants">Section 6</a>)</li>
         <li><strong>Total module count</strong> for the selected stream</li>
+        <li><strong>MU course finder link</strong> — opens the corresponding page on <code>apps.maynoothuniversity.ie</code> for the active stream</li>
       </ul>
 
       <h3>Year tabs</h3>
       <p>
-        The programme structure is divided into years. Click a year tab to view all modules
-        taught in that year:
+        The programme structure is divided into years. Click a year tab to view the structure
+        for that year:
       </p>
 
       <div class="mock-tabs">
@@ -540,13 +559,53 @@
       </div>
 
       <p>
-        Tabs are generated dynamically based on the data — a three-year programme shows
-        three tabs; a four-year programme shows four. Year-long modules (spanning both
-        semesters) are clearly labelled.
+        Tabs are generated dynamically — a three-year programme shows three tabs; a four-year
+        programme shows four.
       </p>
 
+      <h3>Year notes</h3>
+      <p>
+        Where the official MU catalogue includes notes for a year (e.g. credit requirements,
+        registration instructions), these appear in an amber note box at the top of the year.
+        Up to 3 notes are shown by default; if there are more, a <strong>More</strong> /
+        <strong>Less</strong> toggle reveals or hides the remainder.
+      </p>
+
+      <h3>Study pathway sub-tabs</h3>
+      <p>
+        Some years within a programme offer a structural choice — for example, MH101 Bachelor
+        of Arts in Years 2 and 3 offers:
+      </p>
+      <div class="mock-tabs">
+        <div class="mock-tab active">Double Major</div>
+        <div class="mock-tab">Major with Minor</div>
+        <div class="mock-tab">Single Major</div>
+        <div class="mock-tab">Minor</div>
+      </div>
+      <p>
+        These pathway sub-tabs appear below the year tabs when applicable. Each pathway has
+        its own set of subjects and modules, and may carry its own pathway-level notes.
+        Switching pathways updates the subject and module list immediately.
+      </p>
+
+      <h3>Subject blocks</h3>
+      <p>
+        Within each year (and pathway, where applicable), modules are organised into named
+        <strong>subject blocks</strong> — the academic areas that make up the programme.
+        Each subject block shows:
+      </p>
+      <ul>
+        <li><strong>Subject code</strong> — e.g. <code>CS</code>, <code>MH</code>, <code>EE</code></li>
+        <li><strong>Subject name</strong> — e.g. <em>Computer Science</em>, <em>Mathematics</em></li>
+        <li><strong>ECTS total</strong> — total credits for this subject block in this year</li>
+        <li><span class="pill pill-comp">Compulsory</span> or <span class="pill pill-opt">Optional</span> badge — whether the entire subject block is required</li>
+        <li><strong>Subject overview</strong> — a brief description of the subject area drawn from the MU catalogue. The first 100 characters are shown by default; a <strong>More</strong> / <strong>Less</strong> toggle reveals the full text. Where the overview contains sub-lists (formatted as <code>-item</code> sequences in the source), these are rendered as proper bullet lists.</li>
+      </ul>
+
       <h3>Module table</h3>
-      <p>Each year tab shows a table of modules with the following columns:</p>
+      <p>
+        Each subject block contains a table of modules with the following columns:
+      </p>
 
       <div class="table-wrap">
         <table>
@@ -554,20 +613,17 @@
             <tr><th>Column</th><th>Description</th></tr>
           </thead>
           <tbody>
-            <tr>
-              <td><strong>Status</strong></td>
-              <td>
-                <span class="pill pill-comp">Compulsory</span> — module is required for this programme<br>
-                <span class="pill pill-opt">Optional</span> — module is available but not required
-              </td>
-            </tr>
-            <tr><td><strong>Code</strong></td><td>Module code (e.g. <code>CS101</code>). Click to open the Module Detail modal for this module</td></tr>
+            <tr><td><strong>Code</strong></td><td>Module code (e.g. <code>CS101</code>). Click to open the Module Detail modal</td></tr>
             <tr><td><strong>Module name</strong></td><td>Full title of the module. Click to open the Module Detail modal</td></tr>
-            <tr><td><strong>ECTS</strong></td><td>Credit value of the module (European Credit Transfer and Accumulation System)</td></tr>
+            <tr><td><strong>ECTS</strong></td><td>Credit value of the module</td></tr>
             <tr><td><strong>Semester</strong></td><td>1, 2, or Year-Long</td></tr>
             <tr>
-              <td><strong>International</strong></td>
-              <td><span class="pill pill-intl">Intl</span> badge shown for modules available to visiting international students</td>
+              <td><strong>Badges</strong></td>
+              <td>
+                <span class="pill pill-comp">Req</span> — required module within the subject<br>
+                <span class="pill pill-intl">Intl</span> — available to visiting international students<br>
+                Data / Digital skill dots where tagged
+              </td>
             </tr>
             <tr><td><strong>Details</strong></td><td>Button to open the full Module Detail modal</td></tr>
           </tbody>
@@ -575,9 +631,10 @@
       </div>
 
       <div class="callout blue">
-        <strong>Tip:</strong> Compulsory and optional modules are listed in separate groups
-        within each year tab, making it easy to identify the core spine of the programme
-        versus the choice modules.
+        <strong>Note on subject overview text:</strong> The overview text is drawn directly from
+        the MU course catalogue. It is not visible on the public-facing programme page (it is
+        hidden behind expand buttons in the official system) but is present in the page source
+        and fully captured during scraping.
       </div>
     </section>
 
@@ -647,12 +704,12 @@
 
       <h3>Compulsory vs Optional</h3>
       <p>
-        Within each year tab, modules are divided into two groups:
+        The compulsory/optional classification operates at the <strong>subject block</strong>
+        level — i.e. whether the entire subject area is required within the programme structure.
+        Within a subject block, individual modules may additionally carry a
+        <span class="pill pill-comp">Req</span> badge where the MU catalogue marks them as
+        required within their subject.
       </p>
-      <ul>
-        <li><span class="pill pill-comp">Compulsory</span> — the student must take this module; it is a core requirement of the programme in this year</li>
-        <li><span class="pill pill-opt">Optional</span> — the module is listed as available within this programme in this year, but the student may select from a menu of options</li>
-      </ul>
       <p>
         This distinction is drawn directly from the official MU course structure data.
         The compulsory/optional status may vary between streams of the same programme.
@@ -692,7 +749,6 @@
         <li>Assessment components (type, weighting, duration)</li>
         <li>Supplemental / resit information</li>
         <li>Link to the official MU timetable</li>
-        <li><strong>Appears in</strong> — a list of all programmes this module belongs to, with the year and compulsory/optional status in each (see <a href="#reverse">Section 9</a>)</li>
       </ul>
       <p>
         Closing the Module Detail modal (✕ button, Escape, or backdrop click) returns you
@@ -704,45 +760,28 @@
     <!-- 9. Module → Programmes (Reverse Link) -->
     <section id="reverse">
       <h2 class="section-title"><span class="num">9</span> Module → Programmes (Reverse Link)</h2>
+
+      <div class="callout amber">
+        <strong>Planned feature — not yet implemented.</strong> The reverse link data is fully
+        built and available in <code>public/data/module-to-programmes.json</code>, but the UI
+        to display it in the module detail modal has not yet been added.
+      </div>
+
       <p>
-        Every module detail modal includes an <strong>Appears in</strong> section at the bottom,
-        showing all the programmes that include this module in their official structure.
+        When implemented, the module detail modal will include an <strong>Appears in</strong>
+        section at the bottom, showing all programmes that include this module in their official
+        structure. For each programme entry, the following will be shown:
       </p>
-      <p>For each programme entry, the following is shown:</p>
       <ul>
         <li>CAO code and programme title</li>
         <li>Year in which the module appears (Year 1, Year 2, etc.)</li>
         <li>Whether the module is compulsory or optional in that programme</li>
       </ul>
-
-      <h3>Example</h3>
       <p>
-        The module <code>CS101</code> might appear as:
-      </p>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>CAO code</th><th>Programme</th><th>Year</th><th>Status</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><code>MH201</code></td><td>Bachelor of Science</td><td>Year 1</td><td><span class="pill pill-comp">Compulsory</span></td></tr>
-            <tr><td><code>MH602</code></td><td>BSc Computer Science &amp; Software Engineering</td><td>Year 1</td><td><span class="pill pill-comp">Compulsory</span></td></tr>
-            <tr><td><code>MH601</code></td><td>BSc Computer Science (through Arts)</td><td>Year 1</td><td><span class="pill pill-comp">Compulsory</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>
-        This reverse link is particularly useful for academic staff reviewing cross-programme
-        dependencies — for example, identifying modules that are compulsory in 10 or more
+        This will be particularly useful for academic staff reviewing cross-programme
+        dependencies — for example, identifying modules that are compulsory across many
         programmes (changes to these have wide impact) versus modules unique to a single stream.
       </p>
-
-      <div class="callout green">
-        <strong>Cross-programme analysis use case:</strong> The module <code>ID001X</code>
-        (Introduction to Data Science, or similar) appears as compulsory in over 30 programmes.
-        Any change to its assessment or content would need to be coordinated across all affected
-        programmes. The "Appears in" section makes this dependency immediately visible.
-      </div>
     </section>
 
     <!-- 10. Data Sources -->
@@ -786,11 +825,11 @@
       <h2 class="section-title"><span class="num">11</span> Known Limitations</h2>
       <ul>
         <li>Postgraduate programmes are not included in this phase</li>
-        <li>282 module codes appear in programme structures but could not be retrieved from the official course catalogue (likely retired or restructured codes); these show name and code only, with no detail modal</li>
-        <li>The 265 modules newly added from programme structure data (from departments AD, FN, NS, PD, SN) currently have no faculty assignment — they appear without faculty colour tinting until manually assigned</li>
+        <li>265 module codes appear in programme structures but could not be retrieved from the official course catalogue (likely retired or restructured codes); these show name and code only, with no detail modal</li>
         <li>The compulsory/optional classification is sourced directly from the official MU course catalogue; inaccuracies in the source data will be reflected here</li>
-        <li>Programme structure data is static and reflects the state of the MU catalogue at the time of the last scrape; it does not update in real time</li>
-        <li>For programmes with very large numbers of optional modules (e.g. <code>MH101</code> Bachelor of Arts, which draws from the entire arts module catalogue), the optional module list may be long — filtering within the programme modal is planned for a future iteration</li>
+        <li>Programme structure data is static and reflects the state of the MU catalogue at the time of the last scrape (March 2026); it does not update in real time</li>
+        <li>For programmes with very large numbers of optional modules (e.g. <code>MH101</code> Bachelor of Arts, which draws from the full arts module catalogue), the module list within optional subject blocks may be long — filtering within the programme modal is planned for a future iteration</li>
+        <li>The reverse link (<strong>Appears in</strong>) — showing which programmes include a given module — is not yet implemented in the UI (see <a href="#reverse">Section 9</a>)</li>
       </ul>
     </section>
 

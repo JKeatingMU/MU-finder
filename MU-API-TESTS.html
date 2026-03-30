@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MU Admin App — API Test Suite</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mu:       #6b1a2b;
+      --mu-light: #fdf2f4;
+      --mu-mid:   #f5c6ce;
+      --pass:     #15803d;
+      --pass-bg:  #f0fdf4;
+      --pass-bd:  #bbf7d0;
+      --science:  #0369a1;
+      --slate:    #334155;
+      --muted:    #64748b;
+      --border:   #e2e8f0;
+      --bg:       #f8fafc;
+      --radius:   8px;
+      --mono:     'SF Mono', 'Fira Code', 'Consolas', monospace;
+      --font:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--slate);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .doc-header {
+      background: var(--mu);
+      color: white;
+      padding: 2.5rem 2rem 2rem;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .doc-header .label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; opacity: 0.7; margin-bottom: 0.5rem;
+    }
+    .doc-header h1 { font-size: 1.9rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.75rem; }
+    .doc-header .meta { font-size: 0.85rem; opacity: 0.82; line-height: 1.6; }
+    .doc-header .meta a { color: white; text-decoration: underline; opacity: 0.9; }
+
+    .summary-bar {
+      background: var(--pass-bg);
+      border-bottom: 2px solid var(--pass-bd);
+      padding: 0.9rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-size: 0.9rem;
+    }
+    .summary-bar .big { font-size: 1.5rem; font-weight: 800; color: var(--pass); }
+    .summary-bar .label-sm { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); display: block; }
+    .summary-bar .stat { text-align: center; }
+
+    .doc-body {
+      display: flex; flex: 1; max-width: 1100px; width: 100%;
+      margin: 0 auto; padding: 2rem 1.25rem; gap: 2.5rem; align-items: flex-start;
+    }
+
+    .toc {
+      width: 220px; flex-shrink: 0; position: sticky; top: 1.5rem;
+      background: white; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem; font-size: 0.8rem;
+    }
+    .toc h2 { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
+    .toc ol { list-style: none; counter-reset: toc; }
+    .toc ol li { counter-increment: toc; margin-bottom: 0.25rem; }
+    .toc ol li::before { content: counter(toc) ". "; color: var(--mu); font-weight: 700; }
+    .toc a { color: var(--slate); text-decoration: none; }
+    .toc a:hover { color: var(--mu); }
+
+    main { flex: 1; min-width: 0; }
+    section { margin-bottom: 2.75rem; }
+
+    h2.section-title {
+      font-size: 1.25rem; font-weight: 800; color: #1e293b;
+      border-bottom: 2px solid var(--mu); padding-bottom: 0.4rem;
+      margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    h2.section-title .num {
+      background: var(--mu); color: white; font-size: 0.75rem; font-weight: 700;
+      width: 1.6rem; height: 1.6rem; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+      print-color-adjust: exact; -webkit-print-color-adjust: exact;
+    }
+
+    h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 1.5rem 0 0.75rem; }
+
+    p { margin-bottom: 0.8rem; }
+    p:last-child { margin-bottom: 0; }
+    ul, ol { padding-left: 1.4rem; margin-bottom: 0.8rem; }
+    li { margin-bottom: 0.3rem; }
+    strong { color: #1e293b; }
+    a { color: var(--mu); }
+
+    code {
+      font-family: var(--mono); font-size: 0.82em;
+      background: #f1f5f9; padding: 0.15em 0.4em;
+      border-radius: 4px; color: var(--mu);
+    }
+
+    pre {
+      background: #1e293b; color: #e2e8f0; border-radius: var(--radius);
+      padding: 1.1rem 1.25rem; overflow-x: auto; margin: 0.75rem 0;
+      font-family: var(--mono); font-size: 0.82rem; line-height: 1.6;
+    }
+    pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    .cm  { color: #64748b; }
+    .s   { color: #86efac; }
+    .kw  { color: #93c5fd; }
+    .fn  { color: #fde68a; }
+
+    .callout {
+      border-left: 4px solid var(--mu); background: var(--mu-light);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 0.85rem 1.1rem; margin: 1rem 0; font-size: 0.88rem;
+    }
+    .callout.blue { border-color: var(--science); background: #eff6ff; }
+    .callout.green { border-color: var(--pass); background: var(--pass-bg); }
+
+    /* Test suite block */
+    .suite {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: white; margin-bottom: 1.5rem; overflow: hidden;
+    }
+    .suite-header {
+      background: #1e293b; color: white; padding: 0.65rem 1rem;
+      display: flex; align-items: center; gap: 0.75rem;
+      font-family: var(--mono); font-size: 0.85rem;
+      print-color-adjust: exact; -webkit-print-color-adjust: exact;
+    }
+    .suite-header .route {
+      font-weight: 700; color: #fde68a;
+    }
+    .suite-header .method {
+      font-size: 0.7rem; font-weight: 700; padding: 0.15em 0.5em;
+      border-radius: 4px; background: #0369a1; color: white;
+      print-color-adjust: exact; -webkit-print-color-adjust: exact;
+    }
+    .suite-header .method.post { background: #15803d; }
+    .suite-header .method.put  { background: #7e22ce; }
+    .suite-header .pass-count {
+      margin-left: auto; font-size: 0.75rem; color: #86efac; font-weight: 700;
+    }
+
+    .test-row {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      padding: 0.7rem 1rem; border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+    .test-row:last-child { border-bottom: none; }
+
+    .tick {
+      flex-shrink: 0; width: 1.15rem; height: 1.15rem; margin-top: 0.15rem;
+      background: var(--pass); border-radius: 50%; display: flex;
+      align-items: center; justify-content: center;
+      print-color-adjust: exact; -webkit-print-color-adjust: exact;
+    }
+    .tick::after { content: '✓'; color: white; font-size: 0.65rem; font-weight: 900; }
+
+    .test-name { flex: 1; min-width: 0; }
+    .test-name strong { display: block; color: #1e293b; margin-bottom: 0.2rem; }
+    .test-name .assertion { font-size: 0.8rem; color: var(--muted); font-family: var(--mono); }
+
+    .status-pill {
+      flex-shrink: 0; font-size: 0.7rem; font-weight: 700;
+      padding: 0.15em 0.55em; border-radius: 999px;
+    }
+    .s200 { background: #dcfce7; color: #15803d; }
+    .s400 { background: #fef3c7; color: #92400e; }
+    .s401 { background: #fee2e2; color: #991b1b; }
+    .s403 { background: #fce7f3; color: #9d174d; }
+
+    .table-wrap { overflow-x: auto; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead th {
+      background: var(--mu); color: white; text-align: left;
+      padding: 0.55rem 0.85rem; font-size: 0.78rem; font-weight: 700;
+      print-color-adjust: exact; -webkit-print-color-adjust: exact;
+    }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody td { padding: 0.5rem 0.85rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+
+    .doc-footer {
+      background: white; border-top: 1px solid var(--border);
+      padding: 1.25rem 2rem; font-size: 0.8rem; color: var(--muted); text-align: center;
+    }
+
+    @media print {
+      .toc { display: none; }
+      .doc-body { display: block; padding: 0; }
+      body { background: white; font-size: 13px; }
+      section { break-inside: avoid; }
+    }
+    @media (max-width: 700px) {
+      .toc { display: none; }
+      .doc-body { padding: 1.25rem 1rem; }
+      .summary-bar { flex-wrap: wrap; gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div class="label">Maynooth University · Test Documentation</div>
+  <h1>MU Admin App — API Test Suite</h1>
+  <p class="meta">
+    Built by <strong>Prof. John Keating</strong> · Associate Dean for Teaching and Learning (Faculty of Science &amp; Engineering)<br>
+    <a href="mailto:john.keating@mu.ie">john.keating@mu.ie</a> · 30 March 2026
+  </p>
+</header>
+
+<div class="summary-bar">
+  <div class="stat">
+    <span class="big">35</span>
+    <span class="label-sm">Tests passing</span>
+  </div>
+  <div class="stat">
+    <span class="big">3</span>
+    <span class="label-sm">Test suites</span>
+  </div>
+  <div class="stat">
+    <span class="big">4</span>
+    <span class="label-sm">Routes covered</span>
+  </div>
+  <div class="stat">
+    <span class="big">~18s</span>
+    <span class="label-sm">Run time</span>
+  </div>
+  <div style="margin-left:auto; font-size:0.82rem; color:var(--muted);">
+    Stack: Jest 30 + Supertest · Node.js · Express · MongoDB Atlas
+  </div>
+</div>
+
+<div class="doc-body">
+
+  <nav class="toc" aria-label="Table of contents">
+    <h2>Contents</h2>
+    <ol>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#setup">Setup</a></li>
+      <li><a href="#auth-suite">Auth Tests</a></li>
+      <li><a href="#modules-suite">Module Tests</a></li>
+      <li><a href="#export-suite">Export Tests</a></li>
+      <li><a href="#put-suite">PUT Auth Tests</a></li>
+      <li><a href="#security">Security Tests</a></li>
+      <li><a href="#running">Running the Tests</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- 1. Overview -->
+    <section id="overview">
+      <h2 class="section-title"><span class="num">1</span> Overview</h2>
+      <p>
+        This document describes the API test suite for the <strong>MU Admin App</strong> —
+        the Express/Node.js/MongoDB management system used to tag Maynooth University modules
+        with Data, Digital, and Critical Skills classifications.
+      </p>
+      <p>
+        Tests use <a href="https://jestjs.io">Jest</a> as the test runner and
+        <a href="https://github.com/ladjs/supertest">Supertest</a> to make HTTP requests
+        directly to the Express app without starting a real server. All tests run against
+        a live MongoDB Atlas connection to ensure real integration coverage — no mocking.
+      </p>
+
+      <div class="callout green">
+        <strong>All 35 tests pass.</strong> Run time approximately 18 seconds. Tests cover
+        authentication, authorisation, role-based access control, export data integrity,
+        JWT tampering, NoSQL injection, and privilege escalation.
+      </div>
+
+      <h3>What is tested</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Route</th><th>Suite</th><th>Tests</th></tr></thead>
+          <tbody>
+            <tr><td><code>POST /api/auth/login</code></td><td>auth.test.js</td><td>6</td></tr>
+            <tr><td><code>GET /api/modules</code></td><td>modules.test.js</td><td>5</td></tr>
+            <tr><td><code>GET /api/modules/export</code></td><td>modules.test.js</td><td>6</td></tr>
+            <tr><td><code>PUT /api/modules/:id</code> (auth only)</td><td>modules.test.js</td><td>2</td></tr>
+            <tr><td>JWT tampering (6), NoSQL injection (4), privilege escalation (4), data isolation (2)</td><td>security.test.js</td><td>16</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. Setup -->
+    <section id="setup">
+      <h2 class="section-title"><span class="num">2</span> Setup</h2>
+
+      <h3>Files added</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>jest.config.js</code></td><td>Jest configuration — test match pattern, env loader, 15s timeout</td></tr>
+            <tr><td><code>tests/loadTestEnv.js</code></td><td>Loads <code>.env.test</code> before any test runs</td></tr>
+            <tr><td><code>.env.test</code></td><td>Test environment variables (MongoDB URI, JWT secret, port 3003)</td></tr>
+            <tr><td><code>tests/api/auth.test.js</code></td><td>Login endpoint tests (6 tests)</td></tr>
+            <tr><td><code>tests/api/modules.test.js</code></td><td>Module list, export, and PUT auth tests (13 tests)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Change to <code>server.js</code></h3>
+      <p>
+        One small change was made to <code>server.js</code> to make it testable. The
+        <code>app.listen()</code> call was wrapped in a <code>require.main === module</code>
+        guard, and <code>module.exports = app</code> was added at the end:
+      </p>
+<pre><code><span class="cm">// Before — server always started on import:</span>
+app.listen(PORT, ...);
+
+<span class="cm">// After — only starts when run directly (not when imported by tests):</span>
+<span class="kw">if</span> (require.main === module) {
+  app.listen(PORT, ...);
+}
+module.exports = app;</code></pre>
+      <p>
+        This is the standard pattern for making an Express app testable with Supertest.
+        It has no effect on normal operation — <code>node server.js</code> behaves identically.
+      </p>
+
+      <h3>Dependencies installed</h3>
+<pre><code>npm install --save-dev jest supertest</code></pre>
+    </section>
+
+    <!-- 3. Auth Tests -->
+    <section id="auth-suite">
+      <h2 class="section-title"><span class="num">3</span> Auth Tests — <code>auth.test.js</code></h2>
+      <p>Tests the <code>POST /api/auth/login</code> endpoint across all meaningful input conditions.</p>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method post">POST</span>
+          <span class="route">/api/auth/login</span>
+          <span class="pass-count">6 / 6 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Valid credentials → 200 + token returned</strong>
+            <div class="assertion">expect(res.statusCode).toBe(200) · expect(res.body).toHaveProperty('token')</div>
+            <div class="assertion">expect(res.body).toHaveProperty('user') · expect(res.body.user.username).toBe('admin')</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Wrong password → 400 + error field</strong>
+            <div class="assertion">expect(res.statusCode).toBe(400) · expect(res.body).toHaveProperty('error')</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Unknown username → 400 + error field</strong>
+            <div class="assertion">expect(res.statusCode).toBe(400) · expect(res.body).toHaveProperty('error')</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Missing username → 400 + error field</strong>
+            <div class="assertion">Body: <code>{ password: 'admin2025' }</code> — username not provided</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Missing password → 400 + error field</strong>
+            <div class="assertion">Body: <code>{ username: 'admin' }</code> — password not provided</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Empty body → 400 + error field</strong>
+            <div class="assertion">Body: <code>{}</code> — both fields absent</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+      </div>
+
+      <div class="callout blue">
+        <strong>Note on status codes:</strong> The login route returns <code>400</code> (not <code>401</code>)
+        for invalid credentials. This is the actual server behaviour and the tests reflect it exactly.
+        The <code>401</code> code is reserved for the authentication middleware (missing token on protected routes).
+      </div>
+    </section>
+
+    <!-- 4. Module List Tests -->
+    <section id="modules-suite">
+      <h2 class="section-title"><span class="num">4</span> Module List Tests</h2>
+      <p>Tests the <code>GET /api/modules</code> endpoint, including authentication enforcement and role-based access control.</p>
+
+      <p>
+        Two tokens are obtained in <code>beforeAll</code> — one for the <code>admin</code> user
+        (access to all modules) and one for <code>computer_science</code> (a department-scoped
+        user with access only to Computer Science modules):
+      </p>
+
+<pre><code><span class="fn">beforeAll</span>(<span class="kw">async</span> () => {
+  <span class="kw">const</span> adminRes = <span class="kw">await</span> request(app)
+    .post(<span class="s">'/api/auth/login'</span>)
+    .send({ username: <span class="s">'admin'</span>, password: <span class="s">'admin2025'</span> });
+  adminToken = adminRes.body.token;
+
+  <span class="kw">const</span> deptRes = <span class="kw">await</span> request(app)
+    .post(<span class="s">'/api/auth/login'</span>)
+    .send({ username: <span class="s">'computer_science'</span>, password: <span class="s">'d3partm3nt2025'</span> });
+  deptToken = deptRes.body.token;
+});</code></pre>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method">GET</span>
+          <span class="route">/api/modules</span>
+          <span class="pass-count">5 / 5 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>No token → 401</strong>
+            <div class="assertion">Request sent with no Authorization header</div>
+          </div>
+          <span class="status-pill s401">401</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Invalid token → 400</strong>
+            <div class="assertion">Authorization: Bearer this.is.not.valid</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Admin token → 200 and array of modules</strong>
+            <div class="assertion">expect(Array.isArray(res.body)).toBe(true) · expect(res.body.length).toBeGreaterThan(0)</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Each module has expected fields</strong>
+            <div class="assertion">expect(m).toHaveProperty('moduleCode') · 'moduleName' · 'departmentName'</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Department user only receives their own department's modules</strong>
+            <div class="assertion">res.body.forEach(m => expect(m.departmentName).toBe('COMPUTER SCIENCE'))</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Export Tests -->
+    <section id="export-suite">
+      <h2 class="section-title"><span class="num">5</span> Export Tests</h2>
+      <p>
+        Tests the <code>GET /api/modules/export</code> endpoint. This is the route used to
+        generate the <code>modules.json</code> file for the public MU Finder. A key requirement
+        is that the response always includes <code>totalModules</code> and <code>faculties</code>
+        at the top level — the admin UI export button omits these fields, which is why the
+        script-based export is the authoritative method.
+      </p>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method">GET</span>
+          <span class="route">/api/modules/export</span>
+          <span class="pass-count">6 / 6 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>No token → 401</strong>
+            <div class="assertion">Authentication required for export endpoint</div>
+          </div>
+          <span class="status-pill s401">401</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Valid token → 200</strong>
+            <div class="assertion">Admin token accepted</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Response contains <code>totalModules</code> as a number</strong>
+            <div class="assertion">expect(typeof res.body.totalModules).toBe('number') · toBeGreaterThan(0)</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Response contains <code>faculties</code> as a non-empty array</strong>
+            <div class="assertion">expect(Array.isArray(res.body.faculties)).toBe(true) · length > 0</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Response contains a <code>modules</code> array</strong>
+            <div class="assertion">expect(Array.isArray(res.body.modules)).toBe(true)</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong><code>totalModules</code> matches <code>modules.length</code></strong>
+            <div class="assertion">expect(res.body.totalModules).toBe(res.body.modules.length)</div>
+            <div class="assertion">Guards against export producing an inconsistent count</div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. PUT Auth Tests -->
+    <section id="put-suite">
+      <h2 class="section-title"><span class="num">6</span> PUT Auth Tests</h2>
+      <p>
+        Tests the authentication layer of <code>PUT /api/modules/:id</code>. Only the
+        auth/token checks are tested here — no actual module data is mutated.
+        A null ObjectId (<code>000000000000000000000000</code>) is used as the target,
+        ensuring no production document is affected even if auth were bypassed.
+      </p>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method put">PUT</span>
+          <span class="route">/api/modules/:id</span>
+          <span class="pass-count">2 / 2 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>No token → 401</strong>
+            <div class="assertion">Request with no Authorization header is rejected before reaching route logic</div>
+          </div>
+          <span class="status-pill s401">401</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Invalid token → 400</strong>
+            <div class="assertion">Malformed JWT is rejected by the authentication middleware</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Security Tests -->
+    <section id="security">
+      <h2 class="section-title"><span class="num">7</span> Security Tests — <code>security.test.js</code></h2>
+      <p>
+        Tests that the application correctly defends against common API security threats:
+        JWT tampering, NoSQL injection, and privilege escalation. All 16 security tests pass,
+        confirming the defences in place.
+      </p>
+
+      <h3>JWT Security (6 tests)</h3>
+      <p>
+        Verifies that the authentication middleware cannot be bypassed by crafting or
+        manipulating tokens. All six cases must return a non-200 status:
+      </p>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method">GET</span>
+          <span class="route">/api/modules — JWT attacks</span>
+          <span class="pass-count">6 / 6 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Token signed with a different secret → 400</strong>
+            <div class="assertion">jwt.sign(payload, 'wrong-secret') — server rejects unknown signature</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Forged token claiming admin role → 400</strong>
+            <div class="assertion">Payload claims <code>role: 'admin'</code> but signed with wrong secret — rejected</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Expired token → 400</strong>
+            <div class="assertion">Token signed with <code>expiresIn: '1ms'</code>, used after 50ms delay</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Token without Bearer prefix → 401</strong>
+            <div class="assertion">Authorization header set to raw token string — middleware cannot extract it</div>
+          </div>
+          <span class="status-pill s401">401</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Empty Bearer token → 401</strong>
+            <div class="assertion">Authorization: Bearer  — token part is empty string</div>
+          </div>
+          <span class="status-pill s401">401</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Structurally valid but fabricated token → 400</strong>
+            <div class="assertion">Well-formed JWT format but fake signature — rejected by jwt.verify()</div>
+          </div>
+          <span class="status-pill s400">400</span>
+        </div>
+      </div>
+
+      <div class="callout blue">
+        <strong>How JWT verification works:</strong> <code>jwt.verify(token, JWT_SECRET)</code>
+        recomputes the token signature using the server's secret. If it doesn't match — whether
+        the token is expired, tampered, or signed with a different key — it throws and the
+        middleware returns 400. The server never reads the payload of an unverified token,
+        so a forged <code>role: 'admin'</code> claim has no effect.
+      </div>
+
+      <h3>NoSQL Injection (4 tests)</h3>
+      <p>
+        The login route passes the <code>username</code> value directly to MongoDB's
+        <code>findOne()</code>. If a MongoDB query operator (e.g. <code>{ $gt: "" }</code>)
+        is passed instead of a string, it could match any document. These tests confirm
+        that no such injection results in a successful login.
+      </p>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method post">POST</span>
+          <span class="route">/api/auth/login — injection attempts</span>
+          <span class="pass-count">4 / 4 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Operator object as username → not 200</strong>
+            <div class="assertion">Body: <code>&#123; "username": &#123; "$gt": "" &#125;, "password": "anything" &#125;</code></div>
+            <div class="assertion">The injection matches a real user but fails bcrypt password verification</div>
+          </div>
+          <span class="status-pill s400">≠ 200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Operator object as password → not 200</strong>
+            <div class="assertion">Body: <code>&#123; "username": "admin", "password": &#123; "$gt": "" &#125; &#125;</code></div>
+            <div class="assertion">bcrypt.compare() rejects a non-string input</div>
+          </div>
+          <span class="status-pill s400">≠ 200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Operator objects in both fields → not 200</strong>
+            <div class="assertion">Both username and password supplied as <code>&#123; "$gt": "" &#125;</code></div>
+          </div>
+          <span class="status-pill s400">≠ 200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong><code>$where</code> operator in username → not 200</strong>
+            <div class="assertion">Body: <code>&#123; "username": &#123; "$where": "sleep(1000)" &#125; &#125;</code></div>
+          </div>
+          <span class="status-pill s400">≠ 200</span>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Finding worth noting:</strong> The injection tests pass (login is not bypassed),
+        but this is partly due to bcrypt's password check acting as a second line of defence.
+        The <code>username</code> field is not sanitised before being passed to MongoDB's
+        <code>findOne()</code>. Adding input sanitisation (e.g. rejecting non-string values)
+        would make the defence explicit rather than incidental.
+      </div>
+
+      <h3>Privilege Escalation (4 tests)</h3>
+      <p>
+        The <code>POST /api/modules</code> (create) and <code>DELETE /api/modules/:id</code>
+        routes are restricted to <code>admin</code> role only. These tests confirm that
+        authenticated users with lesser roles are blocked with a 403.
+      </p>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method post">POST</span>
+          <span class="route">/api/modules &amp; DELETE /api/modules/:id — role checks</span>
+          <span class="pass-count">4 / 4 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Department user cannot create a module → 403</strong>
+            <div class="assertion">Role: <code>department_head</code> — POST /api/modules returns Access denied</div>
+          </div>
+          <span class="status-pill s403">403</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Faculty dean cannot create a module → 403</strong>
+            <div class="assertion">Role: <code>faculty_dean</code> — POST /api/modules returns Access denied</div>
+          </div>
+          <span class="status-pill s403">403</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Department user cannot delete a module → 403</strong>
+            <div class="assertion">Role: <code>department_head</code> — DELETE returns Access denied before checking if ID exists</div>
+          </div>
+          <span class="status-pill s403">403</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Faculty dean cannot delete a module → 403</strong>
+            <div class="assertion">Role: <code>faculty_dean</code> — DELETE returns Access denied</div>
+          </div>
+          <span class="status-pill s403">403</span>
+        </div>
+      </div>
+
+      <h3>Cross-department Access Control (2 tests)</h3>
+
+      <div class="suite">
+        <div class="suite-header">
+          <span class="method">GET</span>
+          <span class="route">/api/modules — data isolation</span>
+          <span class="pass-count">2 / 2 passing</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Department user sees only their own department's modules</strong>
+            <div class="assertion">Filter: all returned modules must have <code>departmentName === 'COMPUTER SCIENCE'</code></div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+
+        <div class="test-row">
+          <div class="tick"></div>
+          <div class="test-name">
+            <strong>Faculty dean sees only their own faculty's modules</strong>
+            <div class="assertion">Filter: all returned modules must have <code>facultyName === 'Faculty of Science and Engineering'</code></div>
+          </div>
+          <span class="status-pill s200">200</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Running the Tests -->
+    <section id="running">
+      <h2 class="section-title"><span class="num">8</span> Running the Tests</h2>
+
+      <h3>Run all API tests</h3>
+<pre><code>cd mumodulesapp
+npm run test:api</code></pre>
+
+      <h3>Run a single file</h3>
+<pre><code>npx jest tests/api/auth.test.js --forceExit
+npx jest tests/api/modules.test.js --forceExit</code></pre>
+
+      <h3>Watch mode (re-runs on file save)</h3>
+<pre><code>npx jest --watch --forceExit</code></pre>
+
+      <h3>Expected output</h3>
+<pre><code>Test Suites: 3 passed, 3 total
+Tests:       35 passed, 35 total
+Time:        ~18s</code></pre>
+
+      <div class="callout">
+        <strong>Note:</strong> A <code>Force exiting Jest</code> message appears at the end of
+        each run. This is expected — it occurs because the MongoDB Atlas connection opened
+        during the test run is not explicitly closed. The <code>--forceExit</code> flag handles
+        this cleanly. All 19 tests pass before the exit.
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="doc-footer">
+  <p>© 2026 Maynooth University · MU Admin App API Tests · Built by Prof. John Keating</p>
+</footer>
+
+</body>
+</html>

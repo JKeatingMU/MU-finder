@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { Search, ExternalLink, Heart } from 'lucide-react';
+import { Search, ExternalLink, Heart, Info } from 'lucide-react';
 import { courses } from '../data/courses';
 import { careers, careerGroups, CareerOption } from '../data/careers';
 import { Course, StrengthCategory } from '../types';
+
+const GATEWAY_IDS = ['mh101', 'mh201'];
 
 const CAT_COLORS: Record<StrengthCategory, string> = {
   Creative:     '#ea580c',
@@ -84,6 +86,67 @@ export default function CareerFinder({ favourites, onToggleFavourite }: CareerFi
               </button>
             )}
           </div>
+
+          {matchedCourses.length === 0 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-8">
+              <div
+                className="flex gap-3 rounded-xl px-5 py-4 mb-6 text-sm text-slate-700 leading-relaxed"
+                style={{ background: '#fdf2f4', border: '1px solid #f5c6ce' }}
+              >
+                <Info className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#6b1a2b' }} />
+                <span>
+                  Maynooth University doesn't offer a dedicated programme for every career path — for example, MU has no medical school or library science degree. However, our broad entry degrees provide an excellent academic foundation and keep many career options open.
+                </span>
+              </div>
+              <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Consider a broad entry degree</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {courses.filter(c => GATEWAY_IDS.includes(c.id)).map((course, index) => {
+                  const primaryColor = CAT_COLORS[course.primaryCategory] || '#6b1a2b';
+                  return (
+                    <motion.div
+                      key={course.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.04 * index }}
+                      className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden flex flex-col relative"
+                    >
+                      <div className="absolute top-0 left-0 w-1 h-full" style={{ background: primaryColor }} />
+                      <div className="px-5 pl-6 pt-4 pb-2 flex justify-between items-start gap-2">
+                        <div className="min-w-0">
+                          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block mb-1">
+                            {course.code}{course.points && /\d/.test(course.points) ? ` · ${course.points.replace(/\(MH\d+\)/,'').trim()} pts` : ''}
+                          </span>
+                          <h4 className="text-base font-bold text-slate-900 leading-snug">{course.title}</h4>
+                        </div>
+                        <span className="text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
+                          style={{ background: `${primaryColor}18`, color: primaryColor }}>
+                          {course.primaryCategory}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-600 px-5 pl-6 pb-3 flex-grow line-clamp-3">{course.description}</p>
+                      <div className="px-5 pl-6 pb-4 flex items-center justify-between">
+                        {course.url ? (
+                          <a href={course.url} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center text-xs font-semibold gap-1 hover:opacity-80 transition-opacity"
+                            style={{ color: '#6b1a2b' }}>
+                            View Course <ExternalLink className="w-3 h-3" />
+                          </a>
+                        ) : <span />}
+                        <button
+                          onClick={() => onToggleFavourite(course.id)}
+                          title={favourites.has(course.id) ? 'Remove from saved' : 'Save programme'}
+                          className="transition-colors"
+                          style={{ color: favourites.has(course.id) ? '#6b1a2b' : '#cbd5e1' }}
+                        >
+                          <Heart className={`w-4 h-4 ${favourites.has(course.id) ? 'fill-current' : ''}`} />
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {matchedCourses.map((course, index) => {
@@ -173,7 +236,10 @@ export default function CareerFinder({ favourites, onToggleFavourite }: CareerFi
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-center text-slate-400 py-8">No careers match your search.</p>
+        <div className="text-center py-8 px-4">
+          <p className="text-slate-500 font-medium mb-1">No careers match "{search}"</p>
+          <p className="text-slate-400 text-sm">MU may not offer a direct programme for this career. Try a related field, or browse our <strong className="font-semibold">BA (MH101)</strong> or <strong className="font-semibold">BSc (MH201)</strong> as broad entry routes.</p>
+        </div>
       )}
 
       {careerGroups.map(group => {
