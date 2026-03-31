@@ -21,9 +21,9 @@ Designed for use at Open Days (iPad kiosk), on the MU website, and as a standalo
 
 ## The Three Pathways
 
-### 1. Personality Profile
+### 1. Interests & Strengths Quiz
 
-A psychometric-style quiz that maps a student's cognitive interests and strengths onto MU programmes.
+An academic interest inventory that maps a student's expressed interests and strengths onto MU programmes.
 
 **Flow:**
 1. Student selects a faculty (Arts / Science & Engineering / Social Sciences)
@@ -97,13 +97,14 @@ Higher Mathematics H6 or above: **+25 bonus points**
 
 ### 3. Career Finder
 
-Students browse or search 37 career paths across 8 groups and see the MU programmes most relevant to each career.
+Students browse or search career paths across 9 groups and see the MU programmes most relevant to each career.
 
 **Career groups:**
 - Technology & Computing
 - Science & Research
 - Healthcare & Wellbeing
 - Business & Finance
+- Law, Policy & Public Affairs
 - Education & Social Work
 - Arts, Media & Communication
 - Humanities & Culture
@@ -149,7 +150,7 @@ The comparison modal presents each selected programme in its own column with the
 | **Faculty** | Full faculty name in faculty colour |
 | **CAO Points** | Large, prominent; "2025 Round 1" note shown |
 | **Strength Areas** | Primary and secondary category pills |
-| **Your Match %** | Only shown if the student has completed the Personality Profile quiz; uses the same scoring formula as the Results screen; a bar and percentage are displayed for each programme. If the quiz has not been taken, the row is hidden. |
+| **Your Match %** | Only shown if the student has completed the Interests & Strengths Quiz; uses the same scoring formula as the Results screen; a bar and percentage are displayed for each programme. If the quiz has not been taken, the row is hidden. |
 | **Related Careers** | Up to 5 career paths reverse-mapped from the programme's strength categories (using the Career Finder data) |
 | **About** | Full prospectus summary (or AI-generated summary where applicable) |
 | **MU Page** | Direct link to maynoothuniversity.ie |
