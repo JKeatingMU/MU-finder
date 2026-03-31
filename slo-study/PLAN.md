@@ -1,6 +1,6 @@
 # SLO Quality Study — Research Plan
 
-**Status:** Planning phase (30 March 2026)
+**Status:** Phase 2 in progress — rule-based scoring complete (31 March 2026)
 **Authors:** John G Keating, Mark P McCormack — Maynooth University
 
 ---
@@ -16,12 +16,15 @@
 
 ---
 
-## Phase 1 — Evaluation Framework Development
+## Phase 1 — Evaluation Framework Development ✓ COMPLETE
 
 ### Goal
 Define a rigorous, multi-dimensional SLO quality rubric that goes beyond SMART.
 
-### Status: Draft framework developed — see `LO-EVALUATION-FRAMEWORK.md`
+### Status: Complete (30–31 March 2026)
+- Framework document: `LO-EVALUATION-FRAMEWORK.md`
+- Technical design (inputs, outputs, prompts, IRR): `TECHNICAL-DESIGN.md`
+- Verb lexicon v1.2 (tiered, citable as supplementary material): `data/verb-lexicon.json`
 
 ### D1–D6 Rubric (0–3 per dimension, 0–18 composite per outcome)
 
@@ -55,28 +58,56 @@ Define a rigorous, multi-dimensional SLO quality rubric that goes beyond SMART.
 ## Phase 2 — MU Data Analysis (AI Raters)
 
 ### Goal
-Score all MU LOs against the framework using AI batch rating.
+Score all MU LOs against the framework using rule-based and AI batch rating.
 
-### Data
+### Status: Rule-based (D1–D3) complete. LLM (D4–D6) pending.
+
+### Data (confirmed)
 - Source: `../public/data/modules.json`
-- 2,866 modules, up to 8 LOs each (est. ~12,000–15,000 individual LOs)
-- Each LO evaluated **in context**: module code, name, content descriptor, assessment split (CA/Exam), ECTS, year level (UG/PG)
-- Programme context: compulsory vs optional (from `programme-data.json`)
+- **12,603 LOs** extracted from 2,537 modules (329 modules have no LOs)
+- Extracted dataset: `data/mu-los-raw.json`
+- Each LO evaluated in context: `moduleCode`, `moduleName`, `moduleContent`, `credits`, `nfqLevel` (derived), `ugPg`, `yearOfStudy`
 
-### Method
-- Node.js script (`scripts/rate-los.js`) calling LLM APIs in batch
-- Raters: Claude (claude-opus-4-6), GPT-4, Gemini (minimum 3 raters)
-- Each rater scores each LO on each rubric dimension
-- Store results in `data/ratings/mu-ai-ratings.json`
+### D1–D3 Rule-based scoring (complete)
+- Script: `scripts/extract-mu-los.mjs` → `scripts/score-rule-based.mjs` → `scripts/analyse-corpus.mjs`
+- Output: `data/scored-rule-based.json`, `data/corpus-analysis.json`
+- Verb lexicon v1.2 (4 tiers, 34% → 8.4% unknown rate after two corpus analysis passes)
+- Handles: `LO1/LO2` numbering prefixes, `critically [verb]` adverb boost (+1 tier), `be able to` stripping, noun-phrase opener detection, wrong-tense flagging, Irish language detection
 
-### Analysis
-- Mean scores by faculty, department, UG/PG, year, compulsory/optional
-- Distribution of Bloom's levels across the catalogue
-- Proportion of LOs that are outcomes vs objectives
-- Critical Skills alignment check: do Data/Digital tagged modules have stronger LOs?
-- Correlation between LO quality and ECTS, CA/Exam ratio
+### Key findings from D1–D3 (rule-based)
 
-### IRR computation (`scripts/compute-irr.js`)
+| Finding | Value |
+|---|---|
+| Total LOs scored | 12,603 |
+| Tier 0 (unobservable verbs) | 1,237 (9.8%) |
+| Single-behaviour LOs (D2=3) | 9,758 (77.4%) |
+| Verb-first framing (D3=3) | 10,365 (82.2%) |
+| Mean composite (D1+D2+D3, max 9) | 6.71 |
+| High quality (≥7) | 7,930 (62.9%) |
+| "understand" occurrences | 632 (most common Tier 0 verb) |
+| "critically [verb]" boosted | 469 LOs |
+| Unscoreable (all reasons) | 1,056 (8.4%) |
+| Modules with no LOs | 329 |
+
+**By department (notable):**
+- Physics: 7.28 composite, 1.2% Tier 0 — best large-department performer
+- History: 5.66 composite, 22.0% Tier 0 — highest Tier 0 rate; also 37 modules with no LOs
+- Adult Education: 6.38 composite, 19.2% Tier 0
+- Law & Criminology: 6.45 composite, 12.7% Tier 0
+
+**No-LO modules (329):** concentrated in Arts & Humanities (110) and Social Sciences (112). English (44), Applied Social Studies (40), History (37) are the largest gaps. 322 of 329 have module content — data entry omission, not curriculum gap. 58 modules with 30 credits are likely dissertations/projects (defensible).
+
+**UG vs PG:** near-identical quality (6.74 vs 6.66 composite, both 9.9% Tier 0) — PG LOs are not better written than UG, contrary to expectation.
+
+### D4–D6 LLM scoring (next)
+- Script to build: `scripts/score-llm.mjs`
+- Raters: Claude (claude-opus-4-6), GPT-4o, Gemini 1.5 Pro
+- Each LO scored on D4 (scope), D5 (assessability), D6 (NFQ calibration)
+- G-Eval methodology: structured chain-of-thought, JSON output, triple per dimension
+- Pilot on 50-module CS sample before full run
+- Store: `data/scored-llm.json`
+
+### IRR computation (`scripts/compute-irr.mjs`)
 - Cohen's Kappa for each AI rater pair
 - Fleiss's Kappa across all AI raters
 - Kendall's W for ordinal agreement
@@ -178,9 +209,9 @@ A web app that presents a module description and a set of LOs and captures human
 
 ## Immediate Next Steps
 
-1. Finalise the evaluation framework (Phase 1) — dialogic sessions with AI
-2. Write `scripts/extract-mu-los.js` — pull LOs + context from modules.json
-3. Design the rating prompt (CRTRF format) for batch AI rating
-4. Pilot on 50 CS modules — check output quality before full run
-5. Scope scraping feasibility for Phase 3 (check UCD, TCD module catalogue structure)
-6. Draft ethics application (likely Tier 1 — no personal data in Phases 1–4; Tier 2 for Phase 5 crowdsourced app)
+1. **Design LLM rating prompt** (CRTRF format) for D4/D5/D6 — see `TECHNICAL-DESIGN.md` for prompt template
+2. **Build `scripts/score-llm.mjs`** — batch rating against Claude, GPT-4o, Gemini; JSON triple output per LO per dimension
+3. **Pilot on 50 CS modules** — validate output quality before full 12,603-LO run
+4. **Build `scripts/compute-irr.mjs`** — Cohen's Kappa, Fleiss's Kappa, Kendall's W across AI rater pairs
+5. **Scope Phase 3 scraping** — check UCD, TCD, UCC module catalogue structure
+6. **Draft ethics application** — Tier 1 for Phases 1–4 (no personal data); Tier 2 for Phase 5 (crowdsourced human rater app)
