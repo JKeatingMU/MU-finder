@@ -1,7 +1,7 @@
 {
-  "version": "1.0",
-  "date": "2026-03-30",
-  "description": "Tiered verb lexicon for D1 (verb observability) scoring in the SLO evaluation framework. Tier 0 = unobservable internal state; Tier 3 = precise, contextually specific observable performance. Based on Mager (1975) observability principle and Anderson & Krathwohl (2001) cognitive taxonomy.",
+  "version": "1.2",
+  "date": "2026-03-31",
+  "description": "Tiered verb lexicon for D1 (verb observability) scoring in the SLO evaluation framework. Tier 0 = unobservable internal state; Tier 3 = precise, contextually specific observable performance. Based on Mager (1975) observability principle and Anderson & Krathwohl (2001) cognitive taxonomy. v1.1: extended from corpus analysis of 12,603 MU LOs.",
   "tiers": {
     "0": {
       "label": "Unobservable",
@@ -16,7 +16,13 @@
         "get to grips with", "develop an appreciation of",
         "become familiar with", "have a knowledge of",
         "be cognisant of", "be cognizant of",
-        "internalize", "internalise"
+        "internalize", "internalise",
+        "comprehend", "acquire", "gain",
+        "enhance", "increase", "deepen",
+        "master", "feel", "experience",
+        "become", "think", "consider",
+        "familiarise", "familiarize",
+        "have completed"
       ]
     },
     "1": {
@@ -29,7 +35,12 @@
         "recognise (in context)", "recognize (in context)",
         "label", "reproduce", "restate", "repeat",
         "illustrate (when not producing an illustration)",
-        "locate", "match", "select (passively)"
+        "locate", "match", "select (passively)",
+        "reflect", "read", "find", "access", "obtain",
+        "participate", "engage", "work", "give",
+        "consider (review)", "provide", "support",
+        "observe", "choose", "respond", "recount",
+        "detail", "highlight", "introduce", "suggest"
       ]
     },
     "2": {
@@ -46,7 +57,41 @@
         "execute", "perform", "conduct", "complete",
         "express", "represent", "diagram", "chart",
         "categorise", "categorize", "rank", "order",
-        "compute", "estimate", "verify"
+        "compute", "estimate", "verify",
+        "communicate", "articulate", "appraise", "display",
+        "research", "prepare", "carry", "undertake",
+        "integrate", "collaborate", "manage", "gather",
+        "document", "compile", "contribute", "contextualise", "contextualize",
+        "conceptualise", "conceptualize", "extract", "exchange",
+        "manipulate", "operate", "sketch", "debate", "record",
+        "quantify", "trace", "establish", "discern",
+        "characterise", "characterize", "account", "deconstruct",
+        "visualise", "visualize", "convert", "draft", "deduce",
+        "rearrange", "collate", "modify", "navigate", "source",
+        "transfer", "structure", "specify", "extrapolate",
+        "enumerate", "discriminate", "reason", "encode",
+        "utilise", "utilize", "deliver", "draw", "make",
+        "employ", "exemplify", "set", "fit", "interrogate",
+        "converse", "combine", "situate", "collect",
+        "practise", "practice", "connect", "monitor",
+        "respond (with evidence)", "observe (scientific)",
+        "place", "take", "incorporate", "answer", "listen",
+        "submit", "cite", "edit", "exhibit", "showcase",
+        "adjust", "transpose", "elaborate", "consolidate",
+        "convey", "inspect", "survey", "mark", "frame",
+        "raise", "harmonise", "harmonize", "negotiate",
+        "resolve", "assemble", "coordinate", "populate",
+        "disseminate", "scrutinise", "scrutinize",
+        "automate", "anticipate", "finalise", "finalize",
+        "minimise", "minimize", "decompose", "reduce",
+        "handle", "notate", "replicate", "judge",
+        "process", "decide", "comment", "ascertain",
+        "acknowledge", "link", "meet", "delineate",
+        "program", "advance (skill)", "transform",
+        "improve", "rethink", "assimilate", "mobilize",
+        "mobilise", "brainstorm", "leverage", "envisage",
+        "capture", "embed", "tailor", "render",
+        "initiate", "interact", "perceive", "clarify"
       ]
     },
     "3": {
@@ -63,9 +108,44 @@
         "evaluate and justify", "engineer", "architect",
         "devise", "investigate (original question)",
         "hypothesise", "hypothesize", "experiment",
-        "refactor", "prototype", "audit", "diagnose"
+        "refactor", "prototype", "audit", "diagnose",
+        "defend", "redesign", "refine", "operationalise", "operationalize",
+        "craft", "criticise", "criticize", "hone", "selfevaluate", "selfaudit",
+        "advise", "advocate", "challenge", "foster", "cultivate"
       ]
     }
+  },
+  "adverbModifiers": {
+    "description": "Adverbs that precede and qualify action verbs. When detected as the first word, the script extracts the following verb and applies the modifier rule. 'critically' receives a tier boost of +1 (capped at 3) as it signals higher-order cognitive demand (Anderson & Krathwohl, 2001). Other adverbs are stylistic qualifiers — the following verb is scored at its natural tier.",
+    "criticallyBoost": ["critically"],
+    "styleOnly": [
+      "effectively", "systematically", "rigorously", "independently",
+      "confidently", "competently", "successfully", "accurately",
+      "clearly", "concisely", "collaboratively", "reflexively",
+      "strategically", "intelligently", "skillfully", "broadly",
+      "probabilistically", "appropriately", "correctly", "professionally",
+      "analytically", "creatively", "further", "orally", "mathematically"
+    ]
+  },
+  "cleaningPatterns": {
+    "description": "Patterns that indicate data artefacts rather than LO text. LOs matching these should be flagged and not scored.",
+    "numberingPrefixes": [
+      "^lo\\s*\\d+[.:\\s]\\s*",
+      "^\\d+[.):] \\s*",
+      "^[ivxlcdm]+[.):] \\s*",
+      "^[a-e][.):] \\s*"
+    ],
+    "nonVerbOpenings": [
+      "an", "the", "a", "on", "by", "in", "at", "as", "with",
+      "through", "where", "while", "for", "and", "or", "na",
+      "they", "this", "will", "lo", "i"
+    ],
+    "irishLanguageIndicators": [
+      "beidh", "dileil", "gramadach", "danfaidh", "largas", "tuiscint",
+      "feasacht", "smaointeoireacht", "lamhthuiscint", "labhairt",
+      "scrobh", "achoimre", "anails", "tabhairt", "aistrichn",
+      "comparid", "eagarthireacht", "athchiri", "dln", "go"
+    ]
   },
   "contextDependentVerbs": {
     "description": "Verbs whose tier depends on usage context. Flag for LLM confirmation when detected.",
@@ -93,6 +173,22 @@
       "investigate": {
         "default": 2,
         "exception": "If investigating an original or open-ended question, treat as Tier 3"
+      },
+      "reflect": {
+        "default": 1,
+        "exception": "If producing a named reflective artefact ('write a reflective journal', 'complete a reflective portfolio'), treat as Tier 2"
+      },
+      "research": {
+        "default": 2,
+        "exception": "If conducting original empirical research (design + data + analysis), treat as Tier 3"
+      },
+      "communicate": {
+        "default": 2,
+        "exception": "If used vaguely without specifying mode or audience, treat as Tier 1"
+      },
+      "engage": {
+        "default": 1,
+        "exception": "If 'engage' implies active critical participation with a specific body of work, treat as Tier 2"
       }
     }
   },
@@ -123,7 +219,10 @@
       "students will be given",
       "students will be exposed to",
       "students will gain exposure to",
-      "the module aims to"
+      "the module aims to",
+      "to enable students to",
+      "this module aims to",
+      "this course aims to"
     ]
   }
 }
