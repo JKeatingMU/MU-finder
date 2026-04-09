@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, HelpCircle } from 'lucide-react';
 import Welcome from './components/Welcome';
@@ -21,7 +21,10 @@ function loadFavourites(): Set<string> {
 }
 
 export default function App() {
-  const [screen, setScreen]       = useState<Screen>('welcome');
+  const [screen, setScreen]       = useState<Screen>(() => {
+    const hash = window.location.hash.replace('#', '') as Screen;
+    return ['directory', 'modules'].includes(hash) ? hash : 'welcome';
+  });
   const [faculty, setFaculty]     = useState<Faculty | null>(null);
   const [answers, setAnswers]     = useState<Record<number, number>>({});
   const [favourites, setFavourites] = useState<Set<string>>(loadFavourites);
@@ -35,6 +38,10 @@ export default function App() {
       return next;
     });
   };
+
+  useEffect(() => {
+    window.location.hash = ['directory', 'modules'].includes(screen) ? screen : '';
+  }, [screen]);
 
   const handleStartQuiz      = () => setScreen('faculty');
   const handleStartSubjects  = () => setScreen('subjects');
