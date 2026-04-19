@@ -143,18 +143,22 @@ function printLO(lo: import('../App').LO) {
   const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
 <title>${lo.moduleCode} LO${lo.loIndex + 1} — Irish HE LO Quality Browser</title>
 <style>
+  @page { size: A4; margin: 1.5cm; }
   body { font-family: system-ui, sans-serif; font-size: 13px; color: #1f2937; margin: 32px; max-width: 800px; }
   h1 { font-size: 15px; font-weight: 700; margin: 0 0 2px; }
   .meta { font-size: 11px; color: #6b7280; margin-bottom: 16px; }
   .lo-text { font-size: 16px; line-height: 1.6; margin: 12px 0 16px; padding: 12px; background: #f9fafb; border-left: 3px solid #1e2d40; border-radius: 3px; }
   .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #9ca3af; margin: 14px 0 6px; }
+  .table-wrap { border: 1px solid #d1d5db; border-radius: 4px; overflow: hidden; }
   table { width: 100%; border-collapse: collapse; font-size: 11px; }
-  th { padding: 5px 10px; font-weight: 700; color: #4b5563; border-bottom: 2px solid #e5e7eb; }
-  th:not(:first-child) { border-left: 1px solid #e5e7eb; text-align: center; }
+  th { padding: 6px 10px; font-weight: 700; color: #4b5563; background: #f9fafb; border-bottom: 1px solid #d1d5db; }
+  th:not(:first-child) { border-left: 1px solid #d1d5db; text-align: center; }
   .footer { margin-top: 20px; font-size: 10px; color: #9ca3af; border-top: 1px solid #e5e7eb; padding-top: 8px; }
-  @media print { body { margin: 16px; } }
+  .print-btn { display: inline-block; margin-bottom: 20px; padding: 6px 14px; background: #1e2d40; color: #fff; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; }
+  @media print { .print-btn { display: none; } body { margin: 0; } }
 </style>
 </head><body>
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
 <h1>${lo.moduleCode}${lo.moduleName ? ` — ${lo.moduleName}` : ''}</h1>
 <div class="meta">
   ${[lo.departmentName, lo.facultyName].filter(Boolean).join(' · ')}
@@ -169,6 +173,7 @@ ${lo.moduleContent ? `<div class="section-label">Module Descriptor</div>
 <p style="color:#374151;line-height:1.5;margin:0 0 12px">${lo.moduleContent}</p>` : ''}
 
 <div class="section-label">Evaluation Streams</div>
+<div class="table-wrap">
 <table>
   <thead><tr>
     <th style="text-align:left;width:140px">Dimension</th>
@@ -185,14 +190,15 @@ ${lo.moduleContent ? `<div class="section-label">Module Descriptor</div>
     ${tableRow('D6 NFQ calibration', cellHtml(null), lo.llm?.d6 ? cellHtml(lo.llm.d6) : cellHtml(null), lo.human?.d6 ? cellHtml(lo.human.d6) : cellHtml(null))}
   </tbody>
 </table>
+</div>
 ${lo.llm?.model ? `<div style="margin-top:4px;font-size:10px;color:#9ca3af">AI model: ${lo.llm.model}</div>` : ''}
 
 <div class="footer">Irish HE Learning Outcomes Quality Study · jkeatingmu.github.io/MU-finder/slo-study/ · Keating, J. (2025)</div>
-<script>window.onload = () => window.print();</script>
 </body></html>`;
 
-  const w = window.open('', '_blank');
-  if (w) { w.document.write(html); w.document.close(); }
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
 }
 
 export default function LOCard({ lo }: LOCardProps) {
