@@ -40,6 +40,33 @@ const getD3Tooltip = (score: number) => {
   }
 };
 
+const getD4Tooltip = (score: number) => {
+  switch (score) {
+    case 3: return "D4 Score 3: Appropriately scoped";
+    case 2: return "D4 Score 2: Slightly broad or narrow";
+    case 1: return "D4 Score 1: Too broad or too narrow";
+    default: return "D4: Scope (AI)";
+  }
+};
+
+const getD5Tooltip = (score: number) => {
+  switch (score) {
+    case 3: return "D5 Score 3: Clearly assessable";
+    case 2: return "D5 Score 2: Assessable with effort";
+    case 1: return "D5 Score 1: Not directly assessable";
+    default: return "D5: Assessability (AI)";
+  }
+};
+
+const getD6Tooltip = (score: number) => {
+  switch (score) {
+    case 3: return "D6 Score 3: Well-calibrated to NFQ level";
+    case 2: return "D6 Score 2: Partial NFQ alignment";
+    case 1: return "D6 Score 1: Poor NFQ calibration";
+    default: return "D6: NFQ Calibration (AI)";
+  }
+};
+
 type CellData = { score: number; note?: string; rationale?: string } | null;
 
 const SCORE_COLORS: Record<number, string> = {
@@ -130,7 +157,7 @@ export default function LOCard({ lo }: LOCardProps) {
             className={`px-3 py-1 rounded-full font-medium flex items-center gap-2 cursor-help ${tierColor}`}
             title={getD1Tooltip(lo.d1.tier)}
           >
-            <span>Tier {lo.d1.tier}</span>
+            <span>D1 · Tier {lo.d1.tier}</span>
             <span className="w-1 h-1 bg-white rounded-full opacity-50"></span>
             <span className="capitalize">{lo.d1.verb}</span>
           </div>
@@ -142,13 +169,41 @@ export default function LOCard({ lo }: LOCardProps) {
             D2: <span className="font-bold">{lo.d2.score}</span>
           </div>
           
-          <div 
+          <div
             className="px-3 py-1 bg-gray-50 text-gray-700 rounded border border-gray-200 cursor-help"
             title={getD3Tooltip(lo.d3.score)}
           >
             D3: <span className="font-bold">{lo.d3.score}</span>
           </div>
-          
+
+          {lo.llm?.d4 && (
+            <div
+              className="px-3 py-1 bg-gray-50 text-gray-700 rounded border border-gray-200 cursor-help"
+              title={getD4Tooltip(lo.llm.d4.score)}
+            >
+              D4: <span className="font-bold">{lo.llm.d4.score}</span>
+              <span className="text-gray-400 font-normal text-xs ml-1">AI</span>
+            </div>
+          )}
+          {lo.llm?.d5 && (
+            <div
+              className="px-3 py-1 bg-gray-50 text-gray-700 rounded border border-gray-200 cursor-help"
+              title={getD5Tooltip(lo.llm.d5.score)}
+            >
+              D5: <span className="font-bold">{lo.llm.d5.score}</span>
+              <span className="text-gray-400 font-normal text-xs ml-1">AI</span>
+            </div>
+          )}
+          {lo.llm?.d6 && (
+            <div
+              className="px-3 py-1 bg-gray-50 text-gray-700 rounded border border-gray-200 cursor-help"
+              title={getD6Tooltip(lo.llm.d6.score)}
+            >
+              D6: <span className="font-bold">{lo.llm.d6.score}</span>
+              <span className="text-gray-400 font-normal text-xs ml-1">AI</span>
+            </div>
+          )}
+
           <div
             className="ml-auto px-3 py-1 bg-[#1e2d40] text-white rounded font-bold cursor-help"
             title="Composite Score: Sum of D1+D2+D3 (0-9). 9 = single, verb-first, precisely observable."
