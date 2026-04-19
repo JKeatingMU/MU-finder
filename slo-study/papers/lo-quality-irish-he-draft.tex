@@ -1,0 +1,2054 @@
+% ============================================================
+%  Measuring What We Promise: A Cross-Institutional Analysis
+%  of Learning Outcome Quality in Irish Higher Education
+%
+%  Draft v0.1 — April 2026
+%  Authors: Keating, Fortune, Gottlöber
+% ============================================================
+
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{csquotes}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=blue
+}
+
+\setstretch{1.5}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ── Draft annotation colour ─────────────────────────────────
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\note}[1]{\textcolor{blue}{\textit{[Note: #1]}}}
+
+% ────────────────────────────────────────────────────────────
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+
+  {\LARGE\bfseries Measuring What We Promise:\\[0.4em]
+  A Cross-Institutional Analysis of Learning Outcome\\[0.2em]
+  Quality in Irish Higher Education\par}
+
+  \vspace{1.5cm}
+
+  {\large
+    John G. Keating$^{1}$,
+    Niamh Fortune$^{2}$,
+    Susan Gottl{\"o}ber$^{3}$,
+    M{\'a}ire Buckley$^{4}$,
+    Tim Thompson$^{5}$,
+    Lisa O'Regan$^{6}$
+  }
+
+  \vspace{0.8cm}
+
+  {\normalsize
+    $^{1}$Associate Dean for Teaching and Learning, Faculty of Science and Engineering\\
+    $^{2}$Associate Dean for Teaching and Learning, Faculty of Social Sciences\\
+    $^{3}$Associate Dean for Teaching and Learning, Faculty of Arts and Humanities\\
+    $^{4}$Experiential Learning Officer, Student Skills and Success\\
+    $^{5}$Vice President for Students and Learning\\
+    $^{6}$Head, Centre for Teaching and Learning\\[0.4em]
+    Maynooth University
+  }
+
+  \vspace{0.8cm}
+
+  {\normalsize
+    Correspondence: \texttt{john.keating@mu.ie}
+  }
+
+  \vspace{1.5cm}
+
+  {\normalsize \textit{Draft submitted for review --- \today}}
+
+\end{titlepage}
+
+% ── Abstract page ────────────────────────────────────────────
+\newpage
+\begin{abstract}
+  \noindent
+  Learning outcomes (LOs) are the primary accountability instrument in Irish higher
+  education, underpinning programme approval, Quality and Qualifications Ireland (QQI)
+  compliance, and the National Framework of Qualifications (NFQ). Yet the quality of
+  LO language --- specifically the observability and cognitive demand of the action verbs
+  employed --- has received little systematic empirical attention at scale. This paper
+  reports on a corpus-scale analysis of \textbf{233,005} module-level LOs drawn from
+  \textbf{sixteen} Irish higher education institutions (HEIs), spanning the public university,
+  technological university (TU), Institute of Technology (IT), College of Education, and private/specialised sectors. Using a rule-based
+  natural language processing (NLP) pipeline aligned to a six-dimension evaluation
+  rubric (D1--D6), we score each LO on verb observability (D1), behavioural singularity
+  (D2), and student-centredness (D3). We report a consistent and statistically meaningful
+  gap between the public university and TU clusters on the D1 (verb observability)
+  dimension: public university mean D1 = 1.572 versus TU mean D1 = 1.775
+  ($\Delta$ = 0.203), with public universities showing substantially higher rates
+  of unobservable Tier~0 verbs (8.3\% versus 3.4\%). We extend the analysis to
+  constructive alignment, cross-tabulating verb tier against assessment modality and,
+  for three institutions with Akari curriculum management data, against LO-to-component
+  mappings, identifying 64 modules in which high-demand LOs are assessed exclusively
+  by formal examination. We discuss implications for institutional quality assurance
+  processes, module approval workflows, and national policy. Preliminary findings from
+  Universal Design for Learning (UDL) proxy analysis and HEA Data and Digital Skills
+  module tagging are also presented.
+\end{abstract}
+
+\vspace{0.5cm}
+\noindent\textbf{Keywords:} learning outcomes; higher education quality; natural language
+processing; constructive alignment; verb taxonomy; Irish higher education; QQI; NFQ;
+Universal Design for Learning
+\newpage
+
+% ════════════════════════════════════════════════════════════
+\section{Introduction}
+% ════════════════════════════════════════════════════════════
+
+The learning outcome has become the dominant currency of higher education quality
+assurance in Europe and Ireland. Across national qualifications frameworks, programme
+approval processes, institutional review, and external examiner reports, the question
+asked --- implicitly or explicitly --- is the same: what can a graduate \emph{do}?
+The shift from input-based to outcome-based education is now decades old
+\citep{adam2004using, kennedy2007writing}, yet a persistent tension remains between
+the aspiration embedded in that question and the language used to answer it.
+
+If a module learning outcome states that a student will \textit{understand} the
+principles of thermodynamics, or will \textit{appreciate} the historical context of
+modernism, what exactly has been promised? The verb carries the epistemic weight of
+the outcome statement, yet verbs of this kind --- vague, unobservable, unmeasurable
+--- remain prevalent in published module descriptors across the sector
+\citep{hussey2002trouble, moon2002module}. They satisfy the formal requirement of
+outcome-based language while resisting the accountability that language was designed
+to enable.
+
+This paper addresses that gap directly. We report on a systematic, corpus-scale
+analysis of module-level learning outcomes drawn from fourteen Irish HEIs: six public
+universities, three technological universities, two Institutes of Technology, one College
+of Education, and two private/specialised colleges.
+Our corpus of 229,037 LOs was assembled through
+systematic retrieval of publicly accessible institutional module catalogues, processed through a rule-based NLP
+pipeline, and evaluated against a six-dimension rubric developed from the literature
+on LO quality, Bloom's revised taxonomy \citep{anderson2001taxonomy}, and the Irish
+National Framework of Qualifications \citep{qqi2020nfq}.
+
+The research makes three substantive contributions. First, it provides the first
+cross-institutional, corpus-scale empirical characterisation of LO language quality
+in Irish higher education. Second, it identifies a consistent and reproducible gap
+between the university and technological university clusters on the dimension of
+verb observability. Third, it extends the analysis to constructive alignment
+\citep{biggs2011teaching}, demonstrating that verb quality alone is insufficient:
+high-demand LOs assessed exclusively by traditional formal examination represent
+a distinct and actionable category of misalignment.
+
+The paper is structured as follows. Section~\ref{sec:background} reviews the relevant
+literature. Section~\ref{sec:methods} describes corpus construction, the evaluation
+rubric, and the scoring pipeline. Section~\ref{sec:results} presents findings across
+all nine institutions with particular focus on the university--TU comparison and
+constructive alignment. Section~\ref{sec:discussion} interprets findings in the context
+of Irish HE policy and institutional practice. Section~\ref{sec:conclusion} offers
+recommendations.
+
+% ════════════════════════════════════════════════════════════
+\section{Background and Related Literature}
+\label{sec:background}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Learning Outcomes in Higher Education Policy}
+
+The outcomes-based approach to curriculum design entered Irish higher education
+formally through the Bologna Process and the establishment of the National Framework
+of Qualifications in 2003 \citep{nfq2003}. QQI's \textit{Policies, Criteria and
+Guidelines for the Validation of Programmes of Education and Training}
+\citep{qqi2021policies} require that all accredited programmes express intended
+learning outcomes that are specific, assessable, and aligned to NFQ award standards.
+The National Forum for the Enhancement of Teaching and Learning has further endorsed
+outcome-based design as a cornerstone of curriculum quality
+\citep{nationalforum2016mapping}.
+
+Despite this policy consensus, empirical evidence on the \emph{quality} of LO
+language in practice is sparse. Institutional review bodies assess whether outcomes
+are present; they do not routinely measure their linguistic or cognitive quality.
+\citet{hussey2002trouble} identified early that outcome statements frequently conflate
+multiple behaviours, use unobservable language, or are pitched at levels inconsistent
+with their NFQ designation. \citet{moon2002module} similarly noted the gap between
+outcome-as-written and outcome-as-assessable. More recently, \citet{donnelly2019outcomes}
+observed that Irish HEIs have made significant structural progress in outcome adoption
+but that the quality of individual statements remains uneven.
+
+\subsection{The Policy Framework for Learning Outcomes: Three Levels}
+\label{sec:policyframework}
+
+\note{\textbf{[PLACEHOLDER: to be developed with Lisa O'Regan, Centre for Teaching
+and Learning, MU. See accompanying policy reference document.]}}
+
+LO requirements for Irish HEIs operate at three intersecting levels. At the
+\textit{European} level, the Standards and Guidelines for Quality Assurance in the
+European Higher Education Area (ESG 2015) \citep{enqa2015esg} require under
+Standard~1.2 that programmes are \enquote{designed so that they meet the objectives
+set for them, including the intended learning outcomes} and that \enquote{the
+qualification resulting from a programme should be clearly specified and communicated,
+and refer to the correct level of the national qualifications framework.} The Dublin
+Descriptors, which underpin the Bologna Process qualification cycles, specify the
+knowledge, skills, judgement, communication, and learning-to-learn capabilities
+expected at each cycle, and implicitly require LO language that reaches the cognitive
+demand appropriate to the cycle (Bachelor, Master, Doctorate) \citep{joint2004dublin}.
+
+At the \textit{national} level, QQI's \textit{Policies, Criteria and Guidelines for
+the Validation of Programmes of Education and Training} \citep{qqi2021policies} require
+that learning outcomes are \enquote{specific and sufficiently detailed to communicate
+the award-holder's knowledge, skill and competence} and that they are \enquote{appropriate
+to the specified NFQ level and award type.} The NFQ Grid of Level Indicators defines
+expected knowledge, skills, and competence at each level; at Level~8 (Honours
+Bachelor) this includes \enquote{mastery of a complex and specialised area of skills
+and tools} and the capacity to \enquote{conduct guided research} --- language that
+maps to observable, high-demand verbs in the D1 Tier 2--3 range. QQI further requires
+that \enquote{assessment procedures should validly and reliably ensure that learners
+who are recommended for awards have attained the provider's minimum intended programme
+learning outcomes} --- a direct statement of the constructive alignment requirement
+\citep{qqi2021policies}. The National Forum for the Enhancement of Teaching and
+Learning has further endorsed outcome-based design and multi-modal assessment (OF,
+FOR, and AS learning) as cornerstones of curriculum quality
+\citep{nationalforum2016mapping}.
+
+At the \textit{institutional} level, each HEI is required under QQI's quality
+assurance framework to maintain internal procedures for programme and module design
+and approval that operationalise these requirements. The gap between this procedural
+requirement and the documented outcome quality revealed by corpus analysis is a
+central concern of this study.
+
+Critically, the policy framework does not mandate Bloom's taxonomy by name. It does,
+however, require precisely what Bloom formalised: outcomes that are specific,
+observable, level-appropriate, and assessable. Our D1--D6 rubric operationalises
+the policy criteria without depending on any single pedagogical framework: D1
+(verb observability) and D2 (behavioural singularity) address the \enquote{specific
+and sufficiently detailed} requirement; D3 (student-centredness) addresses the
+student-centred LO format implied by the Bologna student-learning paradigm; D6
+(NFQ level calibration) addresses the \enquote{appropriate to the specified NFQ
+level} requirement. The rubric is, in this sense, a policy-compliance instrument
+as much as a pedagogical quality instrument.
+
+\todo{Lisa O'Regan to develop: (a) institutional policy context at MU (L\&T
+Strategy, Programme Board procedures); (b) national QA framework developments
+post-2021; (c) comparative European context — how does Irish policy implementation
+compare with EHEA peers? (d) implications of the shadow curriculum problem for
+institutional QA: if good practice goes undocumented, internal approval processes
+cannot credit or require it.}
+
+\subsection{Bloom's Taxonomy and Verb Observability}
+
+The most widely applied framework for evaluating the cognitive demand of learning
+outcomes is Bloom's Taxonomy of Educational Objectives \citep{bloom1956taxonomy} and
+its subsequent revision by \citet{anderson2001taxonomy}. The revised taxonomy
+distinguishes six levels of cognitive process --- Remember, Understand, Apply, Analyse,
+Evaluate, Create --- each associated with a set of observable action verbs. The verb
+is the operationalisation of the level: it specifies what the student must \emph{do}
+and, by extension, what the assessor must observe.
+
+The critical distinction for quality assurance purposes is between verbs that are
+\emph{observable} --- whose instantiation can be directly evidenced in student
+performance --- and those that are \emph{unobservable}. Verbs such as
+\textit{understand}, \textit{know}, \textit{appreciate}, and \textit{be aware of}
+describe internal cognitive states that cannot be directly measured. Their prevalence
+in module descriptors signals either weak outcome design or a disconnect between
+the language of course documentation and the reality of teaching and assessment
+\citep{kennedy2007writing}. Importantly, the problem is not that deep understanding
+is an unworthy goal --- it is that the verb provides no specification of what evidence
+of understanding would look like.
+
+\subsection{Constructive Alignment}
+
+Biggs's constructive alignment framework \citep{biggs1996enhancing, biggs2011teaching}
+provides the theoretical basis for our extension of the analysis beyond verb quality.
+Alignment requires internal consistency across three elements: intended learning outcomes,
+teaching and learning activities, and assessment tasks. A module in which the LO verbs
+are pitched at high cognitive demand (e.g., \textit{design}, \textit{evaluate},
+\textit{synthesise}) but the sole assessment instrument is a closed-book formal
+examination represents a specific form of misalignment: the assessment cannot elicit
+the performance the outcome specifies.
+
+This form of misalignment --- high-demand LOs, low-authenticity assessment ---
+is practically significant. It disadvantages students who possess the higher-order
+capability described in the outcome but whose performance is measured by a proxy
+(recall under examination conditions) that conflates memory with competence. It also
+undermines the validity of grades as signals of graduate capability, with consequences
+for employers, professional bodies, and the integrity of NFQ level claims
+\citep{bloxham2007marking}.
+
+\subsection{Automated Analysis of Learning Outcome Text}
+
+The application of NLP methods to educational text is a growing field
+\citep{demetriadis2018, zawacki2019systematic}. Prior work has applied
+automated methods to the classification of educational objectives
+\citep{khandelwal2021bloom, ullmann2019automated}, the detection of LO quality
+issues \citep{chen2022automated}, and cross-programme curriculum mapping
+\citep{shabani2012using}. However, corpus-scale cross-institutional analysis
+of LO language quality --- spanning an entire national HE system --- has not
+previously been reported.
+
+The availability of machine-readable module catalogues across Irish institutions,
+combined with advances in rule-based and large language model (LLM) classification,
+makes such analysis technically feasible at scale for the first time. Our study
+exploits this opportunity.
+
+% ════════════════════════════════════════════════════════════
+\section{Research Questions}
+\label{sec:rq}
+% ════════════════════════════════════════════════════════════
+
+This study addresses three research questions:
+
+\begin{enumerate}[label=\textbf{RQ\arabic*}]
+  \item What is the distribution of verb observability tiers across module-level
+        learning outcomes in Irish higher education, and does this distribution
+        differ systematically between the university and technological university
+        sectors?
+
+  \item What is the prevalence of constructive misalignment --- defined as
+        high-demand LOs paired with assessment modalities that cannot elicit
+        the specified performance --- across the corpus?
+
+  \item What methodological and policy implications follow from corpus-scale
+        LO quality analysis for institutional module approval processes and
+        national quality assurance frameworks?
+\end{enumerate}
+
+% ════════════════════════════════════════════════════════════
+\section{Methodology}
+\label{sec:methods}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Corpus Construction}
+
+Module learning outcome data were collected from sixteen Irish HEIs through systematic
+automated retrieval of publicly accessible module catalogue pages during the period
+October 2024 -- April 2026. The institutions comprised six public universities\footnote{We use \textit{public
+universities} (PU) to refer to institutions designated under the Universities Act 1997.
+The broader Irish HE system also includes Institutes of Technology (IT), Colleges of
+Education (CE), and private and specialised colleges (PS). The PU label does not imply
+that TUs are private or non-public --- all Irish HEIs receive public funding. The
+distinction is legislative and sectoral.
+\todo{Confirm preferred terminology; check HEA System Performance Framework for current
+administrative categories.}}
+(Maynooth University [MU], University College Dublin [UCD], University College Cork
+[UCC], University of Galway [Galway], University of Limerick [UL], and Dublin City
+University [DCU]), three technological universities (Atlantic Technological
+University [ATU], South East Technological University [SETU], and Munster
+Technological University [MTU]), two Institutes of Technology (Dundalk Institute of
+Technology [DkIT] and Dún Laoghaire Institute of Art, Design and Technology [IADT]),
+three private and specialised colleges (National College of Ireland [NCI], National
+College of Art and Design [NCAD], and Griffith College Dublin [GC]), one College of Education (Marino Institute of
+Education [MIE]), and TU Dublin [TUD], whose catalogue format is discussed separately
+as a methodological finding (Section~\ref{sec:tud}).
+
+Table~\ref{tab:corpus} summarises the corpus. Each institution required a bespoke
+retrieval approach reflecting the diversity of underlying catalogue systems:
+CourseLeaf (UCC, Selenium headless Chrome), Akari curriculum management system
+(MTU, SETU, DkIT, NCI --- sequential module-ID sweeps), BookOfModules (UL),
+the nuigalway.ie course catalogue (Galway), modspec.dcu.ie and dcu.akarisoftware.com
+(DCU), TU Dublin Vault (TUD), and institution-specific HTML catalogues for the
+remaining institutions. IADT and NCAD module data were extracted from publicly
+available PDF catalogues using pdfplumber. MIE data were parsed from four programme
+handbooks. In all cases, module-level data were extracted including:
+module code, title, ECTS credits, NFQ level where published, and the full text
+of each numbered learning outcome.
+
+\begin{table}[H]
+\centering
+\caption{Corpus composition by institution (D1--D3 scoring complete for all).}
+\label{tab:corpus}
+\begin{tabular}{llrrrc}
+\toprule
+\textbf{Institution} & \textbf{Type} & \textbf{Modules} & \textbf{LOs} & \textbf{D1 Mean} & \textbf{Tier 0 (\%)} \\
+\midrule
+MU      & PU & 2,139  & 12,603 & 1.637 & 10.0 \\
+DCU$^\ddagger$     & PU & 3,464  & 14,472 & 1.682 &  9.5 \\
+Galway  & PU & 2,847  & 12,477 & 1.627 &  9.7 \\
+UCC     & PU & 6,802  & 29,102 & 1.697 &  4.9 \\
+UCD     & PU & 5,419  & 27,145 & 1.158 & 13.4 \\
+UL$^\S$ & PU & 5,731  & 27,056 & 1.736 &  4.9 \\
+\midrule
+\textit{PU cluster} & & \textit{26,402} & \textit{122,855} & \textit{1.572} & \textit{8.3} \\
+\midrule
+ATU     & TU & 5,949$^\dagger$ & 33,770$^\dagger$ & 1.846 & 5.0 \\
+SETU    & TU &  3,772 & 18,162 & 1.529 & 1.6 \\
+MTU     & TU &  8,217 & 29,881 & 1.846 & 2.8 \\
+\midrule
+\textit{TU cluster} & & \textit{17,938} & \textit{81,813} & \textit{1.775} & \textit{3.4} \\
+\midrule
+DkIT    & IT &  4,697 & 19,590 & 1.644 & 6.6 \\
+IADT    & IT &    175 &    814 & 1.776 &  4.9 \\
+\midrule
+NCI     & PS &    749 &  3,647 & 1.627 & 10.4 \\
+NCAD    & PS &     79 &    269 & 1.796 &  2.6 \\
+GC$^\|$ & PS &     63 &    441 & 1.914 &  0.5 \\
+MIE$^\P$ & CE &   163 &     49 & 1.592 &  0.0 \\
+\midrule
+\textbf{Total} & & \textbf{51,190} & \textbf{233,005} & --- & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent
+$^\dagger$ ATU LO data were retrieved from programme pages on \texttt{atu.ie}, where
+modules appear in multiple degree programmes. Raw extraction yielded 69,532 LOs across
+a stated 14,200 module instances; after removing cross-programme duplicates (deduplication
+key: module code $\times$ LO index $\times$ normalised text) the corpus reduces to
+33,770 unique LOs from 5,949 unique module codes---a 51.4\% reduction. A further 622
+records are retained as shared-code variants (same module code, different content and
+credit loading), identified by a version suffix in their identifier.
+
+\noindent
+$^\ddagger$ The DCU corpus includes modules from the DCU Institute of Education, which
+incorporates the former Church of Ireland College of Education (CICE), St Patrick's College
+Drumcondra, and Mater Dei Institute (merged into DCU in 2016).
+
+\noindent
+$^\S$ The UL corpus includes modules validated under UL's degree-awarding authority for
+Mary Immaculate College (MIC), Limerick. MIC-specific subject codes (MH, GY, RS) are
+confirmed present; B.Ed and PME modules are integrated under shared UL subject codes
+and cannot be disaggregated without department-level metadata.
+
+\noindent
+$^\P$ MIE data were extracted from four publicly available programme handbooks (B.Ed.\ Primary,
+B.Sc.\ ECE, B.Sc.\ Ed.\ Studies, B.Oid.). Of 163 modules across the four programmes, only 14 (8.6\%)
+contain explicit student-centred learning outcomes in the handbook text; the remainder provide
+module descriptions only. The B.Sc.\ Ed.\ Studies handbook contains no module-level LO statements.
+D1 mean and Tier~0 are computed from the 49 English-language LOs only.
+The B.Oid.\ (Irish-medium B.Ed.) handbook contains module descriptions in Irish (Gaeilge); these
+38 modules are included in the module count but excluded from D1 scoring.
+
+\noindent
+$^\|$ GC module LO data were extracted from 74 PDF module descriptor documents retrieved
+from Griffith College programme pages. Each PDF follows a standardised format with module
+title, ECTS credits, NFQ level, and numbered learning outcomes. 63 of 74 PDFs contained
+parseable LO lists; the remainder provided aims-only descriptors and were excluded. No
+module codes are published in these PDFs; GC records carry no \texttt{moduleCode} field.
+
+\medskip\noindent
+\textit{Note:} TU Dublin was surveyed via two routes. (1) The primary public catalogue
+(Vault system, 5,449 module pages) does not publish student-centred LOs; modules use
+an aims format (\textit{``The aim of this module is to [verb]\ldots''}). (2) PDF module
+catalogues published by two TUD schools were retrieved separately and yielded 120 modules
+and 736 student-centred LOs across six programmes
+(TU835 Architecture, TU874 Mathematical Sciences, TU078, TU079, TU248, TU5294). The combined TUD corpus
+(3,527 records) is included in the totals; the aims-vs-LO distinction is discussed
+as a methodological finding in Section~\ref{sec:tud}. Dundalk Institute of Technology (DkIT) is included as an IT-sector institution
+(4,697 modules, 19,590 LOs, D1 mean 1.644). DkIT's D1 mean is notably lower than
+the other TU-sector institutions and closer to the university cluster, which may
+reflect its status as a remaining IoT rather than a designated TU; this is discussed
+in Section~\ref{sec:discussion}.
+Dún Laoghaire Institute of Art, Design and Technology (IADT) is similarly included as an IT-sector institution.
+IADT module descriptors were retrieved from a single publicly accessible PDF module catalogue
+(175 modules, 814 LOs, D1 mean 1.776). No assessment data are published in this document;
+IADT contributes to LO quality analysis only.
+Trinity College Dublin (TCD) is under active investigation but is excluded from the
+present analysis due to its decentralised catalogue structure.
+TUS (Technological University of the Shannon: Midlands Midwest) and RCSI University of
+Medicine and Health Sciences are also not yet included.
+
+\subsection{Module Descriptor Enrichment}
+\label{sec:descriptors}
+
+Each LO record in the corpus was augmented with its module descriptor --- the
+contextual summary text (typically 50--300 words) that precedes the LO list in
+the published module catalogue. Descriptors provide the interpretive context
+needed for LLM-based D4--D6 scoring and for the accompanying LO Browser
+application (Section~\ref{sec:app}). Descriptor retrieval required institution-specific
+strategies, summarised in Table~\ref{tab:descriptors}.
+
+\begin{table}[H]
+\centering
+\caption{Module descriptor enrichment by institution.}
+\label{tab:descriptors}
+\begin{tabular}{llrr}
+\toprule
+\textbf{Institution} & \textbf{Source / Method} & \textbf{Modules} & \textbf{Coverage} \\
+\midrule
+MU      & Institutional data export (\texttt{moduleContent} field) & 2,537 & 100\% \\
+ATU     & \texttt{moduleContent} field in LO records (per-LO text) & 5,941 & $\sim$100\% \\
+UCC     & \texttt{ucc-modules-raw.json} description field & 5,137 & $\sim$100\% \\
+UL      & \texttt{ul-modules-raw.json} description field & 5,709 & $\sim$100\% \\
+MTU     & \texttt{mtu-modules-raw.json} description field & 5,877 & $\sim$96\% \\
+TUD     & \texttt{tud-modules-raw.json} description field & 5,385 & $\sim$100\% \\
+SETU    & Akari module records description field & 3,628 & $\sim$98\% \\
+DkIT    & Akari module records description field & 2,727 & $\sim$92\% \\
+UCD     & \texttt{ucd-modules-raw.json} description field & 3,197 & $\sim$62\%$^a$ \\
+Galway  & Scraped from \texttt{nuigalway.ie/course-information/} & 1,455 & $\sim$97\% \\
+DCU     & modspec.dcu.ie (old and Akari endpoints); dcu.akarisoftware.com & 1,670 & $\sim$48\%$^b$ \\
+NCI     & Scraped from \texttt{nci.akarisoftware.com} (indicative content) & 747 & $\sim$100\% \\
+NCAD    & Extracted from PDF module descriptors (pdfplumber, Introduction section) & 78 & $\sim$99\% \\
+IADT    & Extracted from PDF module catalogue (pdfplumber, aims section) & 112 & $\sim$64\% \\
+GC      & Extracted from PDF module descriptors (pdfplumber, Module Objectives section) & 63 & $\sim$100\% \\
+MIE     & Not available (programme handbooks contain no descriptor text) & 0 & 0\% \\
+\bottomrule
+\end{tabular}
+
+\smallskip
+\noindent{\footnotesize
+$^a$ UCD's catalogue does not publish descriptors for all modules; coverage is limited by
+institutional catalogue completeness.\\
+$^b$ DCU descriptor coverage reflects an incomplete migration to the Coursebuilder/Akari
+system at time of collection; modules not yet migrated have no machine-readable descriptor
+in any publicly accessible endpoint.
+}
+\end{table}
+
+\noindent
+Descriptor text was extracted using institution-appropriate methods: direct field
+reads from JSON catalogue exports (MU, ATU, UCC, UL, MTU, TUD, SETU, DkIT, UCD);
+HTTP scraping with targeted HTML parsing (Galway, NCI, DCU); and PDF text extraction
+using \texttt{pdfplumber} with section-boundary detection based on heading patterns
+(NCAD: ``1.~Introduction'' section; IADT: aims text preceding the ``On successful
+completion'' LO trigger; GC: ``Module Objectives'' or ``Module aims and objectives''
+section). Non-English descriptors (primarily Irish-medium MIE and
+UL/MIC modules) are retained without language filtering for subsequent analysis.
+Descriptor text is stored in the \texttt{moduleContent} field of each normalised LO
+record and is available through the LO Browser application.
+
+\subsection{A Tripartite Evaluation Framework: Measurement, Evaluation, and Validation}
+\label{sec:tripartite}
+
+A central methodological premise of this study is that LO quality analysis requires
+two epistemologically distinct operations that must be kept separate: \textit{measurement}
+and \textit{evaluation}. These are not synonyms, and conflating them produces analytically
+incoherent results.
+
+\textbf{Measurement} (the NLP pipeline) applies deterministic rules to observable surface
+features. It \textit{calculates}: given an LO string, the D1 score is computable without
+interpretation, context, or reference to institutional intent. The same algorithm applied
+to the same text will always produce the same result. This reproducibility is a strength
+for corpus-scale analysis but a limitation for quality assessment: a rule-based system
+cannot read an LO against the policy standards it is meant to satisfy, cannot judge
+whether a verb choice is appropriate for a given NFQ level and credit load, and cannot
+recognise when a syntactically well-formed LO is substantively empty.
+
+\textbf{Evaluation} (the LLM and human raters) applies normative judgement to contextualised
+instances. It \textit{assesses}: given an LO, its module context, its institutional
+setting, and the policy framework the institution is required to meet, a rater determines
+whether the outcome constitutes a quality statement. Evaluation is inherently interpretive.
+This is both a limitation (rater effects, anchoring, disciplinary bias) and a capability
+(sensitivity to context, policy grounding, and the kind of reasoning that expert quality
+reviewers actually apply).
+
+The research question that the LLM and human raters are answering is:
+
+\begin{quote}
+\textit{Does this learning outcome, read in context and against the standards its
+institution is required to meet, constitute a well-formed, assessable, and
+level-appropriate outcome?}
+\end{quote}
+
+This is the question a QQI validation panel would ask. It is not reducible to a
+calculation.
+
+The third stream --- \textbf{validation via inter-rater reliability (IRR)} --- is the
+mechanism by which the measurement and evaluation streams are brought into dialogue.
+By computing pairwise agreement between the NLP pipeline, the LLM evaluator, and
+expert human raters on a stratified sample, we can determine: (a) the extent to which
+automated measurement captures the same variance as expert evaluation; (b) where the
+two approaches diverge and why; and (c) whether policy-grounded LLM evaluation achieves
+sufficient agreement with human judgement to serve as a scalable quality audit instrument.
+
+\subsection{The D1--D6 Evaluation Rubric}
+
+We developed a six-dimension evaluation rubric (Table~\ref{tab:rubric}) grounded in
+the LO quality literature and calibrated to the Irish NFQ context. Each dimension is
+scored 0--3, yielding a composite score of 0--18. D1--D3 are operationalised through
+the rule-based NLP pipeline (measurement); D4--D6 require contextual judgement and
+are operationalised through the LLM evaluator and human raters (evaluation).
+
+\begin{table}[H]
+\centering
+\caption{The D1--D6 evaluation rubric and the tripartite framework.}
+\label{tab:rubric}
+\begin{tabularx}{\textwidth}{clXl}
+\toprule
+\textbf{\#} & \textbf{Dimension} & \textbf{Description} & \textbf{Stream} \\
+\midrule
+D1 & Verb observability     & Cognitive demand and observability of the leading action verb & NLP (measurement) \\
+D2 & Behavioural singularity & Degree to which the LO specifies a single, bounded behaviour & NLP (measurement) \\
+D3 & Student-centredness    & Grammatical framing from the student's perspective           & NLP (measurement) \\
+D4 & Scope appropriateness  & Whether the scope matches NFQ level and ECTS credit load     & LLM + Human (evaluation) \\
+D5 & Assessability signal   & Extent to which the LO implies a specific assessment approach & LLM + Human (evaluation) \\
+D6 & NFQ level calibration  & Alignment of cognitive demand to the stated NFQ level        & LLM + Human (evaluation) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+For IRR purposes, the LLM evaluator also independently scores D1--D3 on the same
+sample, providing a cross-validation signal between the measurement and evaluation
+streams on the dimensions where both can operate.
+
+\subsection{NLP Pipeline: Overview and Pre-processing}
+\label{sec:nlp-pipeline}
+
+The rule-based NLP pipeline is implemented in a single-pass Node.js scorer
+(\texttt{score-rule-based.mjs}) that reads normalised LO records and produces
+per-LO scores for D1--D3 together with structured rationale strings and diagnostic
+flags. The pipeline is deterministic and reproducible: given the same LO text and
+lexicon version, it returns identical output on every run.
+
+\paragraph{Input normalisation.}
+Each raw LO text undergoes a cleaning pass before analysis:
+
+\begin{enumerate}
+  \item \textit{Numbering prefix removal.} LO text extracted from PDFs and web pages
+    frequently retains the source numbering (\texttt{1.}, \texttt{Lo 1.}, \texttt{i.},
+    \texttt{(a)}). A family of regular expressions strips these prefixes before
+    any linguistic analysis.
+  \item \textit{Language detection.} A word-list of high-frequency Irish (Gaeilge)
+    function words and verbal particles is checked against the LO text.
+    Irish-medium LOs (\texttt{language=ga}) are excluded from D1--D3 scoring and
+    assigned a \texttt{null} score with an explanatory flag. This affected 33 modules
+    from MIE's B.Oid.\ programme; the B.Oid.\ modules are retained in the corpus
+    with their metadata intact.
+  \item \textit{Infinitive and framing prefix stripping.}
+    The leading verb is isolated by removing common preamble patterns before
+    attempting verb extraction: \textit{``To be able to''}, \textit{``To''} (bare
+    infinitive), \textit{``Be able to''}, and third-person
+    \textit{``Students will (be able to)''} wrappers are stripped so that the true
+    action verb is presented for lookup.
+\end{enumerate}
+
+\paragraph{Diagnostic flags.}
+The pipeline produces a structured \texttt{flags} array per LO for quality audit
+purposes. Flags include: \texttt{unknown-verb} (verb not in lexicon, requiring review);
+\texttt{no-action-verb} (LO opens with a noun or adjective rather than an action verb,
+e.g.\ \textit{``Understanding of\ldots''}, \textit{``Knowledge of\ldots''}); \texttt{wrong-tense}
+(past-tense or participial form rather than imperative, e.g.\ \textit{``Demonstrated\ldots''},
+\textit{``Applying\ldots''}); \texttt{irish-language}; \texttt{compound} (multiple
+behaviours detected); \texttt{instructor-centered}; and \texttt{context-dependent}
+(verb whose observability tier is context-sensitive). LOs carrying a null D1 score
+are excluded from mean calculations but retained in the corpus.
+
+\subsection{D1 Scoring: Verb Observability Tier}
+\label{sec:d1}
+
+D1 operationalises the observability of the leading action verb, grounded in Mager's
+(\citeyear{mager1962preparing}) criterion of behavioural observability and the revised
+Bloom's taxonomy \citep{anderson2001taxonomy}. The central instrument is a tiered verb
+lexicon (v1.3) developed iteratively from the corpus and reviewed against published
+LO quality guides from QQI \citeyear{qqi2017validation}, the ECTS Users' Guide
+\citeyear{ec2015ects}, and the Cedefop \citeyear{cedefop2017lo} handbook on
+defining and writing learning outcomes --- the document explicitly cited by QQI
+as the normative reference for LO writing guidance.
+
+\paragraph{Lexicon structure.}
+The lexicon (367 entries at v1.3, distributed as supplementary material) assigns
+each verb to one of four tiers:
+
+\begin{description}[leftmargin=3em, labelwidth=2.5em]
+  \item[Tier 0 — Unobservable] (50 verbs)\quad Internal cognitive states that cannot be directly
+    assessed without further specification: \textit{understand, know, appreciate,
+    be aware of, learn, grasp, realise, be familiar with, internalise}.
+    These map to Mager's \textit{fuzzy} verbs and correspond to Anderson and
+    Krathwohl's \textit{Remember} and undifferentiated \textit{Understand} categories
+    where no observable performance is implied.
+  \item[Tier 1 — Weak observable] (53 verbs)\quad Behaviours that imply an observable
+    output but are insufficiently specific to determine the assessment method without
+    additional context: \textit{describe, identify, discuss, explain, list, name,
+    state, define, outline, summarise}.
+  \item[Tier 2 — Clear observable] (207 verbs)\quad Behaviours with a defined
+    performance criterion and a clear assessment product: \textit{analyse, evaluate,
+    apply, compare, contrast, demonstrate, classify, interpret, solve, justify,
+    differentiate, predict}.
+  \item[Tier 3 — Precise/contextual] (57 verbs)\quad High-demand behaviours with strong
+    domain specificity implying both the action and its expected artefact or product:
+    \textit{design, construct, synthesise, critique, formulate, derive, implement
+    (novel solution), develop (original), compose, engineer}.
+\end{description}
+
+Multi-word verbs (\textit{be aware of}, \textit{critically evaluate}, 18 in total)
+are matched using a longest-match greedy strategy before single-token lookup.
+Eleven verbs are flagged as \textit{context-dependent}: their observability tier
+depends on the domain or the surrounding noun phrase in ways that a lexical lookup
+cannot resolve (\textit{understand} is the canonical example, but \textit{reflect},
+\textit{investigate}, \textit{communicate}, and \textit{implement} also appear in
+this category). Context-dependent verbs are scored by their primary-tier assignment
+and flagged for potential LLM re-evaluation in the D6 pass.
+
+\paragraph{Verb extraction algorithm.}
+After pre-processing strips leading preamble, the following extraction sequence is applied:
+
+\begin{enumerate}
+  \item \textit{Multi-word greedy match.} All multi-word lexicon entries (sorted longest-first)
+    are checked; the first match wins.
+  \item \textit{``have [past-participle]''} forms. Some LOs use perfect aspect
+    (\textit{``have identified\ldots''}); the auxiliary is discarded and the participle
+    is used as the verb candidate.
+  \item \textit{``be [adjective]''} competency framing. LOs opening with
+    \textit{``be [adjective]''} (e.g.\ \textit{``Be competent in\ldots''}) describe
+    a state rather than a performance. These receive D1 = 1 (weakly observable state)
+    with a \texttt{competency-framing} flag.
+  \item \textit{Adverb detection.} The qualifier \textit{critically} is treated as a
+    tier-boosting adverb: if the opening token is \textit{critically} and the
+    following verb maps to Tier $t < 3$, the score is elevated to $\min(t+1, 3)$.
+    Style-only adverbs (\textit{clearly, effectively, confidently}) are stripped
+    without affecting the tier.
+  \item \textit{Noun/adjective opener detection.} A 32-token set of common noun or
+    adjective openers (\textit{understanding, ability, knowledge, skills, competence,
+    awareness, \ldots}) triggers a \texttt{no-action-verb} flag and a null D1 score.
+    These represent a recurring structural defect in which an LO describes a capability
+    attribute rather than an observable performance.
+  \item \textit{Wrong-tense detection.} Past-tense and participial forms
+    (\textit{developed, demonstrated, applying, exploring}) trigger a
+    \texttt{wrong-tense} flag and a null D1 score, with a rationale noting the
+    required correction.
+  \item \textit{Single-token lookup.} The remaining first token is looked up in the
+    verbTier map (case-insensitive). A match returns the tier score; no match returns
+    null with an \texttt{unknown-verb} flag.
+\end{enumerate}
+
+\paragraph{D1 scoring outcome.}
+Each scoreable LO receives D1 $\in \{0, 1, 2, 3\}$. Null scores (Irish-language,
+no-action-verb, wrong-tense, unknown-verb) are excluded from institution means
+but counted separately. Across the corpus, null D1 scores represent approximately
+2.1\% of all LO records.
+\todo{Insert final null rate from corpus-wide stats.}
+
+\subsection{D2 Scoring: Behavioural Singularity}
+\label{sec:d2}
+
+D2 operationalises the principle that each LO should specify a single bounded,
+independently assessable student behaviour \citep{biggs2011teaching, qqi2016core}.
+Compound LOs — those that bundle multiple distinct behaviours into a single statement
+using coordinating conjunctions — reduce the granularity available for assessment
+mapping and progression tracking.
+
+\paragraph{Detection algorithm.}
+After stripping the leading infinitive opener (\textit{``To''}), the LO text is
+split into clauses at the following boundary tokens: \textit{`` and ''}, \textit{`` or ''},
+semicolons, and commas followed by a space and a lowercase letter (to catch comma-listed
+verb phrases). For each resulting clause, the first token is extracted and checked
+against the verb lexicon. Tokens not in the lexicon are not counted. The count of
+distinct recognised verbs (\textit{not} the raw clause count) determines the D2 score:
+
+\begin{center}
+\begin{tabular}{cl}
+\toprule
+\textbf{D2 score} & \textbf{Criterion} \\
+\midrule
+3 & Single behaviour — one recognised action verb, no coordination \\
+2 & Two distinct behaviours — compound but manageable \\
+1 & Three behaviours — conflated; splitting recommended \\
+0 & Four or more behaviours — highly fragmented \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{Limitations.}
+The detection is conservative by design: only tokens present in the verb lexicon are
+counted, so a compound LO built from unlexiconed verbs may be under-counted.
+Adversely, a single verb with several qualifying noun phrases (e.g., \textit{``analyse
+the structure, function, and regulation of\ldots''}) is not falsely scored as compound.
+D2 is best interpreted as a lower bound on behavioural multiplicity; the LLM pass
+(D5, assessability signal) is intended to provide a context-sensitive complement.
+
+\subsection{D3 Scoring: Student-Centredness}
+\label{sec:d3}
+
+D3 assesses the grammatical framing of the LO, distinguishing LOs that place the
+student's observable performance at the centre from those framed from the module's
+or instructor's perspective. The distinction is required by QQI policy
+\citeyear{qqi2016core} and the Bologna/ECTS framework \citeyear{ec2015ects}, both
+of which specify that LOs must describe what the \textit{student} will be able
+to demonstrate upon completion, not what the \textit{module} will cover.
+
+\paragraph{Scoring scheme.}
+Patterns are checked in priority order (first match wins):
+
+\begin{description}[leftmargin=3em, labelwidth=2.5em]
+  \item[D3 = 0 — Instructor/module-centred] LO begins with one of 14 instructor-centred
+    patterns: \textit{``This module will\ldots''}, \textit{``The aim of this module
+    is to\ldots''}, \textit{``This course will introduce\ldots''}, etc.
+    These are aims statements masquerading as LOs; the grammatical subject is the
+    module or course, not the student.
+  \item[D3 = 1 — Passive student] LO places the student as a recipient rather than an
+    agent: \textit{``Students will be introduced to\ldots''}, \textit{``Students will
+    be provided with\ldots''}, \textit{``Students will become familiar with\ldots''}.
+    Nine such passive constructions are detected. These are student-centred in framing
+    but describe an input to the student rather than an output from the student.
+  \item[D3 = 2 — Active student, indirect framing] LO states what the student will do,
+    but uses a third-person or infinitive wrapper: \textit{``Students will [verb]\ldots''},
+    \textit{``The student will be able to\ldots''}, \textit{``To [verb]\ldots''}.
+    These are student-centred and assessable but use a more indirect grammatical
+    structure than the preferred OBE convention.
+  \item[D3 = 3 — Verb-first imperative] LO opens directly with a recognised action verb,
+    placing the student performance as the grammatical subject by implication:
+    \textit{``Analyse\ldots''}, \textit{``Design\ldots''}, \textit{``Demonstrate\ldots''}.
+    This is the preferred convention in outcome-based education
+    \citep{biggs2011teaching} and is explicitly recommended by QQI \citeyear{qqi2016core}.
+\end{description}
+
+\paragraph{Relationship to D1.}
+D3 and D1 are orthogonal by construction: a verb-first LO can score D3 = 3 with a
+Tier 0 verb (\textit{``Understand the principles of\ldots''}), and a module-centred
+framing can contain a high-tier verb (\textit{``This module will develop students'
+ability to synthesise\ldots''}). The two dimensions capture independent quality
+properties and are reported separately throughout the analysis.
+
+\subsection{LLM Evaluation: D4--D6 (Pilot)}
+\label{sec:llm-eval}
+
+The three rule-based dimensions (D1--D3) operate on lexical and syntactic surface
+features and are context-free by design: the D1 score for \textit{``understand the
+principles of machine learning''} is the same regardless of whether the module is
+a first-year introductory unit or a Level 9 specialist course. The remaining three
+dimensions (D4 scope appropriateness, D5 assessability signal, D6 NFQ calibration)
+require contextual judgement that is beyond the capacity of rule-based methods,
+and are therefore operationalised through an LLM evaluator.
+
+\paragraph{Architecture.}
+The evaluator (\texttt{score-llm-claude.mjs}) makes a single structured API call
+per LO to the Anthropic Claude API, using a prompt that combines:
+
+\begin{enumerate}
+  \item \textbf{Module context:} module code, title, department, ECTS credits, NFQ level,
+    and the full module descriptor text (truncated to 200 words where necessary).
+  \item \textbf{The LO under evaluation,} identified by its within-module index.
+  \item \textbf{The D4--D6 rubric,} presented as a structured scoring instrument with
+    explicit 0--3 anchor descriptions per dimension.
+  \item \textbf{NFQ level descriptors,} mapping each integer level to the QQI knowledge,
+    skill, and competence expectations for that level.
+\end{enumerate}
+
+The model is instructed to respond with valid JSON in a fixed schema
+(\texttt{\{d4: \{score, rationale\}, d5: \{score, rationale\}, d6: \{score, rationale\}\}})
+and to reason step by step before committing to each score. Response temperature is
+left at the API default (not set); scores are clamped to $[0, 3]$ and rounded to the
+nearest integer. Responses that do not parse as valid JSON, or that are missing any
+required dimension, are logged as errors and excluded from analysis.
+
+\paragraph{Current status.}
+A pilot evaluation has been completed on the MU corpus
+(\todo{insert $n$ from scored-llm-claude.json}), using \texttt{claude-haiku-4-5}
+as the evaluating model. Full cross-institutional evaluation is planned but not yet
+complete. Results from the pilot are not reported in the current paper; this section
+documents the methodology for the follow-on analysis.
+
+\paragraph{Policy-grounded prompt architecture.}
+The v2 evaluator (\texttt{score-llm-v2.mjs}) extends the pilot with a two-tier prompt
+structure designed to ground the LLM in the same normative framework as an expert
+human rater. The \textbf{system prompt} (fixed across all calls, eligible for Anthropic
+prompt caching) contains:
+
+\begin{itemize}
+  \item \textbf{QQI Policies and Criteria for the Validation of Programmes}
+    \citep{qqi2017validation} and \textbf{QQI Core Policies and Criteria}
+    \citep{qqi2024core} — the Irish national standards requiring that module LOs
+    are explicitly specified, plainly written, not vague or generalised, and
+    appropriate to NFQ level and credit volume.
+  \item \textbf{QQI Assessment and Standards} \citep{qqi2022assessment} — requiring
+    assessment to be criterion-referenced against stated outcomes.
+  \item \textbf{ECTS Users' Guide} \citep{ec2015ects} — the Bologna framework
+    requiring demonstrable achievement and discouraging unobservable verbs such as
+    \textit{understand} and \textit{know}.
+  \item \textbf{Cedefop (2017)} \citep{cedefop2017lo} — QQI's stated normative
+    reference for LO writing guidance, including active verb requirements, specificity
+    criteria, and measurability standards.
+  \item \textbf{NFQ level descriptors} (levels 6--10) — knowledge, know-how/skill,
+    and competence expectations at each level, used to ground D6 calibration.
+  \item \textbf{The D1--D6 rubric}, presented as a structured scoring instrument
+    with explicit 0--3 anchor descriptions per dimension.
+\end{itemize}
+
+The \textbf{user prompt} (per LO) contains an institution-specific context block
+selected by institution code, drawing from a corpus of LO writing guidance documents
+collected from all sixteen institutions in the corpus. These documents range from
+full standalone institutional guides (DCU Teaching Enhancement Unit, 2023; UCC CIRTL,
+2023) to QA framework appendices and curriculum review checklists. Where an institution
+has adopted QQI or Kennedy \citeyear{kennedy2007writing} as its primary reference without
+supplementary guidance, the evaluator falls back to the shared policy layer. The
+user prompt additionally provides module code, title, ECTS credits, NFQ level, and
+module descriptor text.
+
+This architecture means the evaluator is answering the question a QQI validation
+panel would ask: not merely whether an LO contains an action verb, but whether it
+meets the standards the institution is itself required to apply.
+
+\paragraph{Computational efficiency: prompt amortisation through batching.}
+A policy-grounded LLM evaluator introduces a structural cost asymmetry: the system
+prompt --- containing the full QQI, ECTS, Cedefop, and NFQ policy layer plus the
+evaluation rubric --- is approximately 1,200 tokens and is fixed per API call, while
+the per-LO user content (institutional context block, module descriptor, and LO text)
+is approximately 265 tokens. When LOs are evaluated one per call, the fixed cost
+dominates: approximately 82\% of input tokens are system prompt, applied to a single
+LO. Sending $N$ LOs per call amortises the system prompt across $N$ instances,
+reducing the effective input token cost per LO to:
+
+\begin{equation}
+  C_{\text{input}}(N) = \frac{T_{\text{sys}}}{N} + T_{\text{lo}}
+\end{equation}
+
+where $T_{\text{sys}}$ is the system prompt token count and $T_{\text{lo}}$ is the
+per-LO user content token count.
+
+Table~\ref{tab:batch} shows empirical results from the MU pilot
+(\texttt{gpt-4o-mini}; $n = 50$ per condition; 300 output tokens budgeted per LO).
+
+\begin{table}[H]
+\centering
+\caption{Effect of batch size on LLM evaluation cost and throughput (MU pilot, gpt-4o-mini).}
+\label{tab:batch}
+\begin{tabular}{rrrrrr}
+\toprule
+\textbf{Batch} & \textbf{Input tok/LO} & \textbf{Output tok/LO} & \textbf{Cost/LO} & \textbf{LOs/min} & \textbf{Full corpus est.} \\
+\midrule
+1  & 1,465 & 162 & \$0.000317 & 14.6 & \$73.9 \\
+5  &   516 & 163 & \$0.000175 & 16.6 & \$40.8 \\
+10 &   398 & 143 & \$0.000146 & 31.3 & \$34.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The input token saving follows the expected curve: moving from batch~1 to batch~5
+reduces per-LO input tokens by 65\%; moving from batch~5 to batch~10 yields a further
+23\% reduction, reflecting the diminishing-returns character of the harmonic series.
+Output tokens are essentially constant across batch sizes (143--163 tokens per LO),
+since each LO's evaluation is generated independently within the response. Throughput
+at batch~10 doubles relative to batch~1 (31.3 vs 14.6 LOs/min) because fewer API
+round-trips are required regardless of per-call latency.
+
+Error rates were zero at both batch~5 and batch~10 when output token budget was set to
+$300 \times N$ tokens per call. A tighter budget (150 tokens per LO, used in initial
+testing) produced truncation errors on LOs with long module descriptors; increasing
+the budget resolved this without materially increasing cost, since output tokens for
+short responses are not charged for unused budget.
+
+The practical recommendation for corpus-scale evaluation is batch~5 as a conservative
+choice (well-tested, low error rate, 45\% cost reduction vs single-LO) or batch~10
+for maximum efficiency (54\% cost reduction, doubled throughput, zero errors in
+pilot). Batches larger than~10 are not recommended: the model must track more
+simultaneous evaluation targets within a single response, increasing the risk of
+cross-LO confusion, and the marginal cost saving beyond batch~10 is small.
+
+This batching approach generalises to any policy-grounded LLM evaluation task where
+the system prompt is substantially larger than the per-instance user content --- a
+common configuration when providing regulatory or institutional context for document
+quality evaluation.
+
+\paragraph{Inter-rater reliability design.}
+A stratified sample of 300--500 LOs will be drawn from across the corpus (stratified
+by institution sector, NFQ level, and D1 tier to ensure coverage of edge cases) and
+evaluated by three raters: (1) the rule-based NLP pipeline (D1--D3); (2) the LLM
+evaluator (D1--D6, providing an independent D1--D3 signal for cross-validation);
+and (3) one or more expert human raters. Pairwise inter-rater reliability will be
+reported as Krippendorff's $\alpha$ for ordinal D1--D6 scales and Cohen's $\kappa$
+for D3 as a binary (student-centred / not student-centred) measure.
+The IRR analysis is reported in a companion paper.
+\todo{Update when IRR data are available.}
+
+\subsection{Human Evaluation}
+\label{sec:human-eval}
+
+Human evaluation provides the interpretive gold standard against which both the NLP
+and LLM streams are validated. Expert raters --- academic staff with experience in
+programme design, QQI validation processes, or quality assurance --- evaluate the
+same stratified sample used for IRR, applying the D1--D6 rubric with the same
+policy context documents available to the LLM evaluator.
+
+Human evaluation is not positioned as a superior method but as a different one.
+It brings disciplinary sensitivity and institutional knowledge that neither the NLP
+pipeline nor the LLM evaluator can fully replicate; it is also subject to rater
+fatigue, anchoring effects, and disciplinary bias that automated methods avoid.
+The three streams are therefore complementary: the NLP pipeline provides scalable,
+reproducible measurement across the full corpus; the LLM evaluator provides
+policy-grounded evaluation at scale; and the human raters provide the interpretive
+anchor that validates both.
+
+Rater training will use a common protocol: a briefing document presenting the rubric
+and policy framework, ten calibration LOs with consensus scores and rationale, and
+an instruction to treat each LO as independent (no cross-LO anchoring within a module).
+\todo{Human evaluation to be conducted — protocol finalised, rater recruitment pending.}
+
+\subsection{Constructive Alignment Analysis}
+
+For the constructive alignment extension, we matched module D1 scores against
+assessment modality data. At Maynooth University, assessment data were extracted
+from the institutional module descriptor system: each module records the percentage
+weight of continuous assessment (CA) versus formal examination. At MTU, the Akari
+assessment management system provides richer data, including per-component
+assessment type, weight, and --- critically --- a mapping from each component to the
+specific LO indices it is designed to assess.
+
+Misalignment was operationalised as follows: a module is classified as \textbf{Type A}
+(confirmed misalignment) when its mean D1 verb tier $\geq 2.0$ (clear observable or
+above), its formal examination weight $\geq 70\%$, and (for MTU) the high-demand LOs
+are specifically mapped to the examination component with no CA rescue. A module is
+classified as \textbf{partially rescued} when high-demand LOs appear in both the
+examination and CA component mappings. Type B misalignment (low D1 + high CA weight)
+captures the converse problem: assessment practice that exceeds the aspiration of
+the LO language.
+
+% ════════════════════════════════════════════════════════════
+\section{Results}
+\label{sec:results}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Cross-Institutional D1 Distribution}
+
+Figure~\ref{fig:d1dist} \todo{Insert bar chart: D1 mean by institution, coloured by
+sector (PU/TU/PS)} shows the D1 mean for each of the ten institutions. The
+within-PU-sector consistency is notable, with five of six universities returning means
+between 1.627 and 1.736; UCD (1.158) is an outlier requiring methodological scrutiny
+(see below). TU means range from 1.529 (SETU) to 1.846 (ATU and MTU), with SETU
+occupying a position closer to the university cluster than the other TUs --- a finding
+discussed in Section~\ref{sec:discussion}. The sector gap of $\Delta = 0.203$ (PU mean
+1.572, TU mean 1.775) is consistent in direction across every institution; no TU mean
+falls below the five-university mean excluding UCD (1.695).
+
+\begin{table}[H]
+\centering
+\caption{D1 tier distribution by sector.}
+\label{tab:tiers}
+\begin{tabular}{lrrrrrr}
+\toprule
+& \multicolumn{2}{c}{\textbf{Tier 0}} & \multicolumn{2}{c}{\textbf{Tier 1}} & \multicolumn{2}{c}{\textbf{Tier 2+}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+\textbf{Sector} & \textbf{n} & \textbf{\%} & \textbf{n} & \textbf{\%} & \textbf{n} & \textbf{\%} \\
+\midrule
+University  & 10,198 &  8.3 & 71,256 & 58.0 & 41,401 & 33.7 \\
+TU          &  3,827 &  3.7 & 51,243 & 49.5 & 48,370 & 46.8 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The Tier 0 rate differential is particularly notable: 8.3\% of PU LOs
+open with an unobservable verb versus 3.4\% in the TU sector ($\Delta = 4.9$
+percentage points). At UCD, which returns the lowest D1 mean in the corpus (1.158),
+13.4\% of LOs open with a Tier 0 verb. The UCD D1 mean is substantially below
+the five-university mean excluding UCD (1.695), which may reflect formatting
+artefacts in UCD's module descriptor export --- specifically, a 31.2\% rate of
+null or near-null LO fields --- as well as genuine quality variation; this is
+flagged for follow-up in the IRR phase (D4--D6 LLM scoring). The dominant
+Tier 0 verb across all universities is \textit{understand} (appearing in 2,065
+UCD LOs alone); at TUs, \textit{understand} is present but is not the dominant
+Tier 0 form.
+
+The TU advantage on verb observability may reflect the vocational and professional
+orientation of TU programmes, in which the performative specification of outcomes
+--- what the graduate can \emph{do in a professional context} --- is more deeply
+embedded in curriculum culture \citep{dait2022tu}. It may also reflect the
+influence of QQI programme validation processes on TU module design, or historical
+differences in how Bloom's taxonomy has been adopted and enforced in curriculum
+approval workflows across sector types.
+
+\subsection{Dominant Tier 0 Verbs}
+
+Table~\ref{tab:tier0verbs} lists the fifteen most frequent Tier 0 verbs across
+the full corpus. The dominance of \textit{understand} is consistent with prior
+findings in the international literature \citep{kennedy2007writing}; it is
+sufficiently common to suggest institutional habit rather than individual authorial
+choice.
+
+\begin{table}[H]
+\centering
+\caption{Top 15 Tier 0 verbs (full corpus, $n$ = 226,295 LOs).}
+\label{tab:tier0verbs}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Verb} & \textbf{Count} & \textbf{\% of Tier 0} \\
+\midrule
+understand        & \todo{n} & \todo{\%} \\
+appreciate        & \todo{n} & \todo{\%} \\
+know              & \todo{n} & \todo{\%} \\
+be aware of       & \todo{n} & \todo{\%} \\
+learn             & \todo{n} & \todo{\%} \\
+gain              & \todo{n} & \todo{\%} \\
+be familiar with  & \todo{n} & \todo{\%} \\
+comprehend        & \todo{n} & \todo{\%} \\
+recognise         & \todo{n} & \todo{\%} \\
+grasp             & \todo{n} & \todo{\%} \\
+explore           & \todo{n} & \todo{\%} \\
+familiarise       & \todo{n} & \todo{\%} \\
+enhance           & \todo{n} & \todo{\%} \\
+cover             & \todo{n} & \todo{\%} \\
+develop awareness & \todo{n} & \todo{\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\note{Run verb frequency query across full corpus to populate Table 3.}
+
+\subsection{D2 and D3: Behavioural Singularity and Student-Centredness}
+
+Across the full corpus, the majority of LOs demonstrate adequate student-centredness
+(D3 $\geq 2$; \todo{n}\%), reflecting widespread adoption of the standard
+\textit{``On completion of this module the student will be able to\ldots''} framing.
+However, behavioural singularity (D2) reveals meaningful variation: \todo{n}\% of LOs
+contain two or more distinct action verbs in a single statement, and \todo{n}\% contain
+three or more. Compound LOs of this kind resist reliable assessment design and create
+ambiguity about which competence is being evaluated.
+
+\subsection{Institutional Format: The TU Dublin Finding}
+\label{sec:tud}
+
+TU Dublin presented a methodologically distinct case. Scraping of 5,449 publicly
+accessible module catalogue pages (TUD's \textit{Vault} system) revealed that TUD
+does not publish student-centred learning outcomes on its public module pages. Instead,
+modules are described using a module aims format: \textit{``The aim of this module
+is to [verb]\ldots''}. This format is grammatically and epistemologically distinct
+from an LO: it describes the module's instructional intention rather than the
+student's expected achievement.
+
+Of 5,449 pages queried, 2,687 (49.3\%) yielded extractable aim statements; 89
+contained explicit \textit{``students will be able to\ldots''} LOs. The mean D1
+score for extracted TUD aims (1.458) is lower than that of any other TU in the
+corpus and is comparable to the university cluster. However, direct comparison
+with institutions publishing student-centred LOs is methodologically inappropriate;
+the aims format is itself the finding.
+
+A supplementary investigation discovered that TU Dublin does publish full
+QQI-compliant module catalogues in PDF form for at least one school. Four PDF
+module catalogues for the \textit{Spatial Planning and Environmental Management}
+programme (TU835, Stages 1--4, 2024--25) were retrieved from the TU Dublin public
+website and parsed using a \texttt{pdfplumber}-based extractor targeting the Akari
+M1 template format. Subsequent discovery identified a second PDF format --- TU Dublin's
+Coursebuilder (Akari M2) template --- used for five further programmes. Systematic
+URL probing of all 26 TUD school media directories against 542 programme codes
+(147 from the CAO handbook plus codes identified via the TU Dublin A-Z courses page
+and a supplementary sweep of the TU001--TU199 short-code range)
+yielded PDFs for six programmes in total:
+
+\begin{itemize}
+  \item \textbf{TU835} (Architecture/Spatial Planning, 4 stages): 35 modules, 206 LOs in M1 template format
+  \item \textbf{TU874} (Mathematical Sciences, 4 stages): 61 modules, 362 LOs in Coursebuilder format
+  \item \textbf{TU078} (Mathematical Sciences postgraduate, 1 stage): 8 modules, 59 LOs in Coursebuilder format
+  \item \textbf{TU079} (Mathematical Sciences postgraduate, 1 stage): 8 modules, 56 LOs in Coursebuilder format
+  \item \textbf{TU248}: 4 modules, 27 LOs in Coursebuilder format
+  \item \textbf{TU5294}: 4 modules, 26 LOs in Coursebuilder format
+\end{itemize}
+
+Combined, the PDF corpus yields 120 unique modules and 736 student-centred LOs
+with a mean D1 score of 1.837 --- substantially higher than the Vault aims corpus
+and consistent with TU-sector norms. These records are included in the corpus.
+The remaining TUD schools do not appear to have published equivalent PDFs through
+discoverable URL patterns; contact with the TUD Quality Office for comprehensive
+coverage is recommended for future work. TUD is, to our knowledge,
+the only Irish HEI whose primary public module catalogue does not publish
+student-centred learning outcomes system-wide, representing a transparency concern
+independent of what may exist in internal programme documentation.
+
+\subsection{Specialist Sector: NCAD}
+
+The National College of Art and Design (NCAD) presents a methodologically and
+substantively distinctive case. Module descriptors were retrieved from NCAD's public
+website as individual PDF files and parsed to extract LO text, assessment components,
+and LO-to-assessment mappings. The resulting corpus (79 modules, 269 LOs) is small
+relative to institutional HEI corpora but constitutes the complete publicly available
+set for the undergraduate programmes surveyed.
+
+NCAD returns the highest D1 mean in the corpus (1.796), with Tier 0 at 2.6\% ---
+lower than any other institution. This is consistent with the performative nature of
+art and design education: module LOs are characterised by observable, practice-based
+verbs (\textit{demonstrate, design, develop, create, produce, exhibit}) that map
+naturally to high D1 tiers. The absence of Tier 0 language (\textit{understand,
+appreciate}) is itself a disciplinary marker.
+
+Equally notable is NCAD's assessment profile: across all 79 modules, zero formal
+examinations are recorded. Assessment is exclusively portfolio-, project-, and
+presentation-based --- a complete CA model. This represents a natural point of
+comparison with the confirmed Type A modules identified at MTU, SETU, and NCI,
+where high-demand LOs are paired with examination-heavy assessment; at NCAD,
+the assessment modality is structurally aligned to the LO language by institutional
+design.
+
+\subsection{Private Sector: Griffith College Dublin}
+
+Griffith College Dublin (GC) is a designated higher education institution operating
+under the Qualifications and Quality Assurance (Education and Training) Act 2012.
+Module LO data were retrieved from PDF module descriptor documents linked from
+programme pages on the Griffith College website. Seventy-four unique PDFs were
+identified and downloaded; 63 (85.1\%) contained parseable numbered learning
+outcome lists. The remaining 11 PDFs provided aims-only or empty descriptor text
+and were excluded.
+
+PDFs follow a standardised format that includes module title, ECTS credits, NFQ level,
+numbered LOs (using Arabic or Roman numerals across two format variants), and a
+``Module Objectives'' or ``Module aims and objectives'' section used as the
+descriptor field. No module codes are published; GC records carry the module title
+as the primary identifier.
+
+The 63 modules yield 441 student-centred LOs --- a mean of 7.0 LOs per module,
+higher than the corpus-wide average. GC returns the highest D1 mean in the corpus
+(1.914), with Tier 0 at 0.5\% (2 LOs), the second-lowest Tier 0 rate after MIE.
+The verb profile is markedly action-oriented; modal verbs (\textit{apply, analyse,
+evaluate, design, implement}) dominate, consistent with a strong professional and
+applied orientation across Griffith's programme portfolio. The distribution of
+assessment data was not available in the PDF format and GC contributes to LO quality
+analysis only.
+
+\subsection{College of Education Sector: MIE}
+
+Marino Institute of Education (MIE) contributes the smallest and methodologically
+most distinctive sub-corpus in this study. Four undergraduate programme handbooks
+were parsed: B.Ed.\ (Primary), B.Sc.\ Early Childhood Education, B.Sc.\ Education
+Studies, and B.Oid.\ (Irish-medium B.Ed.). The B.Oid.\ handbook is in Irish (Gaeilge)
+and is excluded from D1 scoring, as the verb lexicon is English-only; its modules
+are retained in the corpus with a \texttt{language=ga} flag.
+
+Of 163 modules across the four programmes, only 14 (8.6\%) contain student-centred
+learning outcomes meeting the trigger criterion (\textit{On/Upon successful completion
+of this/the module}, or the Irish equivalent \textit{Ar chríochnú an mhodúil});
+the remaining 149 modules (91.4\%) carry module descriptions but no formal LOs.
+B.Sc.\ Education Studies presents zero LO-bearing modules across its entire
+programme. The 49 scoreable LOs yield a D1 mean of 1.592 with Tier 0 at 0.0\%.
+
+The headline LO-absence rate is less informative than the within-institution
+pattern: modules \textit{within the same programme and academic year} differ in
+whether they carry formal LOs, with no apparent institutional standard governing
+which module types are required to do so. This is not a case of a sector-wide
+convention against LO publication (such as might partially explain TUD's
+aims-format corpus); it is an inconsistency of practice within a single institution.
+For a teacher education college whose graduates will be expected to write LOs for
+their own classroom teaching, the absence of a consistent institutional LO
+framework is itself a notable finding. Tier 0 at 0.0\% --- the lowest in the
+corpus --- suggests that where LOs \textit{are} written at MIE, verb choice is
+consistently observational; the quality deficit lies in coverage, not in
+the language used where LOs exist.
+
+\subsection{Constructive Alignment: Maynooth University}
+
+At MU, 2,139 modules had complete D1 scoring and published assessment weight data.
+Cross-tabulating D1 mean tier against examination weight revealed 73 modules with
+mean D1 $\geq 2.0$ and examination weight $\geq 70\%$. Applying a third filter ---
+zero reported laboratory or practical hours in the timetabled T\&L activities ---
+reduced this to \textbf{49 confirmed Type A} modules: modules in which high-demand
+LOs are promised, examination-heavy assessment is applied, and no practical learning
+activity is recorded that might provide an alternative alignment pathway.
+
+The remaining 24 modules (high D1, exam $\geq 70\%$, but with laboratory hours
+present) were classified as ambiguous: the CA component might rescue alignment
+if the CA is authentically aligned to the high-demand LOs, but MU's data recording
+practice --- CA as a single aggregate percentage weight, without component type ---
+does not permit this determination from data alone.
+
+\subsection{Constructive Alignment: Munster Technological University}
+
+MTU's Akari assessment management system enabled a substantially more precise analysis.
+Of 4,987 modules with both D1 scoring and confirmed assessment data, \textbf{114}
+met the Type A threshold (mean D1 $\geq 2.0$, exam $\geq 70\%$). The LO-to-component
+index in Akari maps each assessment component to the specific LO indices it is
+designed to assess, enabling the following classification:
+
+\begin{itemize}
+  \item \textbf{55 confirmed misaligned}: high-demand LOs (D1 $\geq 2$) are
+    specifically mapped to the formal examination component, with no CA component
+    also targeting those LOs. The examination is the sole instrument for assessing
+    the highest-demand outcomes.
+
+  \item \textbf{101 partially rescued}: the module is examination-heavy overall, but
+    high-demand LOs are also mapped to at least one CA component. The headline exam
+    percentage is misleading as a misalignment indicator; the internal LO mapping
+    reveals adequate alignment.
+
+  \item \textbf{1 fully aligned}: all high-demand LOs are mapped exclusively to CA
+    components despite the high examination weight.
+
+  \item \textbf{7}: LO index data insufficient to classify.
+\end{itemize}
+
+The distribution of CA types in confirmed misaligned MTU modules is revealing
+(Table~\ref{tab:catypes}). Short Answer Questions (SAQ) is the most frequent CA
+type (20 instances), which is effectively examination-like in cognitive structure:
+it assesses recall and short-form reproduction rather than the higher-order
+performance implied by the high-demand LO verbs.
+
+\begin{table}[H]
+\centering
+\caption{CA component types in MTU confirmed misaligned modules ($n$ = 55).}
+\label{tab:catypes}
+\begin{tabular}{lr}
+\toprule
+\textbf{CA Component Type} & \textbf{Count} \\
+\midrule
+Short Answer Questions     & 20 \\
+Other                      & 14 \\
+Written Report             & 12 \\
+Project                    & 12 \\
+Practical/Skills Evaluation & 10 \\
+Essay                      &  7 \\
+Open-book Examination      &  5 \\
+Presentation               &  4 \\
+Non-MTU Exam               &  1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Constructive Alignment: South East Technological University}
+
+SETU's Akari data provides a third instance of the gold-standard LO-to-component
+analysis. Of 3,772 modules with D1 scoring and confirmed assessment data, \textbf{7}
+meet the confirmed Type A threshold (mean D1 $\geq 2.0$, exam $\geq 70\%$, high-demand
+LOs mapped exclusively to the examination component), with a further \textbf{40}
+partially rescued. SETU also yields \textbf{5 confirmed Type B} modules --- low D1
+(mean $< 1.5$) paired with CA-heavy assessment --- representing the converse alignment
+problem: assessment that exceeds the aspiration of the LO language. The CA-only
+component type in SETU confirmed misaligned modules is uniformly Assignment,
+consistent with the observation that written assignments are the most common CA
+rescue mechanism across Akari institutions.
+
+The lower absolute count of Type A modules at SETU relative to MTU (7 vs 55) is
+partially attributable to SETU's lower overall D1 mean (1.529 vs 1.846): fewer modules
+clear the D1 $\geq 2.0$ threshold. This raises the question of whether a lower
+Type A count represents better alignment or simply lower LO ambition.
+
+\subsection{Constructive Alignment: National College of Ireland}
+
+NCI's publicly accessible Akari instance provides a fourth gold-standard dataset.
+Of 749 modules analysed, \textbf{2} are confirmed Type A and \textbf{26} partially
+rescued. No Type B modules were identified. NCI's D1 mean (1.627) is comparable to
+the university cluster, despite NCI's classification as a private/specialised
+institution; its Tier 0 rate (10.4\%) is the highest in the non-university sample.
+
+Table~\ref{tab:comparison} summarises the alignment findings across all four institutions.
+
+\begin{table}[H]
+\centering
+\caption{Constructive alignment findings by institution and data method.}
+\label{tab:comparison}
+\begin{tabular}{lllll}
+\toprule
+& \textbf{MU} & \textbf{MTU} & \textbf{SETU} & \textbf{NCI} \\
+\midrule
+Modules with D1 + assessment data & 2,139 & 4,987 & 3,772 & 749 \\
+Type A candidates (D1 $\geq 2$, exam $\geq 70\%$) & 73 & 114 & 47 & 28 \\
+Confirmed misaligned & 49$^a$ & 55$^b$ & 7$^b$ & 2$^b$ \\
+Partially rescued & 24$^c$ & 101 & 40 & 26 \\
+Type B (low D1, CA-heavy) & n/a & --- & 5 & 0 \\
+Method & Proxy & LO-index & LO-index & LO-index \\
+CA type data available & No & Yes & Yes & Yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent
+$^a$ Confirmed by lab-hours proxy (zero practical hours). $^b$ Confirmed by
+LO-to-component index mapping. $^c$ Ambiguous: exam $\geq 70\%$ but lab hours present; CA may rescue alignment.
+
+The methodological contrast between MU (weight-only + lab-hours proxy) and the three
+Akari institutions (MTU, SETU, NCI) is itself a substantive finding.
+The 24 MU modules classified as ambiguous would be resolvable with component-level
+CA recording. The 101 MTU modules that appear misaligned on exam-weight alone but
+are resolved as partially aligned by the LO index are modules that a weight-only
+analysis would misclassify. The precision of the Akari data is a direct consequence
+of the system's design; it suggests that the data infrastructure of assessment
+management systems has a direct bearing on the quality of evidence available for
+institutional review. The confirmed misalignment count across all four institutions
+(113 confirmed Type A modules) represents a conservative lower bound; the five
+institutions with weight-only or no assessment data would yield additional cases
+under the same criteria.
+
+\subsection{Readability of Module Descriptors and Learning Outcomes}
+\label{sec:readability}
+
+\note{This section reports planned readability analysis on module descriptor text and
+LO statements across the full corpus. No API cost — pure text processing.}
+
+A learning outcome that specifies an observable behaviour in the correct grammatical
+form may nonetheless be inaccessible to the student it is written for. Verb
+observability (D1) captures the \emph{epistemic} quality of an LO statement; its
+\emph{communicative} accessibility is a distinct dimension. Module descriptors and
+LO text are public-facing documents: students consult them when choosing programmes,
+planning their studies, and understanding what will be assessed. Their readability
+is therefore a student equity concern as much as a quality assurance one.
+
+We apply a suite of established readability measures to module descriptor text and
+LO statements across all institutions in the corpus:
+
+\begin{itemize}
+  \item \textbf{Flesch-Kincaid Grade Level (FKGL)}: estimates the US school grade
+    level required to comprehend a text; based on sentence length and syllable count.
+    A FKGL of 12--14 is typical for HE module descriptors; values above 16 suggest
+    prose that may impede student comprehension.
+
+  \item \textbf{Flesch Reading Ease (FRE)}: the inverse of FKGL on a 0--100 scale
+    (higher = more readable). More intuitive for non-specialist audiences and
+    policy reporting.
+
+  \item \textbf{Gunning Fog Index}: penalises words of three or more syllables,
+    directly flagging the nominalisation problem identified in systemic functional
+    linguistics (SFL) accounts of academic register
+    \citep{halliday1993language}. A Gunning Fog score above 12 is considered
+    difficult; above 17, obscure.
+
+  \item \textbf{Lexical density}: the ratio of content words (nouns, verbs,
+    adjectives, adverbs) to total words. In SFL, high lexical density characterises
+    written, formal register; very high density in module descriptors may indicate
+    information packing that reduces accessibility without increasing clarity
+    \citep{halliday1989spoken}.
+
+  \item \textbf{Average sentence length}: a direct measure of syntactic complexity;
+    correlates with cognitive load independent of vocabulary.
+\end{itemize}
+
+Table~\ref{tab:readability} reports preliminary findings from the two institutions
+for which the full pipeline has been run to date (MU and MTU; $n = 2{,}779$ and
+$n = 6{,}110$ modules respectively with sufficient descriptor text).
+
+\begin{table}[H]
+\centering
+\caption{Readability of module descriptors: MU (PU) vs MTU (TU). Higher FKGL and FOG
+indicate less readable text; higher FRE indicates greater readability; LD = lexical
+density (\%).}
+\label{tab:readability}
+\begin{tabular}{lrrrrr}
+\toprule
+Measure & \multicolumn{2}{c}{MU ($n=2{,}779$)} & \multicolumn{2}{c}{MTU ($n=6{,}110$)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+ & Mean & Median & Mean & Median \\
+\midrule
+FKGL            & 18.74 & 17.53 & 20.14 & 17.82 \\
+FRE             & 12.25 &  7.35 &  6.39 &  0.00 \\
+Gunning Fog     & 21.35 & 20.12 & 22.75 & 20.44 \\
+Lexical Density (\%) & 63.4 & 62.2 & 69.4 & 69.2 \\
+Avg Sentence Length & 25.2 & 21.8 & 23.4 & 16.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both institutions produce module descriptors that are substantially harder to read
+than is desirable for public-facing student documents. Mean FKGL values of 18.7 (MU)
+and 20.1 (MTU) correspond to postgraduate reading-level requirements; the Gunning Fog
+scores (21.4 and 22.7 respectively) far exceed the threshold of 17 typically considered
+obscure. MTU descriptors show markedly higher lexical density than MU (69.4\% vs
+63.4\%), consistent with the SFL prediction that professional/technical registers
+sustain higher information packing \citep{halliday1989spoken} --- a finding that
+warrants attention given the TU sector's stated commitment to student-centred learning.
+
+We computed Pearson correlations between D1 verb tier (per module mean) and each
+readability measure. The only substantive correlation was between D1 and lexical
+density (MU: $r = 0.225$; MTU: $r = 0.191$), suggesting that modules specifying
+more observable behaviours tend to use slightly denser, more content-rich prose ---
+consistent with the hypothesis that precise LO writing requires richer noun-phrase
+structures to specify conditions and criteria. Correlations between D1 and sentence-
+level measures (FKGL, FOG, ASL) were negligible in both institutions ($|r| < 0.07$),
+indicating that verb vagueness and syntactic complexity vary largely independently:
+a module can be written in plain sentences yet specify unobservable outcomes, or use
+complex prose to specify measurable ones.
+
+\todo{Extend readability pipeline to all nine corpus institutions (DCU, Galway, UCC,
+UCD, UL, ATU, SETU, TUD) once data collection is complete. Add cross-tab by NFQ level
+and faculty/discipline. Consult Susan Gottl{\"o}ber re Humanities descriptor language
+norms; Niamh Fortune re Social Sciences.}
+
+% ── Beyond D1: Curriculum Design Signals ────────────────────
+\subsubsection*{A note on the shadow curriculum}
+
+The analyses in Sections~\ref{sec:udl}--\ref{sec:skills} share a methodological
+caveat that is also a policy argument. Module descriptor text and published LOs
+constitute the \textit{visible curriculum}: the documented commitment made to
+students, accreditation bodies, and the public. They do not constitute the
+\textit{enacted curriculum}. UDL practices, skills development activities, and
+data literacy components that are present in teaching and assessment but absent
+from documentation are invisible to this analysis --- and to every analysis
+dependent on public-facing records.
+
+This is not merely a measurement limitation. Good practice that goes undocumented
+cannot be credited in national benchmarking, replicated by colleagues, or
+communicated to prospective students making module choices. Where the analyses
+below identify weak signal for UDL, skills, or data literacy, the most accurate
+reading is: \textit{the documentation does not claim it}. Whether the practice
+exists in the shadow curriculum is a question this dataset cannot answer --- but
+it is one that institutions are well-placed to investigate and, where the evidence
+supports it, to document visibly. The message is not deficit but opportunity:
+if it is happening, tell everyone.
+
+Where assessment component data is available (MTU, SETU, DkIT, NCI via Akari;
+MU via CA/exam weighting), it provides a second window onto enacted practice
+that the LO text alone cannot open. Sections below flag cases where assessment
+data corroborates or contradicts the UDL, skills, or alignment signal in the
+descriptor text.
+
+\subsection{Universal Design for Learning: Proxy Analysis}
+\label{sec:udl}
+
+\note{This section reports preliminary UDL proxy findings for MU (2,139 modules).
+Extension to the full corpus is planned. \textbf{[PLACEHOLDER: narrative to be
+developed with Niamh Fortune and Susan Gottl{\"o}ber.]}}
+
+Universal Design for Learning (UDL) \citep{cast2018udl} provides a complementary
+lens to verb-level quality analysis. Where D1 asks what cognitive performance an LO
+specifies, UDL principles ask whether the module's design creates the conditions for
+diverse learners to achieve that performance. We operationalised three UDL principles
+as proxies from module descriptor data at MU:
+
+\begin{itemize}
+  \item \textbf{Representation} (Principle I): diversity of teaching and learning
+    modalities recorded in the timetabled activity (lectures, laboratory, tutorial,
+    planned self-directed learning).
+  \item \textbf{Action and Expression} (Principle II): diversity of assessment
+    component types across the module.
+  \item \textbf{Engagement} (Principle III): presence of engagement-signalling
+    keywords in module descriptor text (e.g., \textit{collaborative},
+    \textit{problem-based}, \textit{authentic}, \textit{reflective}).
+\end{itemize}
+
+Across 2,139 MU modules with complete data, preliminary findings indicate:
+
+\begin{itemize}
+  \item 40.3\% of modules report a single teaching and learning modality (lectures
+    only), indicating low UDL Representation signal.
+  \item Only 5.4\% of modules show strong signal across all three UDL principles.
+  \item 17.9\% show no UDL signal (single T\&L modality, no engagement keywords,
+    single assessment component).
+  \item A weak positive correlation exists between UDL composite score and D1 mean
+    ($r = 0.059$); engagement keyword presence shows the strongest relationship
+    with verb observability ($r = 0.085$).
+  \item Department-level variation is pronounced: modules in Critical Skills show the
+    highest combined UDL and D1 profiles; modules in History show the lowest on
+    both dimensions.
+\end{itemize}
+
+These findings are preliminary and subject to the limitations of keyword-based proxy
+analysis. Descriptor text quality and completeness varies across departments and
+individuals. \todo{Extend UDL analysis to full nine-institution corpus once descriptor
+text is normalised across institutions. Consult with Niamh Fortune and Susan Gottl{\"o}ber re UDL in Irish HE context
+(Froebel/Social Sciences and Humanities perspectives respectively). Consider whether Strand 4 UDL paper
+material should be partially incorporated here or remain a separate publication.}
+
+\subsection{HEA Data and Digital Skills: Module Tagging Case Study}
+\label{sec:datadigital}
+
+\note{\textbf{[PLACEHOLDER: data and narrative to be developed with Tim Thompson (VP for Students and Learning) and John G. Keating.]}}
+
+In response to the HEA's \textit{Human Capital Initiative} mandate, Maynooth University
+undertook a systematic tagging of modules contributing to Data and Digital Skills
+competencies across its curriculum. This exercise combined human expert tagging with
+AI-assisted classification, enabling an agreement analysis between human and
+algorithmic judgements.
+
+\todo{Develop this section once John shares HEA Data/Digital reports. Key content to
+include: (a) methodology for human + AI tagging; (b) agreement analysis results;
+(c) distribution of Data/Digital modules across faculties and NFQ levels; (d) connection
+to LO quality findings --- does higher D1 verb tier correlate with stronger Data/Digital
+signal? (e) relevance to national skills policy. This section connects Strands 3 and 5
+of the broader research programme.}
+
+\subsection{Graduate Skills Alignment: QQI Framework}
+\label{sec:skills}
+
+\note{\textbf{[PLACEHOLDER: analysis complete; narrative to be developed with
+Máire Buckley, Experiential Learning Officer, MU.]}}
+
+QQI's \textit{Graduate Attributes Framework} \citep{qqi2022graduates} identifies
+a set of capabilities expected of Irish higher education graduates, including
+critical thinking and problem solving, communication, collaboration, creativity
+and innovation, research and inquiry, ethical responsibility, and self-direction.
+These are not discipline-specific but constitute a cross-sectoral baseline against
+which programme and module documentation can be examined.
+
+We operationalise each attribute as a keyword and phrase set applied to both LO
+text and module descriptor text across all fourteen institutions. Because
+documentation is the unit of analysis (see shadow curriculum note above), the
+measure captures whether institutions \textit{claim} these attributes in their
+public module records, not whether they deliver them.
+
+\begin{table}[H]
+\centering
+\caption{QQI Graduate Attribute keyword targets for corpus scanning.
+Sources: LO text and module descriptor text; assessment component labels where
+Akari data is available (MTU, SETU, DkIT, NCI, MU).}
+\label{tab:skills-targets}
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+\textbf{Attribute} & \textbf{LO / Descriptor targets} & \textbf{Assessment signal} \\
+\midrule
+Critical thinking & evaluate, critique, analyse, justify, argue, assess & essay, viva \\
+Communication & present, report, communicate, write, articulate & presentation, report \\
+Collaboration & collaborate, group work, team, peer review & group project \\
+Creativity \& innovation & design, create, develop, innovate, generate & portfolio, project \\
+Research \& inquiry & investigate, research, evidence-based, literature & dissertation, project \\
+Ethical responsibility & ethical, responsible, sustainability, equity, justice & reflection \\
+Self-direction & self-directed, independently, manage own learning & portfolio \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\todo{Run scan-skills.mjs across all 14 corpus institutions. Produce: (a) per-institution
+attribute coverage rates (proportion of modules with at least one keyword hit per
+attribute); (b) sector-level comparison (PU vs TU vs IT vs CE vs PS); (c) cross-tab
+with D1 tier (do high-D1 modules also show stronger skills signal?); (d) where Akari
+assessment data is available, flag modules where assessment component type corroborates
+the skills claim in the LO text. Consult Máire Buckley re QQI attribute definitions
+and any MU-specific graduate attribute policy. Flag whether Data/Digital overlaps
+with any QQI attribute (likely: research and inquiry, self-direction) to avoid
+double-counting with Section~\ref{sec:datadigital}.}
+
+\subsection{Alignment with National Policy Standards}
+\label{sec:policyalignment}
+
+\note{\textbf{[PLACEHOLDER: analysis complete; narrative and policy interpretation
+to be developed with Lisa O'Regan, Centre for Teaching \& Learning, MU. See
+\texttt{papers/policy-landscape-reference.md} for full policy language and
+mapping table.]}}
+
+The three-level policy framework described in Section~\ref{sec:policyframework}
+establishes concrete, testable requirements for LO quality. Table~\ref{tab:policy-mapping}
+maps these requirements to the D-dimensions of our rubric and summarises the
+corpus-level compliance picture.
+
+\begin{table}[H]
+\centering
+\caption{Mapping of policy requirements to rubric dimensions and corpus findings.
+Sources: ESG 2015 Standard 1.2; QQI Validation Policy 2021; NFQ Grid of Level
+Indicators; Dublin Descriptors (Cycle 1 and 2).}
+\label{tab:policy-mapping}
+\begin{tabularx}{\textwidth}{p{0.32\textwidth}p{0.22\textwidth}X}
+\toprule
+\textbf{Policy requirement} & \textbf{Rubric dimension} & \textbf{Corpus finding} \\
+\midrule
+\enquote{Specific and sufficiently detailed} (QQI) &
+  D1 Verb observability &
+  10.4\% of corpus LOs use Tier~0 (unobservable) verbs; range 2.6\%--23.9\% by institution \\
+\addlinespace
+\enquote{Specific} — one outcome per statement (implied) &
+  D2 Behavioural singularity &
+  \todo{D2 mean scores by institution — to insert} \\
+\addlinespace
+Student-centred LO format (ESG 1.2; Bologna) &
+  D3 Student-centredness &
+  TUD Vault (2,791 LOs) uses aims format; 736 student-centred LOs recovered from PDF catalogues across 6 programmes (TU835, TU874, TU078, TU079, TU248, TU5294); MIE 91.4\% of modules carry no student-centred LOs \\
+\addlinespace
+\enquote{Appropriate to specified NFQ level} (QQI) &
+  D6 NFQ level calibration (LLM) &
+  \todo{D6 results — to insert once LLM scoring complete} \\
+\addlinespace
+Assessment ensures MIPLOs are assessed (QQI) &
+  Constructive alignment analysis &
+  123 confirmed Type A modules across 5 institutions; MU: 49; MTU: 55; SETU: 7; DkIT: 10; NCI: 2 \\
+\addlinespace
+LOs present for all modules (QQI institutional QA) &
+  LO publication rate &
+  MIE: 8.6\% module LO rate; UCD: 31.2\% null; UL: 37.8\% null; TUD: aims-only \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Several findings warrant particular attention from a policy compliance perspective.
+First, the prevalence of Tier~0 verbs (\textit{understand}, \textit{know},
+\textit{appreciate}) across all fourteen institutions indicates that despite
+three decades of outcomes-based education policy, unobservable language remains
+embedded in Irish HE module documentation at scale. Second, the MIE no-LO rate
+(91.4\%) and TUD aims-format corpus represent structural rather than quality
+issues: the problem is not poorly written LOs but the absence of the
+student-centred outcome format that QQI and the Bologna process require. Third,
+the 123 confirmed Type A modules identified across five institutions represent
+documented cases in which QQI's assessment-alignment requirement is not met:
+high-demand LOs are promised but examination-only assessment is applied,
+producing a verifiable gap between the MIPLO commitment and the assessment
+instrument designed to verify it.
+
+\todo{Lisa O'Regan to develop: (a) contextualise findings against QQI's own
+review/audit findings where publicly available; (b) consider whether the null
+LO rates at UCD/UL represent institutional QA process failures or publication
+system artefacts (and the policy implications of each); (c) institutional
+response framing — recommendations for QA process improvement at programme
+approval stage; (d) international comparator — how does Ireland compare with
+EHEA peers on LO quality? Consider referencing EURASHE / EUA Learning and
+Teaching Thematic Peer Group findings if available.}
+
+% ════════════════════════════════════════════════════════════
+\section{Discussion}
+\label{sec:discussion}
+% ════════════════════════════════════════════════════════════
+
+\subsection{The PU--TU Gap}
+
+The consistent D1 advantage of the TU sector over the public university cluster ---
+$\Delta = 0.203$ (PU mean 1.572, TU mean 1.775), reproduced in direction across every
+institution in both clusters --- merits careful interpretation.
+It would be tempting to read this as evidence of a quality differential favouring TUs,
+and in the specific dimension of verb observability this reading is defensible.
+However, the interpretation should be contextualised.
+
+TU programmes, rooted in applied and professional education, are designed around the
+demonstration of competence in specific contexts. The programme approval and review
+culture in the technological sector, historically regulated through QQI processes
+with strong emphasis on measurable and vocational outcomes, may have produced a
+curriculum documentation practice in which observable verbs are more consistently
+selected. This is not necessarily evidence of deeper constructive alignment; it may
+reflect a discipline-level norm about how outcomes are articulated.
+
+Universities, by contrast, house a wider range of disciplines including humanities,
+social sciences, and pure sciences in which the objectives of education are
+genuinely more difficult to reduce to observable performance. A module in philosophy,
+history, or theoretical mathematics may legitimately aim for transformative
+\textit{understanding} that resists specification in the terms that Bloom's taxonomy
+most easily accommodates. The persistent presence of \textit{understand} in university
+LOs may therefore reflect both a quality problem (weak outcome design) and an
+epistemological resistance (the genuine difficulty of specifying what excellent
+philosophical or historical reasoning looks like in verb form).
+
+The collaboration of Maynooth University colleagues in the authorship of this paper
+reflects this tension directly. Faculty of Arts and Humanities and Faculty of Social
+Sciences perspectives are essential for distinguishing the legitimate complexity of
+humanistic learning objectives from the habitual use of vague language that could,
+with appropriate design support, be made more precise without sacrificing
+disciplinary integrity.
+
+\subsection{Constructive Alignment: A Solvable Problem}
+
+The finding that 113 modules across four institutions exhibit confirmed constructive
+misalignment (MU: 49; MTU: 55; SETU: 7; NCI: 2) is notable not primarily because of
+its scale, but because of what it implies about current quality assurance processes. These are not hidden or theoretical
+misalignments: they are encoded in publicly accessible module descriptors and
+institutional assessment records. A module approval process with routine access to
+D1 verb scoring and assessment modality data would, in principle, detect and flag
+these modules before students enrol.
+
+The 101 MTU modules initially appearing misaligned but resolved by LO-index mapping
+makes the complementary point: apparent misalignment is not always actual misalignment.
+Surface-level analysis of exam percentages without reference to the LO-level mapping
+of assessment components produces both false positives (modules flagged as misaligned
+that are in fact well-designed) and false negatives (modules that appear acceptable
+because their CA weight is high but whose CA is examination-like in structure, as the
+SAQ finding suggests).
+
+\subsection{Policy Implications}
+
+Three policy implications follow from these findings.
+
+\textbf{First}, module approval processes should incorporate routine LO quality
+checking at the verb level. This does not require human expert review of 232,000
+LOs; it requires a lightweight automated scoring step integrated into module
+registration or approval systems. Our pipeline, which processes the full corpus in
+under an hour on standard hardware, is deployable at institutional scale.
+
+\textbf{Second}, assessment data recording standards should be revised to capture
+component type, not merely percentage weight. The ambiguous category in MU's
+analysis --- 24 modules that cannot be resolved without component-type data ---
+is an artefact of data recording practice, not of the underlying educational reality.
+The investment required to capture \textit{Project}, \textit{Short Answer Questions},
+\textit{Presentation} alongside the percentage weight is minimal; the quality
+assurance value is substantial.
+
+\textbf{Third}, the TU Dublin finding invites a national conversation about the
+publication of learning outcomes on public module catalogue pages. If module
+descriptors are the primary instrument through which students make informed programme
+choices, and through which the sector accounts for what it teaches, then the
+widespread non-publication of student-centred learning outcomes is a transparency
+issue that QQI's review processes should address directly.
+
+\subsection{Limitations}
+
+Several limitations should be noted. The D1--D3 dimensions capture syntactic and
+lexical features of LO text; they do not assess the underlying quality of educational
+design or the lived experience of alignment in the classroom. A module with perfectly
+observable, student-centred, singularly specified LOs may still be poorly taught or
+poorly assessed in practice; conversely, a module with Tier 0 verbs in its formal
+descriptor may be taught with rigour and assessed authentically by a skilled practitioner.
+
+The lexicon-based approach to D1 scoring is limited by lexicon coverage and by the
+context-dependence of verb interpretation. \textit{Review}, for example, is assigned
+Tier 1 in our lexicon, but in some disciplinary contexts it describes a complex
+evaluative act more appropriately assigned to Tier 2. The v1.3 lexicon includes
+a context-dependent verb register to flag such cases for manual review; a fully
+automated treatment of context-dependence awaits LLM-based scoring (D4--D6, in progress).
+
+The constructive alignment analysis at MU is limited by the weight-only recording of
+continuous assessment. The 24 ambiguous modules cannot be resolved without
+component-type data, and some proportion of the 49 confirmed Type A modules may
+contain CA components not captured in the descriptor that do provide alignment rescue.
+Similarly, the MTU analysis is limited to modules for which the Akari system records
+LO-to-component mappings; a subset of modules had no such mapping and were excluded.
+
+% ════════════════════════════════════════════════════════════
+\section{Conclusion and Recommendations}
+\label{sec:conclusion}
+% ════════════════════════════════════════════════════════════
+
+This study provides the first cross-institutional, corpus-scale characterisation of
+learning outcome language quality in Irish higher education. Across 226,295 LOs from
+nine institutions, we find a consistent gap in verb observability between university
+and technological university sectors, with universities showing higher rates of
+unobservable Tier 0 verbs and lower mean D1 scores. The gap is reproducible across
+all institutions within each cluster and is unlikely to be artefactual.
+
+The extension to constructive alignment reveals that verb quality is necessary but
+not sufficient: 55 MTU modules (and a minimum of 49 MU modules) exhibit confirmed
+misalignment between high-demand LO language and assessment modalities that cannot
+elicit the specified performance. The methodological contrast between MU and MTU
+demonstrates that the precision of this analysis is directly determined by the
+granularity of assessment data recording practice.
+
+We offer the following recommendations:
+
+\begin{enumerate}
+  \item \textbf{Integrate automated LO quality scoring into module approval workflows.}
+    Lightweight rule-based scoring of the leading action verb is sufficient to flag
+    Tier 0 usage for author review. This does not constrain academic freedom; it
+    surfaces language choices for deliberate consideration.
+
+  \item \textbf{Revise assessment data recording standards to capture component type.}
+    The distinction between \textit{Project} and \textit{Short Answer Questions} as
+    CA modalities is not a bureaucratic nicety; it is the difference between a
+    resolvable and an unresolvable alignment question.
+
+  \item \textbf{Establish a national expectation for LO publication on public module
+    catalogue pages.} The TU Dublin finding indicates that the absence of student-centred
+    LOs on public pages is not inevitable; it is an institutional choice. QQI programme
+    review should include a check on public LO publication.
+
+  \item \textbf{Extend the analysis to D4--D6.} Rule-based scoring captures syntax;
+    LLM-based scoring of scope, assessability, and NFQ calibration will extend the
+    analytical depth and move toward a composite quality score suitable for
+    institutional dashboard reporting.
+
+  \item \textbf{Involve academic development units in disciplinary interpretation.}
+    The university--TU gap cannot be addressed by blanket verb-replacement advice.
+    Humanities and social science disciplines require disciplinary-appropriate guidance
+    on how to specify complex understanding in assessable terms without reducing
+    learning to performance. Faculty-level academic development, informed by
+    discipline-specific examples from the corpus, offers the most promising pathway.
+\end{enumerate}
+
+The data, verb lexicon, and scoring pipeline are available to institutional partners
+and QQI on request. \todo{Add data availability / supplementary materials statement.}
+\label{sec:data-availability}
+
+% ════════════════════════════════════════════════════════════
+\section*{Acknowledgements}
+% ════════════════════════════════════════════════════════════
+
+\todo{Add acknowledgements: MU ADTL office, participating institutions, any funding statement.}
+
+% ════════════════════════════════════════════════════════════
+\bibliographystyle{apalike}
+\bibliography{lo-quality-refs}
+% ════════════════════════════════════════════════════════════
+
+% ════════════════════════════════════════════════════════════
+\appendix
+% ════════════════════════════════════════════════════════════
+
+\section{LLM Evaluator Prompts}
+\label{app:prompts}
+
+This appendix reproduces the exact prompts used in the policy-grounded LLM
+evaluation (\texttt{score-llm-v2.mjs}). Full scripts and all sixteen institutional
+context blocks are available in the project repository
+(see Section~\ref{sec:data-availability}).
+
+% ── A.1 ───────────────────────────────────────────────────────────────────────
+\subsection{System Prompt: Policy Layer and Evaluation Rubric}
+\label{app:system-prompt}
+
+The system prompt is fixed across all API calls and contains the complete policy
+grounding and rubric (approximately 1,200 tokens; amortised across $N$ LOs per
+call --- see Table~\ref{tab:batch}).
+
+\begin{small}
+\begin{verbatim}
+You are an expert evaluator of learning outcomes (LOs) in Irish higher
+education. Your evaluations are grounded in the following policy framework,
+which defines what a well-formed LO must achieve in this jurisdiction.
+
+## QQI Policies and Criteria for the Validation of Programmes (QP.17, 2017)
+- Module LOs must be "explicitly specified" — vague or generalised
+  statements are non-compliant.
+- LOs must not be "vague, ambiguous or generalised."
+- LOs must be "appropriate to award title and credit volumes."
+- Minimum Intended Module Learning Outcomes (MIMLOs) are the binding
+  specification.
+
+## QQI Core Policies and Criteria (QP 24, 2024)
+- LOs must be plainly written so that students can understand what they
+  are expected to achieve.
+- QQI's stated normative reference for LO writing guidance is Cedefop (2017).
+
+## ECTS Users' Guide (European Commission, 2015)
+- LOs describe what the learner will be able to know, understand, and do
+  after completing a learning activity.
+- LOs must describe demonstrable, observable achievement — not curriculum
+  content coverage.
+- Verbs such as "understand" and "know" are explicitly discouraged as
+  unobservable.
+- One ECTS credit corresponds to 25-30 hours of student workload — scope
+  must be calibrated accordingly.
+
+## Cedefop (2017) — Defining, Writing and Applying Learning Outcomes
+   (QQI's normative reference)
+- Each LO should specify a single observable behaviour using an active verb.
+- Verbs should be drawn from a recognised taxonomy (e.g. Bloom's)
+  appropriate to the cognitive level.
+- LOs should be specific, measurable, and student-centred.
+- Common errors: using vague verbs (know, understand, appreciate, be
+  familiar with); writing aims or curriculum content as LOs; writing
+  teacher-centred rather than learner-centred statements.
+
+## NFQ Level Descriptors
+NFQ Level 6: Knowledge — broad general knowledge of field; Skill —
+  demonstrate a range of standard skills; Competence — act independently
+  in familiar contexts, limited autonomy.
+NFQ Level 7: Knowledge — broad knowledge with some theoretical depth;
+  Skill — apply range of skills to known or new contexts; Competence —
+  some autonomy in decision-making, take responsibility for outcomes.
+NFQ Level 8 (Honours Bachelor): Knowledge — detailed theoretical and
+  conceptual knowledge; Skill — demonstrate advanced skills including
+  synthesis, evaluation, critical analysis; Competence — act with
+  autonomy in novel complex contexts, take initiative.
+NFQ Level 9 (Masters): Knowledge — specialised knowledge at forefront
+  of field, including research; Skill — highly developed skills in
+  research, analysis, and problem-solving in unpredictable contexts;
+  Competence — act with substantial autonomy, manage complex professional
+  activities.
+NFQ Level 10 (Doctoral): Knowledge — original contribution to knowledge
+  at forefront of field; Skill — expert research and advanced technical
+  skills; Competence — exercise substantial authority, innovation, full
+  autonomy in academic or professional activity.
+
+## Evaluation Rubric
+
+D1 — VERB OBSERVABILITY TIER (for IRR against NLP pipeline)
+0 = Tier 0: Non-observable verb (know, understand, appreciate, be aware
+    of, be familiar with, learn) — cannot be assessed as stated.
+1 = Tier 1: Low-demand observable verb (identify, define, describe, list,
+    name, state, recall) — assessable but cognitively undemanding.
+2 = Tier 2: Mid-demand observable verb (apply, analyse, explain, compare,
+    demonstrate, calculate, classify) — standard HE-level demand.
+3 = Tier 3: High-demand observable verb (evaluate, critique, synthesise,
+    design, create, construct, formulate, justify) — advanced demand.
+
+D4 — SCOPE APPROPRIATENESS
+Does the scope match the NFQ level and ECTS credit volume of the module?
+0 = Scope is wrong: either a micro-task or a programme-level goal.
+1 = Scope is plausible but imprecise.
+2 = Scope is module-appropriate — a single assessable outcome at the
+    right granularity for this credit weight.
+3 = Scope is precisely calibrated — matches module content and credit
+    weight exactly.
+
+D5 — ASSESSABILITY SIGNAL
+Can a specific, valid assessment be pictured for this outcome?
+0 = No plausible assessment — describes a state, not a performance.
+1 = An assessment can be imagined but requires significant reinterpretation.
+2 = A clear assessment method is implied (exam question, lab task,
+    report, presentation, portfolio).
+3 = The LO directly signals a specific assessment approach, including
+    context or artefact type.
+
+D6 — NFQ LEVEL CALIBRATION
+Is the cognitive demand appropriate for the stated NFQ level?
+0 = Substantial mismatch — e.g. recall-only verb on NFQ 8/9.
+1 = Mild mismatch — one level below or above expected cognitive demand.
+2 = Consistent with NFQ level — the cognitive demand is appropriate.
+3 = Precisely calibrated — verb and content complexity match both NFQ
+    level and module context exactly.
+
+Respond with ONLY valid JSON in exactly this schema:
+{
+  "d1_verify": { "score": <0-3>, "verb": "<extracted verb>",
+                 "rationale": "<one sentence>" },
+  "d4":        { "score": <0-3>, "rationale": "<one sentence>" },
+  "d5":        { "score": <0-3>, "rationale": "<one sentence>" },
+  "d6":        { "score": <0-3>, "rationale": "<one sentence>" }
+}
+\end{verbatim}
+\end{small}
+
+% ── A.2 ───────────────────────────────────────────────────────────────────────
+\subsection{Representative User Prompt}
+\label{app:user-prompt}
+
+The user prompt is constructed per batch. The institutional context block is
+selected by institution code from a lookup table of sixteen entries (one per
+corpus institution); the module and LO fields are populated from the scored
+corpus record. This example shows a single-LO call for clarity; in batch mode
+the \texttt{LO~1}, \texttt{LO~2}, \ldots\ blocks are repeated within a single
+user message and the model returns a JSON array of the same length.
+
+\begin{small}
+\begin{verbatim}
+INSTITUTIONAL CONTEXT — MU:
+Maynooth University: Action verb is mandatory — "the important word in
+every learning outcome is the action verb." Staff required to write LOs
+"appropriate to learners' level and stage." LOs should identify WHAT
+the student does, not HOW. Maximum 8 LOs per module enforced by system.
+
+LO 1 [AC205_LO1]:
+Module: AC205 — MANAGEMENT & COST ACCOUNTING | NFQ Level 8 | 10 ECTS
+Descriptor: The purpose of this course is to equip students with an
+  explanation of management accounting as a basis for developing the
+  tools and knowledge required to meet management information needs.
+  Students will study the organisational content of management accounting;
+  cost accumulation for inventory valuation and profit measurement;
+  decision making; information for planning control and performance
+  measurement, and ethics.
+Text: "Describe and evaluate the management accountant's role,
+  organizational environment, accounting information systems and
+  possible ethical issues they face."
+
+Evaluate D1_VERIFY, D4, D5, D6. Return JSON only.
+\end{verbatim}
+\end{small}
+
+% ── A.3 ───────────────────────────────────────────────────────────────────────
+\subsection{Output Schema and Example Response}
+\label{app:output-schema}
+
+The model returns one JSON object per LO (or a JSON array in batch mode). Scores
+are clamped to $[0,3]$ and rounded to the nearest integer. Records that fail
+JSON parsing or omit any required dimension are logged as errors and excluded
+from analysis; they are retried automatically on the next run.
+
+Example response for the LO shown in Appendix~\ref{app:user-prompt}:
+
+\begin{small}
+\begin{verbatim}
+{
+  "d1_verify": {
+    "score": 1,
+    "verb": "describe",
+    "rationale": "The verb 'describe' is a low-demand observable verb,
+                  making it assessable but not cognitively challenging."
+  },
+  "d4": {
+    "score": 2,
+    "rationale": "The scope is module-appropriate, addressing the role
+                  of management accountants within the module context."
+  },
+  "d5": {
+    "score": 2,
+    "rationale": "A clear assessment is implied, such as an exam question
+                  or report requiring description and evaluation of the
+                  specified topics."
+  },
+  "d6": {
+    "score": 1,
+    "rationale": "Mild mismatch: the cognitive demand of 'describe' is
+                  below what is expected for NFQ Level 8."
+  }
+}
+\end{verbatim}
+\end{small}
+
+\noindent
+The full set of sixteen institutional context blocks, all evaluation scripts,
+and the complete scored output files are available at the project repository
+(see Section~\ref{sec:data-availability}).
+
+\end{document}

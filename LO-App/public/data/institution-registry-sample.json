@@ -1,0 +1,22 @@
+[
+  {
+    "code": "NCI",
+    "fullName": "National College of Ireland",
+    "sector": "PS",
+    "loCount": 3647,
+    "moduleCount": 749,
+    "d1Mean": 1.627,
+    "tier0Pct": 10.4,
+    "corpusStatus": "complete"
+  },
+  {
+    "code": "MU",
+    "fullName": "Maynooth University",
+    "sector": "PU",
+    "loCount": 12603,
+    "moduleCount": 2100,
+    "d1Mean": 1.85,
+    "tier0Pct": 8.2,
+    "corpusStatus": "complete"
+  }
+]

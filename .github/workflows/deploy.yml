@@ -32,6 +32,15 @@ jobs:
 
       - run: npm run build
 
+      - name: Build LO-App (slo-study)
+        working-directory: LO-App
+        run: npm ci && npm run build
+
+      - name: Copy LO-App build into dist/slo-study
+        run: |
+          mkdir -p dist/slo-study
+          cp -r LO-App/dist/. dist/slo-study/
+
       - uses: actions/configure-pages@v4
 
       - uses: actions/upload-pages-artifact@v3
