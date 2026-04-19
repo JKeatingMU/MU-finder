@@ -108,6 +108,93 @@ function StreamRow({ label, nlp, ai, human }: {
   );
 }
 
+const SCORE_LABEL: Record<number, string> = { 0: '0', 1: '1', 2: '2', 3: '3' };
+const TIER_LABEL: Record<number, string> = { 0: 'Tier 0 — Unobservable', 1: 'Tier 1 — Weak', 2: 'Tier 2 — Clear', 3: 'Tier 3 — Precise' };
+
+function scoreChip(score: number, note?: string): string {
+  const colors: Record<number, string> = { 0: '#dc3545', 1: '#fd7e14', 2: '#28a745', 3: '#007bff' };
+  const bg = colors[score] ?? '#888';
+  const label = note ? `${SCORE_LABEL[score]} · ${note}` : SCORE_LABEL[score];
+  return `<span style="background:${bg};color:#fff;padding:1px 6px;border-radius:3px;font-weight:bold;font-size:11px">${label}</span>`;
+}
+
+function tableRow(label: string, nlp: string, ai: string, human: string): string {
+  return `<tr style="border-top:1px solid #e5e7eb">
+    <td style="padding:5px 10px 5px 0;font-weight:600;color:#4b5563;white-space:nowrap">${label}</td>
+    <td style="padding:5px 10px;text-align:center;border-left:1px solid #e5e7eb">${nlp}</td>
+    <td style="padding:5px 10px;text-align:center;border-left:1px solid #e5e7eb">${ai}</td>
+    <td style="padding:5px 10px;text-align:center;border-left:1px solid #e5e7eb">${human}</td>
+  </tr>`;
+}
+
+function cellHtml(data: { score: number; note?: string; rationale?: string } | null): string {
+  if (!data) return '<span style="color:#d1d5db">—</span>';
+  return `<div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+    ${scoreChip(data.score, data.note)}
+    ${data.rationale ? `<span style="font-size:10px;color:#6b7280;text-align:center">${data.rationale}</span>` : ''}
+  </div>`;
+}
+
+function printLO(lo: import('../App').LO) {
+  const d1nlp = cellHtml({ score: lo.d1.tier, note: lo.d1.verb, rationale: lo.d1.rationale });
+  const d1ai = lo.llm?.d1_verify ? cellHtml({ score: lo.llm.d1_verify.score, note: lo.llm.d1_verify.verb ?? undefined, rationale: lo.llm.d1_verify.rationale }) : cellHtml(null);
+  const d1h = lo.human?.d1 ? cellHtml(lo.human.d1) : cellHtml(null);
+
+  const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>${lo.moduleCode} LO${lo.loIndex + 1} — Irish HE LO Quality Browser</title>
+<style>
+  body { font-family: system-ui, sans-serif; font-size: 13px; color: #1f2937; margin: 32px; max-width: 800px; }
+  h1 { font-size: 15px; font-weight: 700; margin: 0 0 2px; }
+  .meta { font-size: 11px; color: #6b7280; margin-bottom: 16px; }
+  .lo-text { font-size: 16px; line-height: 1.6; margin: 12px 0 16px; padding: 12px; background: #f9fafb; border-left: 3px solid #1e2d40; border-radius: 3px; }
+  .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #9ca3af; margin: 14px 0 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { padding: 5px 10px; font-weight: 700; color: #4b5563; border-bottom: 2px solid #e5e7eb; }
+  th:not(:first-child) { border-left: 1px solid #e5e7eb; text-align: center; }
+  .footer { margin-top: 20px; font-size: 10px; color: #9ca3af; border-top: 1px solid #e5e7eb; padding-top: 8px; }
+  @media print { body { margin: 16px; } }
+</style>
+</head><body>
+<h1>${lo.moduleCode}${lo.moduleName ? ` — ${lo.moduleName}` : ''}</h1>
+<div class="meta">
+  ${[lo.departmentName, lo.facultyName].filter(Boolean).join(' · ')}
+  ${lo.nfqLevel != null ? ` &nbsp;·&nbsp; NFQ ${lo.nfqLevel}` : ''}
+  ${lo.credits != null ? ` &nbsp;·&nbsp; ${lo.credits} credits` : ''}
+  &nbsp;·&nbsp; LO ${lo.loIndex + 1} of module &nbsp;·&nbsp; ${lo.institution}
+</div>
+
+<div class="lo-text">${lo.loText}</div>
+
+${lo.moduleContent ? `<div class="section-label">Module Descriptor</div>
+<p style="color:#374151;line-height:1.5;margin:0 0 12px">${lo.moduleContent}</p>` : ''}
+
+<div class="section-label">Evaluation Streams</div>
+<table>
+  <thead><tr>
+    <th style="text-align:left;width:140px">Dimension</th>
+    <th>NLP <span style="font-weight:400;color:#9ca3af">(measured)</span></th>
+    <th>AI <span style="font-weight:400;color:#9ca3af">(evaluated)</span></th>
+    <th>Human <span style="font-weight:400;color:#9ca3af">(evaluated)</span></th>
+  </tr></thead>
+  <tbody>
+    ${tableRow('D1 Verb observability', d1nlp, d1ai, d1h)}
+    ${tableRow('D2 Singularity', cellHtml({ score: lo.d2.score, rationale: lo.d2.rationale }), cellHtml(null), cellHtml(null))}
+    ${tableRow('D3 Student-centred', cellHtml({ score: lo.d3.score, rationale: lo.d3.rationale }), cellHtml(null), cellHtml(null))}
+    ${tableRow('D4 Scope', cellHtml(null), lo.llm?.d4 ? cellHtml(lo.llm.d4) : cellHtml(null), lo.human?.d4 ? cellHtml(lo.human.d4) : cellHtml(null))}
+    ${tableRow('D5 Assessability', cellHtml(null), lo.llm?.d5 ? cellHtml(lo.llm.d5) : cellHtml(null), lo.human?.d5 ? cellHtml(lo.human.d5) : cellHtml(null))}
+    ${tableRow('D6 NFQ calibration', cellHtml(null), lo.llm?.d6 ? cellHtml(lo.llm.d6) : cellHtml(null), lo.human?.d6 ? cellHtml(lo.human.d6) : cellHtml(null))}
+  </tbody>
+</table>
+${lo.llm?.model ? `<div style="margin-top:4px;font-size:10px;color:#9ca3af">AI model: ${lo.llm.model}</div>` : ''}
+
+<div class="footer">Irish HE Learning Outcomes Quality Study · jkeatingmu.github.io/MU-finder/slo-study/ · Keating, J. (2025)</div>
+<script>window.onload = () => window.print();</script>
+</body></html>`;
+
+  const w = window.open('', '_blank');
+  if (w) { w.document.write(html); w.document.close(); }
+}
+
 export default function LOCard({ lo }: LOCardProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -219,6 +306,16 @@ export default function LOCard({ lo }: LOCardProps) {
       {/* Expanded Details */}
       {expanded && (
         <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-700 space-y-4">
+
+          {/* Print button */}
+          <div className="flex justify-end">
+            <button
+              onClick={(e) => { e.stopPropagation(); printLO(lo); }}
+              className="px-3 py-1 text-xs text-gray-500 border border-gray-300 rounded hover:bg-white hover:text-gray-700 transition-colors"
+            >
+              Print / Export PDF
+            </button>
+          </div>
 
           {/* Module Descriptor */}
           {lo.moduleContent && (
