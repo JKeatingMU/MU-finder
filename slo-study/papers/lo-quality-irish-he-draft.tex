@@ -964,10 +964,10 @@ The IRR analysis is reported in a companion paper.
 \subsection{Human Evaluation}
 \label{sec:human-eval}
 
-Human evaluation provides the interpretive gold standard against which both the NLP
+Human evaluation provides the interpretive anchor against which both the NLP
 and LLM streams are validated. Expert raters --- academic staff with experience in
-programme design, QQI validation processes, or quality assurance --- evaluate the
-same stratified sample used for IRR, applying the D1--D6 rubric with the same
+programme design, QQI validation processes, or quality assurance --- apply the
+D1--D6 rubric independently to a stratified sample of the corpus, with the same
 policy context documents available to the LLM evaluator.
 
 Human evaluation is not positioned as a superior method but as a different one.
@@ -979,10 +979,46 @@ reproducible measurement across the full corpus; the LLM evaluator provides
 policy-grounded evaluation at scale; and the human raters provide the interpretive
 anchor that validates both.
 
-Rater training will use a common protocol: a briefing document presenting the rubric
-and policy framework, ten calibration LOs with consensus scores and rationale, and
-an instruction to treat each LO as independent (no cross-LO anchoring within a module).
-\todo{Human evaluation to be conducted — protocol finalised, rater recruitment pending.}
+\paragraph{Rating tool.}
+To facilitate distributed human evaluation, a browser-based rating interface was
+developed and deployed at
+\url{https://jkeatingmu.github.io/MU-finder/slo-study/}
+(see also Appendix~\ref{app:rating-tool}). The tool is fully static --- it requires
+no login, no plugin, and no software installation --- and is accessible to any
+collaborator with the URL. Raters browse the full 233,005-LO corpus by institution,
+expand any LO record to view the full module context and NLP/AI evaluation scores,
+and submit ratings via an in-app modal.
+
+The modal presents the LO text and module context at the top for reference, then
+solicits scores (0--3) and optional rationale text for each of the four human-stream
+dimensions: D1 (verb observability, for IRR against the NLP measurement), D4 (scope),
+D5 (assessability), and D6 (NFQ calibration). Scores are submitted anonymously to a
+cloud database (Supabase); no personal identifying data are collected or transmitted.
+The rater's browser records which LOs have been rated in local storage, allowing the
+interface to indicate previously rated records and warn of potential duplicate
+submissions; this record is local only and is never transmitted.
+
+\paragraph{IRR sample design.}
+Inter-rater reliability will be computed on a stratified sample of approximately
+200--300 LOs, drawn proportionally by institution type (university, technological
+university, institute), NFQ level (6--10), and D1 tier (0--3) to ensure coverage
+of the quality gradient. Each LO in the sample will be independently rated by at
+least two human raters. Agreement will be assessed using Cohen's weighted $\kappa$
+for each dimension, with a target $\kappa \geq 0.70$ as the threshold for acceptable
+reliability \citep{landis1977measurement}. The same sample will be evaluated by the
+LLM pipeline, enabling a three-way comparison: NLP measurement vs.\ LLM evaluation
+vs.\ human evaluation.
+
+\paragraph{Rater protocol.}
+Raters will receive a briefing document presenting the rubric, the underlying policy
+framework (QQI QP.17, ECTS Users' Guide, Cedefop 2017, NFQ descriptors), and ten
+calibration LOs with consensus scores and written rationale. Raters are instructed
+to evaluate each LO as an independent unit --- without anchoring to other outcomes
+within the same module --- and to apply the rubric as written rather than adjusting
+for perceived institutional norms.
+
+\todo{Human evaluation data collection in progress --- IRR results to be reported
+when minimum sample threshold is reached.}
 
 \subsection{Constructive Alignment Analysis}
 
@@ -2050,5 +2086,83 @@ Example response for the LO shown in Appendix~\ref{app:user-prompt}:
 The full set of sixteen institutional context blocks, all evaluation scripts,
 and the complete scored output files are available at the project repository
 (see Section~\ref{sec:data-availability}).
+
+% ════════════════════════════════════════════════════════════
+\section{Human Evaluation Rating Interface}
+\label{app:rating-tool}
+
+This appendix describes the browser-based rating tool used to collect human
+evaluation data. The tool is publicly accessible at:
+
+\begin{center}
+\url{https://jkeatingmu.github.io/MU-finder/slo-study/}
+\end{center}
+
+\subsection{Architecture}
+
+The application is a fully static single-page application (React/Vite), deployed
+to GitHub Pages. It requires no authentication, no server, and no software
+installation. Rating data are submitted directly from the browser to a Supabase
+PostgreSQL instance via the Supabase REST API, using an insert-only Row Level
+Security policy: anonymous users may insert rows but cannot read, update, or delete
+any record. The researcher retrieves accumulated ratings via authenticated access to
+the Supabase dashboard or by direct SQL query.
+
+\subsection{Rating Workflow}
+
+\begin{enumerate}
+  \item The rater selects an institution from the sidebar. The full LO corpus for
+  that institution loads from a pre-scored JSON file.
+  \item The rater uses the search and filter controls to locate LOs of interest
+  (by keyword, D1 tier, or NFQ level).
+  \item Expanding an LO card reveals the full module context, the NLP measurement
+  scores (D1--D3), and the LLM evaluation scores (D1\textsubscript{verify}, D4--D6),
+  providing the rater with a reference point while maintaining independence.
+  \item The rater clicks \textit{Rate this LO} to open the rating modal.
+  \item The modal presents the LO text and module descriptor at the top, then
+  solicits a score (0--3) and optional rationale for each of D1, D4, D5, and D6.
+  Score buttons are colour-coded (red/orange/green/blue for 0/1/2/3) and labelled
+  with the rubric descriptor for that score.
+  \item On submission, the record is inserted into the \texttt{lo\_ratings} table
+  with a server-side timestamp. The rater's browser records the \texttt{lo\_id} in
+  \texttt{localStorage}; rated cards display a \textit{Rated} indicator on
+  subsequent visits.
+\end{enumerate}
+
+\subsection{Data Schema}
+
+The \texttt{lo\_ratings} table schema is as follows:
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Column & Type & Description \\
+\midrule
+\texttt{id} & UUID & Primary key (auto-generated) \\
+\texttt{created\_at} & timestamptz & Submission timestamp (server-side) \\
+\texttt{lo\_id} & text & Unique LO identifier (corpus key) \\
+\texttt{institution} & text & Institution code (e.g.\ MU, DCU) \\
+\texttt{module\_code} & text & Module code (e.g.\ AC205) \\
+\texttt{lo\_text} & text & Full LO text (for audit) \\
+\texttt{nfq\_level} & integer & NFQ level of the module \\
+\texttt{rater} & text & \textit{anonymous} (pending ethics approval) \\
+\texttt{d1} & integer [0--3] & D1 verb observability score \\
+\texttt{d1\_rationale} & text & Optional rationale \\
+\texttt{d4} & integer [0--3] & D4 scope score \\
+\texttt{d4\_rationale} & text & Optional rationale \\
+\texttt{d5} & integer [0--3] & D5 assessability score \\
+\texttt{d5\_rationale} & text & Optional rationale \\
+\texttt{d6} & integer [0--3] & D6 NFQ calibration score \\
+\texttt{d6\_rationale} & text & Optional rationale \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+Rater identity is currently recorded as \textit{anonymous} pending institutional
+ethics approval for identified data collection. The schema accommodates a named
+\texttt{rater} field; authenticated rating (e.g.\ via institutional SSO or a
+shared session token) is a planned extension that will be activated once ethical
+clearance is in place.
 
 \end{document}
