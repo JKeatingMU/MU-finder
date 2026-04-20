@@ -21,6 +21,7 @@ export default function TopBar({ onOpenHelp, onOpenResources }: TopBarProps) {
         >
           <span className="text-base leading-none">📄</span>
           Paper
+          <span className="text-xs text-gray-500 ml-0.5">Draft · 20 April 2026</span>
         </a>
         <button
           onClick={onOpenResources}
