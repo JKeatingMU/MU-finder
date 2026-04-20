@@ -14,6 +14,10 @@ export type LoRating = {
   rater: string;
   d1: number;
   d1_rationale: string;
+  d2: number;
+  d2_rationale: string;
+  d3: number;
+  d3_rationale: string;
   d4: number;
   d4_rationale: string;
   d5: number;

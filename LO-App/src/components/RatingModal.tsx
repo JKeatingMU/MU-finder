@@ -11,46 +11,78 @@ type Props = {
 
 type DimState = { score: number | null; rationale: string };
 
-const DIM_META: Record<string, { label: string; question: string; scores: string[] }> = {
+type DimMeta = {
+  label: string;
+  question: string;
+  min: number;
+  max: number;
+  scores: Record<number, string>;
+};
+
+const DIM_META: Record<string, DimMeta> = {
   d1: {
     label: 'D1 — Verb Observability',
     question: 'How observable and measurable is the action verb?',
-    scores: [
-      'Unobservable — verb cannot be assessed (e.g. understand, know, appreciate)',
-      'Weak — low-demand observable verb (e.g. describe, identify, list)',
-      'Clear — mid-demand observable verb (e.g. analyse, apply, explain)',
-      'Precise — high-demand observable verb (e.g. evaluate, design, synthesise)',
-    ],
+    min: 0, max: 3,
+    scores: {
+      0: 'Unobservable — verb cannot be assessed (e.g. understand, know, appreciate)',
+      1: 'Weak — low-demand observable verb (e.g. describe, identify, list)',
+      2: 'Clear — mid-demand observable verb (e.g. analyse, apply, explain)',
+      3: 'Precise — high-demand observable verb (e.g. evaluate, design, synthesise)',
+    },
+  },
+  d2: {
+    label: 'D2 — Behavioural Singularity',
+    question: 'How many distinct behaviours does this LO require?',
+    min: 1, max: 3,
+    scores: {
+      1: 'Three or more behaviours — LO should be split',
+      2: 'Two behaviours — compound but manageable',
+      3: 'Single behaviour — clear and independently assessable',
+    },
+  },
+  d3: {
+    label: 'D3 — Student-Centredness',
+    question: 'Is the LO written in a student-centred, verb-led format?',
+    min: 1, max: 3,
+    scores: {
+      1: 'Passive or aims-format — e.g. "Students will be introduced to…"',
+      2: 'Student-subject with verb — e.g. "Students will describe…"',
+      3: 'Verb-first format — e.g. "Describe and evaluate…"',
+    },
   },
   d4: {
     label: 'D4 — Scope',
     question: 'Is the LO appropriately scoped for a single module outcome?',
-    scores: [
-      'Wrong scope — either a micro-task or a programme-level goal',
-      'Imprecise — plausible scope but too vague or too narrow',
-      'Module-appropriate — single assessable outcome at the right granularity',
-      'Precisely calibrated — matches module content and credit weight exactly',
-    ],
+    min: 0, max: 3,
+    scores: {
+      0: 'Wrong scope — either a micro-task or a programme-level goal',
+      1: 'Imprecise — plausible scope but too vague or too narrow',
+      2: 'Module-appropriate — single assessable outcome at the right granularity',
+      3: 'Precisely calibrated — matches module content and credit weight exactly',
+    },
   },
   d5: {
     label: 'D5 — Assessability',
     question: 'Can a specific, valid assessment be pictured for this outcome?',
-    scores: [
-      'No plausible assessment — describes a state, not a performance',
-      'Requires significant reinterpretation to assess',
-      'Clear assessment method implied (exam, report, presentation, portfolio)',
-      'LO directly signals a specific assessment approach or artefact',
-    ],
+    min: 0, max: 3,
+    scores: {
+      0: 'No plausible assessment — describes a state, not a performance',
+      1: 'Requires significant reinterpretation to assess',
+      2: 'Clear assessment method implied (exam, report, presentation, portfolio)',
+      3: 'LO directly signals a specific assessment approach or artefact',
+    },
   },
   d6: {
     label: 'D6 — NFQ Calibration',
     question: 'Is the cognitive demand appropriate for the stated NFQ level?',
-    scores: [
-      'Substantial mismatch — e.g. recall-only verb at NFQ 8/9',
-      'Mild mismatch — one level below or above expected demand',
-      'Consistent with NFQ level — cognitive demand is appropriate',
-      'Precisely calibrated — verb and content complexity match NFQ level exactly',
-    ],
+    min: 0, max: 3,
+    scores: {
+      0: 'Substantial mismatch — e.g. recall-only verb at NFQ 8/9',
+      1: 'Mild mismatch — one level below or above expected demand',
+      2: 'Consistent with NFQ level — cognitive demand is appropriate',
+      3: 'Precisely calibrated — verb and content complexity match NFQ level exactly',
+    },
   },
 };
 
@@ -62,7 +94,7 @@ const CONFIDENCE_LABELS: Record<number, string> = {
   5: 'Very confident — unambiguous case',
 };
 
-const SLIDER_TRACK_COLORS: Record<number, string> = {
+const SCORE_COLORS: Record<number, string> = {
   0: '#dc3545',
   1: '#fd7e14',
   2: '#28a745',
@@ -76,7 +108,7 @@ function DimSlider({ dimKey, value, onChange }: {
 }) {
   const meta = DIM_META[dimKey];
   const score = value.score;
-  const trackColor = score !== null ? SLIDER_TRACK_COLORS[score] : '#d1d5db';
+  const thumbColor = score !== null ? (SCORE_COLORS[score] ?? SCORE_COLORS[1]) : '#d1d5db';
 
   return (
     <div className="py-4 border-b border-gray-100 last:border-0">
@@ -84,22 +116,22 @@ function DimSlider({ dimKey, value, onChange }: {
       <div className="text-xs text-gray-500 mb-3">{meta.question}</div>
 
       <div className="flex items-center gap-3 mb-2">
-        <span className="text-xs text-gray-400 w-4 text-center shrink-0">0</span>
+        <span className="text-xs text-gray-400 w-4 text-center shrink-0">{meta.min}</span>
         <input
           type="range"
-          min={0}
-          max={3}
+          min={meta.min}
+          max={meta.max}
           step={1}
-          value={score ?? 0}
+          value={score ?? meta.min}
           onChange={e => onChange({ ...value, score: Number(e.target.value) })}
-          onClick={() => { if (score === null) onChange({ ...value, score: 0 }); }}
+          onClick={() => { if (score === null) onChange({ ...value, score: meta.min }); }}
           className="flex-1"
-          style={{ '--slider-color': trackColor } as React.CSSProperties}
+          style={{ '--slider-color': thumbColor } as React.CSSProperties}
         />
-        <span className="text-xs text-gray-400 w-4 text-center shrink-0">3</span>
+        <span className="text-xs text-gray-400 w-4 text-center shrink-0">{meta.max}</span>
         <span
           className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 transition-colors"
-          style={{ background: score !== null ? trackColor : '#d1d5db' }}
+          style={{ background: thumbColor }}
         >
           {score !== null ? score : '·'}
         </span>
@@ -108,8 +140,8 @@ function DimSlider({ dimKey, value, onChange }: {
       <div
         className="text-xs rounded px-3 py-2 mb-2 min-h-[32px] transition-all"
         style={{
-          background: score !== null ? `${trackColor}15` : '#f9fafb',
-          borderLeft: `3px solid ${score !== null ? trackColor : '#e5e7eb'}`,
+          background: score !== null ? `${thumbColor}18` : '#f9fafb',
+          borderLeft: `3px solid ${score !== null ? thumbColor : '#e5e7eb'}`,
           color: score !== null ? '#374151' : '#9ca3af',
         }}
       >
@@ -127,18 +159,18 @@ function DimSlider({ dimKey, value, onChange }: {
   );
 }
 
+const DIM_ORDER = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6'];
+
 export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted }: Props) {
-  const [dims, setDims] = useState<Record<string, DimState>>({
-    d1: { score: null, rationale: '' },
-    d4: { score: null, rationale: '' },
-    d5: { score: null, rationale: '' },
-    d6: { score: null, rationale: '' },
-  });
+  const [dims, setDims] = useState<Record<string, DimState>>(
+    Object.fromEntries(DIM_ORDER.map(k => [k, { score: null, rationale: '' }]))
+  );
   const [confidence, setConfidence] = useState<number>(3);
+  const [descriptorOpen, setDescriptorOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const allScored = Object.values(dims).every(d => d.score !== null);
+  const allScored = DIM_ORDER.every(k => dims[k].score !== null);
 
   const handleSubmit = async () => {
     if (!allScored) return;
@@ -152,14 +184,12 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
         lo_text: lo.loText,
         nfq_level: lo.nfqLevel,
         rater: 'anonymous',
-        d1: dims.d1.score!,
-        d1_rationale: dims.d1.rationale,
-        d4: dims.d4.score!,
-        d4_rationale: dims.d4.rationale,
-        d5: dims.d5.score!,
-        d5_rationale: dims.d5.rationale,
-        d6: dims.d6.score!,
-        d6_rationale: dims.d6.rationale,
+        d1: dims.d1.score!, d1_rationale: dims.d1.rationale,
+        d2: dims.d2.score!, d2_rationale: dims.d2.rationale,
+        d3: dims.d3.score!, d3_rationale: dims.d3.rationale,
+        d4: dims.d4.score!, d4_rationale: dims.d4.rationale,
+        d5: dims.d5.score!, d5_rationale: dims.d5.rationale,
+        d6: dims.d6.score!, d6_rationale: dims.d6.rationale,
         confidence,
       });
       onSubmitted();
@@ -185,15 +215,36 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
               <div className="font-bold text-gray-900 text-sm">
                 {lo.moduleCode}{lo.moduleName ? ` — ${lo.moduleName}` : ''}
               </div>
-              {lo.nfqLevel != null && (
-                <div className="text-xs text-gray-400 mt-0.5">NFQ {lo.nfqLevel} · Anonymous submission</div>
-              )}
+              <div className="text-xs text-gray-400 mt-0.5">
+                {lo.nfqLevel != null ? `NFQ ${lo.nfqLevel} · ` : ''}Anonymous submission
+              </div>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none shrink-0">✕</button>
           </div>
+
+          {/* LO text */}
           <div className="mt-3 text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 leading-relaxed border-l-2 border-[#1e2d40]">
             {lo.loText}
           </div>
+
+          {/* Collapsible module descriptor */}
+          {lo.moduleContent && (
+            <div className="mt-2">
+              <button
+                onClick={() => setDescriptorOpen(o => !o)}
+                className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+              >
+                <span>{descriptorOpen ? '▲' : '▼'}</span>
+                <span>{descriptorOpen ? 'Hide' : 'Show'} module descriptor</span>
+              </button>
+              {descriptorOpen && (
+                <div className="mt-2 text-xs text-gray-600 bg-gray-50 border border-gray-200 rounded px-3 py-2 leading-relaxed max-h-32 overflow-y-auto">
+                  {lo.moduleContent}
+                </div>
+              )}
+            </div>
+          )}
+
           {previouslyRated && (
             <div className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-1.5">
               You have already rated this LO in this browser. Submitting will add a second rating.
@@ -203,7 +254,7 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
 
         {/* Dimensions */}
         <div className="px-5 overflow-y-auto flex-1">
-          {Object.keys(dims).map(key => (
+          {DIM_ORDER.map(key => (
             <DimSlider
               key={key}
               dimKey={key}
@@ -216,7 +267,7 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
           <div className="py-4">
             <div className="font-semibold text-gray-800 text-sm mb-0.5">Confidence in these ratings</div>
             <div className="text-xs text-gray-500 mb-3">
-              How confident are you in the scores you have given above? This is methodological metadata — it is not personal information.
+              How confident are you in the scores above? This is methodological metadata — not personal information.
             </div>
             <div className="flex items-center gap-3 mb-2">
               <span className="text-xs text-gray-400 w-4 text-center shrink-0">1</span>
@@ -235,8 +286,7 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
                 {confidence}
               </span>
             </div>
-            <div className="text-xs rounded px-3 py-2 bg-gray-50 border-l-3 border-gray-300 text-gray-600"
-              style={{ borderLeft: '3px solid #1e2d40' }}>
+            <div className="text-xs rounded px-3 py-2 text-gray-600" style={{ borderLeft: '3px solid #1e2d40', background: '#1e2d4010' }}>
               {CONFIDENCE_LABELS[confidence]}
             </div>
           </div>
@@ -246,7 +296,7 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
         <div className="px-5 py-4 border-t border-gray-200 shrink-0 flex items-center justify-between gap-3">
           {error && <div className="text-xs text-red-600">{error}</div>}
           {!allScored && !error && (
-            <div className="text-xs text-gray-400">Move all four dimension sliders to submit.</div>
+            <div className="text-xs text-gray-400">Score all six dimensions to submit.</div>
           )}
           {allScored && !error && <div className="flex-1" />}
           <div className="flex gap-2 shrink-0">
