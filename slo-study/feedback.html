@@ -140,12 +140,15 @@
 
       <div class="field">
         <label for="name">Your name</label>
-        <input type="text" id="name" name="name" placeholder="e.g. Lisa Murphy" required />
-      </div>
-
-      <div class="field">
-        <label for="email">Email (optional — only if you'd like a reply)</label>
-        <input type="email" id="email" name="email" placeholder="you@institution.ie" />
+        <select id="name" name="name" required>
+          <option value="" disabled selected>Select your name</option>
+          <option>Máire Buckley</option>
+          <option>Niamh Fortune</option>
+          <option>Susi Gottlöber</option>
+          <option>John Keating</option>
+          <option>Lisa O'Regan</option>
+          <option>Tim Thompson</option>
+        </select>
       </div>
 
       <div class="field">
@@ -156,12 +159,16 @@
             <label for="tag-app">LO Browser App</label>
           </span>
           <span class="tag-option">
-            <input type="checkbox" id="tag-paper1" name="tags" value="Paper 1 (Methods)" />
-            <label for="tag-paper1">Paper 1 — Methods</label>
+            <input type="checkbox" id="tag-methods" name="tags" value="Methods Paper" />
+            <label for="tag-methods">Methods Paper</label>
           </span>
           <span class="tag-option">
-            <input type="checkbox" id="tag-paper2" name="tags" value="Paper 2 (Findings)" />
-            <label for="tag-paper2">Paper 2 — Findings</label>
+            <input type="checkbox" id="tag-conf" name="tags" value="Paper — Conference" />
+            <label for="tag-conf">Paper — Conference</label>
+          </span>
+          <span class="tag-option">
+            <input type="checkbox" id="tag-journal" name="tags" value="Paper — Journal" />
+            <label for="tag-journal">Paper — Journal</label>
           </span>
           <span class="tag-option">
             <input type="checkbox" id="tag-general" name="tags" value="General" />
