@@ -93,8 +93,8 @@ function DimSlider({ dimKey, value, onChange }: {
           value={score ?? 0}
           onChange={e => onChange({ ...value, score: Number(e.target.value) })}
           onClick={() => { if (score === null) onChange({ ...value, score: 0 }); }}
-          className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
-          style={{ accentColor: trackColor }}
+          className="flex-1"
+          style={{ '--slider-color': trackColor } as React.CSSProperties}
         />
         <span className="text-xs text-gray-400 w-4 text-center shrink-0">3</span>
         <span
@@ -227,8 +227,8 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
                 step={1}
                 value={confidence}
                 onChange={e => setConfidence(Number(e.target.value))}
-                className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
-                style={{ accentColor: '#1e2d40' }}
+                className="flex-1"
+                style={{ '--slider-color': '#1e2d40' } as React.CSSProperties}
               />
               <span className="text-xs text-gray-400 w-4 text-center shrink-0">5</span>
               <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 bg-[#1e2d40]">
