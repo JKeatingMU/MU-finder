@@ -34,6 +34,9 @@ jobs:
 
       - name: Build LO-App (slo-study)
         working-directory: LO-App
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: npm ci && npm run build
 
       - name: Copy LO-App build into dist/slo-study
