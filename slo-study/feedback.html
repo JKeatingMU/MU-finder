@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SLO Study — Feedback</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 16px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .logo-bar {
+      width: 4px;
+      height: 32px;
+      background: #1e2d40;
+      border-radius: 2px;
+    }
+    .logo-text { font-size: 13px; color: #64748b; line-height: 1.4; }
+    .logo-text strong { display: block; font-size: 15px; color: #1e293b; }
+    h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { font-size: 14px; color: #64748b; margin-bottom: 32px; line-height: 1.5; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    .field { margin-bottom: 20px; }
+    input[type="text"],
+    input[type="email"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1e293b;
+      background: white;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    select:focus,
+    textarea:focus { border-color: #1e2d40; }
+    textarea { resize: vertical; min-height: 100px; }
+    .tag-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tag-option input { display: none; }
+    .tag-option label {
+      display: inline-block;
+      padding: 5px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      color: #64748b;
+      margin: 0;
+      transition: all 0.15s;
+    }
+    .tag-option input:checked + label {
+      background: #1e2d40;
+      border-color: #1e2d40;
+      color: white;
+    }
+    .hint { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+    .submit-row { margin-top: 28px; display: flex; justify-content: flex-end; }
+    button[type="submit"] {
+      background: #1e2d40;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button[type="submit"]:hover { background: #2a3f58; }
+    .success {
+      display: none;
+      text-align: center;
+      padding: 32px;
+      color: #166534;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+    .back { display: block; margin-top: 24px; text-align: center; font-size: 13px; color: #64748b; }
+    .back a { color: #1e2d40; text-decoration: none; }
+    .back a:hover { text-decoration: underline; }
+    .notice {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #f1f5f9;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <div class="logo-bar"></div>
+      <div class="logo-text">
+        <strong>SLO Quality Study</strong>
+        Maynooth University — Research Feedback
+      </div>
+    </div>
+
+    <h1>Submit Feedback</h1>
+    <p class="subtitle">
+      Use this form to share feedback on the study, the LO browser tool, or the paper drafts.
+      Responses go directly to the research team and are logged in the study record.
+    </p>
+
+    <!-- Replace FORMSPREE_ENDPOINT_HERE with your Formspree form URL e.g. https://formspree.io/f/xxxxxxxx -->
+    <form id="feedback-form" action="FORMSPREE_ENDPOINT_HERE" method="POST">
+
+      <div class="field">
+        <label for="name">Your name</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Lisa Murphy" required />
+      </div>
+
+      <div class="field">
+        <label for="email">Email (optional — only if you'd like a reply)</label>
+        <input type="email" id="email" name="email" placeholder="you@institution.ie" />
+      </div>
+
+      <div class="field">
+        <label>Feedback relates to</label>
+        <div class="tag-group">
+          <span class="tag-option">
+            <input type="checkbox" id="tag-app" name="tags" value="App" />
+            <label for="tag-app">LO Browser App</label>
+          </span>
+          <span class="tag-option">
+            <input type="checkbox" id="tag-paper1" name="tags" value="Paper 1 (Methods)" />
+            <label for="tag-paper1">Paper 1 — Methods</label>
+          </span>
+          <span class="tag-option">
+            <input type="checkbox" id="tag-paper2" name="tags" value="Paper 2 (Findings)" />
+            <label for="tag-paper2">Paper 2 — Findings</label>
+          </span>
+          <span class="tag-option">
+            <input type="checkbox" id="tag-general" name="tags" value="General" />
+            <label for="tag-general">General</label>
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="feedback">Feedback</label>
+        <textarea id="feedback" name="feedback" placeholder="What is your observation or suggestion?" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="suggested-change">Suggested change (optional)</label>
+        <textarea id="suggested-change" name="suggested_change" rows="3" placeholder="If you have a specific change in mind, describe it here."></textarea>
+      </div>
+
+      <!-- Hidden field: capture submission date -->
+      <input type="hidden" name="_subject" value="SLO Study Feedback" />
+      <input type="hidden" name="_next" value="" />
+
+      <div class="submit-row">
+        <button type="submit">Submit feedback</button>
+      </div>
+
+      <p class="notice">
+        This form collects your name, optional email, and feedback text. Data is used solely for
+        research quality management. No personal data is shared with third parties.
+        See the <a href="https://github.com/JKeatingMU/MU-finder/blob/main/slo-study/RESEARCH-LOG.md" target="_blank">research log</a> for how feedback is acted on.
+      </p>
+    </form>
+
+    <p class="back">
+      &larr; <a href="./">Back to the LO Browser</a>
+    </p>
+  </div>
+
+  <script>
+    // On Formspree success, show a thank-you message
+    const form = document.getElementById('feedback-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+      } else {
+        alert('Something went wrong — please try again or email john.keating@mu.ie directly.');
+      }
+    });
+  </script>
+
+  <div id="success-msg" class="success">
+    <strong>Thank you — feedback received.</strong><br />
+    It will be reviewed and logged in the research record.
+  </div>
+</body>
+</html>
