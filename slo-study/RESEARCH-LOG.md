@@ -5,8 +5,8 @@ Entries are in reverse chronological order (newest first).
 
 ---
 
-## 2026-04-20 — Feedback from Lisa
-**Tags:** `Paper`
+## 2026-04-20 — Feedback from Lisa O'Regan
+**Tags:** `Paper — Methods`
 
 ### Feedback
 - Calling out specific HEIs by name is sensitive — risks upsetting institutions and could damage relationships with the sector.
