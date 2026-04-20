@@ -2119,10 +2119,16 @@ the Supabase dashboard or by direct SQL query.
   scores (D1--D3), and the LLM evaluation scores (D1\textsubscript{verify}, D4--D6),
   providing the rater with a reference point while maintaining independence.
   \item The rater clicks \textit{Rate this LO} to open the rating modal.
-  \item The modal presents the LO text and module descriptor at the top, then
-  solicits a score (0--3) and optional rationale for each of D1, D4, D5, and D6.
-  Score buttons are colour-coded (red/orange/green/blue for 0/1/2/3) and labelled
-  with the rubric descriptor for that score.
+  \item The modal presents the LO text at the top. A collapsible \textit{Show
+  module descriptor} toggle is available below the LO text for raters who need
+  the broader module context (particularly relevant for D4--D6).
+  \item The modal solicits a score and optional rationale for all six dimensions
+  D1--D6 in sequence. Scores are entered via a labelled range slider (0--3 for
+  D1/D4/D5/D6; 1--3 for D2/D3). The rubric descriptor for the selected score
+  updates dynamically below each slider, colour-coded red/orange/green/blue for
+  scores 0/1/2/3. Rationale text boxes include a prompt not to enter personal
+  information. A final \textit{Confidence in these ratings} slider (1--5) records
+  methodological metadata about rater certainty.
   \item On submission, the record is inserted into the \texttt{lo\_ratings} table
   with a server-side timestamp. The rater's browser records the \texttt{lo\_id} in
   \texttt{localStorage}; rated cards display a \textit{Rated} indicator on
@@ -2148,12 +2154,17 @@ Column & Type & Description \\
 \texttt{rater} & text & \textit{anonymous} (pending ethics approval) \\
 \texttt{d1} & integer [0--3] & D1 verb observability score \\
 \texttt{d1\_rationale} & text & Optional rationale \\
+\texttt{d2} & integer [1--3] & D2 behavioural singularity score \\
+\texttt{d2\_rationale} & text & Optional rationale \\
+\texttt{d3} & integer [1--3] & D3 student-centredness score \\
+\texttt{d3\_rationale} & text & Optional rationale \\
 \texttt{d4} & integer [0--3] & D4 scope score \\
 \texttt{d4\_rationale} & text & Optional rationale \\
 \texttt{d5} & integer [0--3] & D5 assessability score \\
 \texttt{d5\_rationale} & text & Optional rationale \\
 \texttt{d6} & integer [0--3] & D6 NFQ calibration score \\
 \texttt{d6\_rationale} & text & Optional rationale \\
+\texttt{confidence} & integer [1--5] & Rater's self-assessed confidence \\
 \bottomrule
 \end{tabular}
 \end{center}
