@@ -4,12 +4,11 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import { Course, StrengthCategory, Faculty } from '../types';
 import { courses } from '../data/courses';
 import { ExternalLink, Heart } from 'lucide-react';
-import { facultyQuestions } from '../data/questions';
 
 interface ResultsProps {
   answers: Record<number, number>;
   questions: { id: number; category: StrengthCategory }[];
-  faculty: Faculty;
+  faculty: Faculty | null;
   onRestart: () => void;
   favourites: Set<string>;
   onToggleFavourite: (id: string) => void;
@@ -76,9 +75,9 @@ export default function Results({ answers, questions, faculty, onRestart, favour
   // Questions per category (for max score)
   const qPerCat = useMemo(() => {
     const m: Record<string, number> = {};
-    facultyQuestions[faculty].forEach(q => { m[q.category] = (m[q.category] || 0) + 1; });
+    questions.forEach(q => { m[q.category] = (m[q.category] || 0) + 1; });
     return m;
-  }, [faculty]);
+  }, [questions]);
 
   const getMatchScore = (course: Course) => {
     const primaryQ  = qPerCat[course.primaryCategory]  || 3;
@@ -93,7 +92,7 @@ export default function Results({ answers, questions, faculty, onRestart, favour
 
   const recommendedCourses = useMemo(() => {
     return courses
-      .filter(c => c.faculty === faculty)
+      .filter(c => faculty === null || c.faculty === faculty)
       .filter(c => !favsOnly || favourites.has(c.id))
       .sort((a, b) => getMatchScore(b) - getMatchScore(a));
   }, [faculty, scores, favsOnly, favourites]);
@@ -175,7 +174,7 @@ export default function Results({ answers, questions, faculty, onRestart, favour
       >
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <h3 className="text-2xl font-bold text-slate-900 flex items-center gap-2 flex-wrap">
-            Programmes — {FACULTY_LABELS[faculty]}
+            {faculty ? `Programmes — ${FACULTY_LABELS[faculty]}` : 'Matching Programmes'}
             <span className="text-sm font-normal text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
               {recommendedCourses.length} programmes
             </span>
@@ -228,7 +227,12 @@ export default function Results({ answers, questions, faculty, onRestart, favour
                       {course.title}
                     </h4>
                   </div>
-                  <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 ml-2 flex-shrink-0 flex-wrap justify-end">
+                    {faculty === null && (
+                      <span className="text-xs px-2 py-1 rounded-full font-semibold bg-slate-100 text-slate-500">
+                        {FACULTY_LABELS[course.faculty]}
+                      </span>
+                    )}
                     <span
                       className="text-xs px-2 py-1 rounded-full font-semibold"
                       style={{ background: `${primaryColor}18`, color: primaryColor }}

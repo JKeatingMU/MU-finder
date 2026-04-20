@@ -49,3 +49,18 @@ export const facultyQuestions: FacultyQuestions = {
   science: scienceQuestions,
   social:  socialQuestions,
 };
+
+export const generalQuestions: Question[] = [
+  { id: 1,  text: "I enjoy expressing ideas through design, music, creative writing or the visual arts.", category: "Creative" },
+  { id: 2,  text: "I am fascinated by history, philosophy, culture or how human societies develop over time.", category: "Humanities" },
+  { id: 3,  text: "I enjoy writing, debating, presenting or communicating ideas clearly and persuasively.", category: "Language" },
+  { id: 4,  text: "I enjoy finding out how biological, chemical or physical systems work.", category: "Scientific" },
+  { id: 5,  text: "I enjoy working with numbers, equations or mathematical reasoning.", category: "Quantitative" },
+  { id: 6,  text: "I enjoy programming, building software or working out how digital systems work.", category: "Computing" },
+  { id: 7,  text: "I am motivated by helping others and making a positive difference in my community.", category: "Social" },
+  { id: 8,  text: "I am interested in how organisations work — strategy, management, marketing or entrepreneurship.", category: "Business" },
+  { id: 9,  text: "I feel energised when I can create something original — a design, performance, piece of writing or product.", category: "Creative" },
+  { id: 10, text: "I am curious about the natural world — living things, matter, energy or the environment.", category: "Scientific" },
+  { id: 11, text: "I am drawn to a career in teaching, healthcare, social work or community development.", category: "Social" },
+  { id: 12, text: "I prefer subjects where critical thinking and interpretation matter more than a single correct answer.", category: "Humanities" },
+];

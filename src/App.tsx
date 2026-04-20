@@ -10,7 +10,7 @@ import CareerFinder from './components/CareerFinder';
 import ProgrammeDirectory from './components/ProgrammeDirectory';
 import ModuleFinder from './components/ModuleFinder';
 import HelpModal from './components/HelpModal';
-import { facultyQuestions } from './data/questions';
+import { facultyQuestions, generalQuestions } from './data/questions';
 import { Faculty } from './types';
 
 type Screen = 'welcome' | 'faculty' | 'quiz' | 'results' | 'subjects' | 'careers' | 'directory' | 'modules';
@@ -43,7 +43,7 @@ export default function App() {
     window.location.hash = ['directory', 'modules'].includes(screen) ? screen : '';
   }, [screen]);
 
-  const handleStartQuiz      = () => setScreen('faculty');
+  const handleStartQuiz      = () => { setFaculty(null); setAnswers({}); setScreen('quiz'); };
   const handleStartSubjects  = () => setScreen('subjects');
   const handleStartCareers   = () => setScreen('careers');
   const handleOpenDirectory  = () => setScreen('directory');
@@ -71,7 +71,7 @@ export default function App() {
     setScreen('faculty');
   };
 
-  const currentQuestions = faculty ? facultyQuestions[faculty] : [];
+  const currentQuestions = faculty ? facultyQuestions[faculty] : generalQuestions;
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
@@ -152,12 +152,12 @@ export default function App() {
               <FacultyPicker onSelect={handleFacultySelect} />
             </motion.div>
           )}
-          {screen === 'quiz' && faculty && (
+          {screen === 'quiz' && (
             <motion.div key="quiz" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
               <Quiz questions={currentQuestions} onComplete={handleQuizComplete} />
             </motion.div>
           )}
-          {screen === 'results' && faculty && (
+          {screen === 'results' && (
             <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
               <Results
                 answers={answers}
