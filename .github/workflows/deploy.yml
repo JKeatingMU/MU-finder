@@ -43,6 +43,7 @@ jobs:
         run: |
           mkdir -p dist/slo-study
           cp -r LO-App/dist/. dist/slo-study/
+          cp slo-study/feedback.html dist/slo-study/feedback.html
 
       - uses: actions/configure-pages@v4
 
