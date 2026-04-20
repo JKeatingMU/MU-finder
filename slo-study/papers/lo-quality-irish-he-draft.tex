@@ -344,14 +344,7 @@ This study addresses three research questions:
 
 Module learning outcome data were collected from sixteen Irish HEIs through systematic
 automated retrieval of publicly accessible module catalogue pages during the period
-October 2024 -- April 2026. The institutions comprised six public universities\footnote{We use \textit{public
-universities} (PU) to refer to institutions designated under the Universities Act 1997.
-The broader Irish HE system also includes Institutes of Technology (IT), Colleges of
-Education (CE), and private and specialised colleges (PS). The PU label does not imply
-that TUs are private or non-public --- all Irish HEIs receive public funding. The
-distinction is legislative and sectoral.
-\todo{Confirm preferred terminology; check HEA System Performance Framework for current
-administrative categories.}}
+October 2024 -- April 2026. The institutions comprised six public universities
 (Maynooth University [MU], University College Dublin [UCD], University College Cork
 [UCC], University of Galway [Galway], University of Limerick [UL], and Dublin City
 University [DCU]), three technological universities (Atlantic Technological
@@ -362,6 +355,15 @@ three private and specialised colleges (National College of Ireland [NCI], Natio
 College of Art and Design [NCAD], and Griffith College Dublin [GC]), one College of Education (Marino Institute of
 Education [MIE]), and TU Dublin [TUD], whose catalogue format is discussed separately
 as a methodological finding (Section~\ref{sec:tud}).
+
+\paragraph{Sectoral terminology.}
+We use \textit{public universities} (PU) to refer to institutions designated under
+the Universities Act 1997. The broader Irish HE system also includes Technological
+Universities (TU), Institutes of Technology (IT), Colleges of Education (CE), and
+private and specialised colleges (PS). The PU label does not imply that TUs are
+private or non-public --- all Irish HEIs receive public funding. The distinction is
+legislative and sectoral. \todo{Confirm preferred terminology; check HEA System
+Performance Framework for current administrative categories.}
 
 Table~\ref{tab:corpus} summarises the corpus. Each institution required a bespoke
 retrieval approach reflecting the diversity of underlying catalogue systems:
@@ -384,15 +386,15 @@ of each numbered learning outcome.
 \textbf{Institution} & \textbf{Type} & \textbf{Modules} & \textbf{LOs} & \textbf{D1 Mean} & \textbf{Tier 0 (\%)} \\
 \midrule
 MU      & PU & 2,139  & 12,603 & 1.637 & 10.0 \\
-DCU$^\ddagger$     & PU & 3,464  & 14,472 & 1.682 &  9.5 \\
+DCU     & PU & 3,464  & 14,472 & 1.682 &  9.5 \\
 Galway  & PU & 2,847  & 12,477 & 1.627 &  9.7 \\
 UCC     & PU & 6,802  & 29,102 & 1.697 &  4.9 \\
 UCD     & PU & 5,419  & 27,145 & 1.158 & 13.4 \\
-UL$^\S$ & PU & 5,731  & 27,056 & 1.736 &  4.9 \\
+UL      & PU & 5,731  & 27,056 & 1.736 &  4.9 \\
 \midrule
 \textit{PU cluster} & & \textit{26,402} & \textit{122,855} & \textit{1.572} & \textit{8.3} \\
 \midrule
-ATU     & TU & 5,949$^\dagger$ & 33,770$^\dagger$ & 1.846 & 5.0 \\
+ATU     & TU & 5,949  & 33,770 & 1.846 & 5.0 \\
 SETU    & TU &  3,772 & 18,162 & 1.529 & 1.6 \\
 MTU     & TU &  8,217 & 29,881 & 1.846 & 2.8 \\
 \midrule
@@ -403,71 +405,77 @@ IADT    & IT &    175 &    814 & 1.776 &  4.9 \\
 \midrule
 NCI     & PS &    749 &  3,647 & 1.627 & 10.4 \\
 NCAD    & PS &     79 &    269 & 1.796 &  2.6 \\
-GC$^\|$ & PS &     63 &    441 & 1.914 &  0.5 \\
-MIE$^\P$ & CE &   163 &     49 & 1.592 &  0.0 \\
+GC      & PS &     63 &    441 & 1.914 &  0.5 \\
+MIE     & CE &   163 &     49 & 1.592 &  0.0 \\
 \midrule
 \textbf{Total} & & \textbf{51,190} & \textbf{233,005} & --- & --- \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent
-$^\dagger$ ATU LO data were retrieved from programme pages on \texttt{atu.ie}, where
-modules appear in multiple degree programmes. Raw extraction yielded 69,532 LOs across
-a stated 14,200 module instances; after removing cross-programme duplicates (deduplication
-key: module code $\times$ LO index $\times$ normalised text) the corpus reduces to
-33,770 unique LOs from 5,949 unique module codes---a 51.4\% reduction. A further 622
-records are retained as shared-code variants (same module code, different content and
-credit loading), identified by a version suffix in their identifier.
+\paragraph{ATU: cross-programme deduplication.}
+ATU LO data were retrieved from programme pages on \texttt{atu.ie}, where modules
+appear in multiple degree programmes. Raw extraction yielded 69,532 LOs across a
+stated 14,200 module instances; after removing cross-programme duplicates
+(deduplication key: module code $\times$ LO index $\times$ normalised text) the
+corpus reduces to 33,770 unique LOs from 5,949 unique module codes --- a 51.4\%
+reduction. A further 622 records are retained as shared-code variants (same module
+code, different content and credit loading), identified by a version suffix in their
+identifier.
 
-\noindent
-$^\ddagger$ The DCU corpus includes modules from the DCU Institute of Education, which
-incorporates the former Church of Ireland College of Education (CICE), St Patrick's College
-Drumcondra, and Mater Dei Institute (merged into DCU in 2016).
+\paragraph{DCU: Institute of Education modules.}
+The DCU corpus includes modules from the DCU Institute of Education, which
+incorporates the former Church of Ireland College of Education (CICE), St Patrick's
+College Drumcondra, and Mater Dei Institute (all merged into DCU in 2016).
 
-\noindent
-$^\S$ The UL corpus includes modules validated under UL's degree-awarding authority for
+\paragraph{UL: Mary Immaculate College.}
+The UL corpus includes modules validated under UL's degree-awarding authority for
 Mary Immaculate College (MIC), Limerick. MIC-specific subject codes (MH, GY, RS) are
 confirmed present; B.Ed and PME modules are integrated under shared UL subject codes
 and cannot be disaggregated without department-level metadata.
 
-\noindent
-$^\P$ MIE data were extracted from four publicly available programme handbooks (B.Ed.\ Primary,
-B.Sc.\ ECE, B.Sc.\ Ed.\ Studies, B.Oid.). Of 163 modules across the four programmes, only 14 (8.6\%)
-contain explicit student-centred learning outcomes in the handbook text; the remainder provide
-module descriptions only. The B.Sc.\ Ed.\ Studies handbook contains no module-level LO statements.
-D1 mean and Tier~0 are computed from the 49 English-language LOs only.
-The B.Oid.\ (Irish-medium B.Ed.) handbook contains module descriptions in Irish (Gaeilge); these
-38 modules are included in the module count but excluded from D1 scoring.
+\paragraph{MIE: programme handbook extraction.}
+MIE data were extracted from four publicly available programme handbooks (B.Ed.\
+Primary, B.Sc.\ ECE, B.Sc.\ Ed.\ Studies, B.Oid.). Of 163 modules across the four
+programmes, only 14 (8.6\%) contain explicit student-centred learning outcomes in the
+handbook text; the remainder provide module descriptions only. The B.Sc.\ Ed.\ Studies
+handbook contains no module-level LO statements. D1 mean and Tier~0 are computed from
+the 49 English-language LOs only. The B.Oid.\ (Irish-medium B.Ed.) handbook contains
+module descriptions in Irish (Gaeilge); these 38 modules are included in the module
+count but excluded from D1 scoring.
 
-\noindent
-$^\|$ GC module LO data were extracted from 74 PDF module descriptor documents retrieved
-from Griffith College programme pages. Each PDF follows a standardised format with module
-title, ECTS credits, NFQ level, and numbered learning outcomes. 63 of 74 PDFs contained
-parseable LO lists; the remainder provided aims-only descriptors and were excluded. No
-module codes are published in these PDFs; GC records carry no \texttt{moduleCode} field.
+\paragraph{Griffith College: PDF extraction.}
+GC module LO data were extracted from 74 PDF module descriptor documents retrieved
+from Griffith College programme pages. Each PDF follows a standardised format with
+module title, ECTS credits, NFQ level, and numbered learning outcomes. 63 of 74 PDFs
+contained parseable LO lists; the remainder provided aims-only descriptors and were
+excluded. No module codes are published in these PDFs; GC records carry no
+\texttt{moduleCode} field.
 
-\medskip\noindent
-\textit{Note:} TU Dublin was surveyed via two routes. (1) The primary public catalogue
-(Vault system, 5,449 module pages) does not publish student-centred LOs; modules use
-an aims format (\textit{``The aim of this module is to [verb]\ldots''}). (2) PDF module
-catalogues published by two TUD schools were retrieved separately and yielded 120 modules
-and 736 student-centred LOs across six programmes
-(TU835 Architecture, TU874 Mathematical Sciences, TU078, TU079, TU248, TU5294). The combined TUD corpus
-(3,527 records) is included in the totals; the aims-vs-LO distinction is discussed
-as a methodological finding in Section~\ref{sec:tud}. Dundalk Institute of Technology (DkIT) is included as an IT-sector institution
-(4,697 modules, 19,590 LOs, D1 mean 1.644). DkIT's D1 mean is notably lower than
-the other TU-sector institutions and closer to the university cluster, which may
-reflect its status as a remaining IoT rather than a designated TU; this is discussed
-in Section~\ref{sec:discussion}.
-Dún Laoghaire Institute of Art, Design and Technology (IADT) is similarly included as an IT-sector institution.
-IADT module descriptors were retrieved from a single publicly accessible PDF module catalogue
-(175 modules, 814 LOs, D1 mean 1.776). No assessment data are published in this document;
-IADT contributes to LO quality analysis only.
+\paragraph{TU Dublin: dual-source retrieval.}
+TU Dublin was surveyed via two routes. The primary public catalogue (Vault system,
+5,449 module pages) does not publish student-centred LOs; modules use an aims format
+(\textit{``The aim of this module is to [verb]\ldots''}). PDF module catalogues
+published by two TUD schools were retrieved separately and yielded 120 modules and
+736 student-centred LOs across six programmes (TU835 Architecture, TU874 Mathematical
+Sciences, TU078, TU079, TU248, TU5294). The combined TUD corpus (3,527 records) is
+included in the totals; the aims-vs-LO distinction is discussed as a methodological
+finding in Section~\ref{sec:tud}.
+
+\paragraph{DkIT and IADT.}
+Dundalk Institute of Technology (DkIT) contributes 4,697 modules and 19,590 LOs
+(D1 mean 1.644). Its D1 mean is notably lower than the other TU-sector institutions
+and closer to the university cluster, which may reflect its status as a remaining IoT
+rather than a designated TU; this is discussed in Section~\ref{sec:discussion}.
+IADT module descriptors were retrieved from a single publicly accessible PDF module
+catalogue (175 modules, 814 LOs, D1 mean 1.776). No assessment data are published in
+this document; IADT contributes to LO quality analysis only.
+
+\paragraph{Excluded institutions.}
 Trinity College Dublin (TCD) is under active investigation but is excluded from the
-present analysis due to its decentralised catalogue structure.
-TUS (Technological University of the Shannon: Midlands Midwest) and RCSI University of
-Medicine and Health Sciences are also not yet included.
+present analysis due to its decentralised catalogue structure. TUS (Technological
+University of the Shannon: Midlands Midwest) and RCSI University of Medicine and
+Health Sciences are also not yet included.
 
 \subsection{Module Descriptor Enrichment}
 \label{sec:descriptors}
