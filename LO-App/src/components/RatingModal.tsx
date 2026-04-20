@@ -4,7 +4,7 @@ import { submitRating } from '../lib/supabase';
 
 type Props = {
   lo: LO;
-  rater: string;
+  previouslyRated: boolean;
   onClose: () => void;
   onSubmitted: () => void;
 };
@@ -77,7 +77,7 @@ function DimRow({ dimKey, value, onChange }: {
   );
 }
 
-export default function RatingModal({ lo, rater, onClose, onSubmitted }: Props) {
+export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted }: Props) {
   const [dims, setDims] = useState<Record<string, DimState>>({
     d1: { score: null, rationale: '' },
     d4: { score: null, rationale: '' },
@@ -100,7 +100,7 @@ export default function RatingModal({ lo, rater, onClose, onSubmitted }: Props) 
         module_code: lo.moduleCode,
         lo_text: lo.loText,
         nfq_level: lo.nfqLevel,
-        rater,
+        rater: 'anonymous',
         d1: dims.d1.score!,
         d1_rationale: dims.d1.rationale,
         d4: dims.d4.score!,
@@ -134,7 +134,7 @@ export default function RatingModal({ lo, rater, onClose, onSubmitted }: Props) 
                 {lo.moduleCode}{lo.moduleName ? ` — ${lo.moduleName}` : ''}
               </div>
               {lo.nfqLevel != null && (
-                <div className="text-xs text-gray-400 mt-0.5">NFQ {lo.nfqLevel} · Rater: {rater}</div>
+                <div className="text-xs text-gray-400 mt-0.5">NFQ {lo.nfqLevel}</div>
               )}
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none shrink-0">✕</button>
@@ -142,6 +142,11 @@ export default function RatingModal({ lo, rater, onClose, onSubmitted }: Props) 
           <div className="mt-3 text-sm text-gray-700 bg-gray-50 rounded px-3 py-2 leading-relaxed border-l-2 border-[#1e2d40]">
             {lo.loText}
           </div>
+          {previouslyRated && (
+            <div className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-3 py-1.5">
+              You have already rated this LO in this browser. Submitting will add a second rating.
+            </div>
+          )}
         </div>
 
         {/* Dimensions */}

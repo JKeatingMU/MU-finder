@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { LO } from '../App';
 import RatingModal from './RatingModal';
 
@@ -202,10 +202,8 @@ ${lo.llm?.model ? `<div style="margin-top:4px;font-size:10px;color:#9ca3af">AI m
   window.open(url, '_blank');
 }
 
-const RATER_KEY = 'lo-rater-name';
 const RATED_KEY = 'lo-rated-ids';
 
-function getRater() { return localStorage.getItem(RATER_KEY) ?? ''; }
 function getRated(): Set<string> {
   try { return new Set(JSON.parse(localStorage.getItem(RATED_KEY) ?? '[]')); }
   catch { return new Set(); }
@@ -219,13 +217,7 @@ function markRated(loId: string) {
 export default function LOCard({ lo }: LOCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [showRating, setShowRating] = useState(false);
-  const [rater, setRater] = useState(getRater);
-  const [raterInput, setRaterInput] = useState('');
-  const [rated, setRated] = useState(() => getRated().has(lo.loId));
-
-  useEffect(() => {
-    if (rater) localStorage.setItem(RATER_KEY, rater);
-  }, [rater]);
+  const [previouslyRated, setPreviouslyRated] = useState(() => getRated().has(lo.loId));
 
   const handleRateClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -234,7 +226,7 @@ export default function LOCard({ lo }: LOCardProps) {
 
   const handleSubmitted = () => {
     markRated(lo.loId);
-    setRated(true);
+    setPreviouslyRated(true);
     setShowRating(false);
   };
 
@@ -352,12 +344,12 @@ export default function LOCard({ lo }: LOCardProps) {
             <button
               onClick={handleRateClick}
               className={`px-3 py-1 text-xs font-medium rounded border transition-colors ${
-                rated
-                  ? 'bg-green-50 text-green-700 border-green-200 cursor-default'
+                previouslyRated
+                  ? 'bg-green-50 text-green-700 border-green-200 hover:bg-green-100'
                   : 'bg-[#1e2d40] text-white border-transparent hover:bg-[#2a3f58]'
               }`}
             >
-              {rated ? '✓ Rated' : 'Rate this LO'}
+              {previouslyRated ? '✓ Rated — rate again?' : 'Rate this LO'}
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); printLO(lo); }}
@@ -440,45 +432,11 @@ export default function LOCard({ lo }: LOCardProps) {
         </div>
       )}
 
-      {/* Rater name prompt */}
-      {showRating && !rater && (
-        <div
-          className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
-          onClick={() => setShowRating(false)}
-        >
-          <div
-            className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm"
-            onClick={e => e.stopPropagation()}
-          >
-            <h2 className="font-bold text-gray-900 mb-1">Enter your name or initials</h2>
-            <p className="text-sm text-gray-500 mb-4">This identifies your ratings in the dataset. Stored in your browser only.</p>
-            <input
-              autoFocus
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-gray-500 mb-4"
-              placeholder="e.g. JK or John Keating"
-              value={raterInput}
-              onChange={e => setRaterInput(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && raterInput.trim()) setRater(raterInput.trim()); }}
-            />
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowRating(false)} className="px-4 py-1.5 text-sm text-gray-600 border border-gray-200 rounded hover:bg-gray-50">Cancel</button>
-              <button
-                onClick={() => { if (raterInput.trim()) setRater(raterInput.trim()); }}
-                disabled={!raterInput.trim()}
-                className="px-4 py-1.5 text-sm bg-[#1e2d40] text-white rounded disabled:opacity-40"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Rating modal */}
-      {showRating && rater && (
+      {showRating && (
         <RatingModal
           lo={lo}
-          rater={rater}
+          previouslyRated={previouslyRated}
           onClose={() => setShowRating(false)}
           onSubmitted={handleSubmitted}
         />
