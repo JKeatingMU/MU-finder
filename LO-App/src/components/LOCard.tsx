@@ -340,7 +340,7 @@ export default function LOCard({ lo }: LOCardProps) {
         <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-700 space-y-4">
 
           {/* Action buttons */}
-          <div className="flex justify-between items-center">
+          <div className="flex justify-end items-center gap-2">
             <button
               onClick={handleRateClick}
               className={`px-3 py-1 text-xs font-medium rounded border transition-colors ${

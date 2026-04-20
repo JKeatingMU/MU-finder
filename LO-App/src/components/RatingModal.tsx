@@ -11,65 +11,115 @@ type Props = {
 
 type DimState = { score: number | null; rationale: string };
 
-const DIM_LABELS: Record<string, { label: string; description: string; scores: string[] }> = {
+const DIM_META: Record<string, { label: string; question: string; scores: string[] }> = {
   d1: {
     label: 'D1 — Verb Observability',
-    description: 'How observable/measurable is the action verb?',
-    scores: ['0 — Unobservable (understand, know)', '1 — Weak (describe, identify)', '2 — Clear (analyse, apply)', '3 — Precise (design, critique, synthesise)'],
+    question: 'How observable and measurable is the action verb?',
+    scores: [
+      'Unobservable — verb cannot be assessed (e.g. understand, know, appreciate)',
+      'Weak — low-demand observable verb (e.g. describe, identify, list)',
+      'Clear — mid-demand observable verb (e.g. analyse, apply, explain)',
+      'Precise — high-demand observable verb (e.g. evaluate, design, synthesise)',
+    ],
   },
   d4: {
     label: 'D4 — Scope',
-    description: 'Is the LO appropriately scoped for a single module outcome?',
-    scores: ['0 — N/A', '1 — Too broad or too narrow', '2 — Slightly broad or narrow', '3 — Appropriately scoped'],
+    question: 'Is the LO appropriately scoped for a single module outcome?',
+    scores: [
+      'Wrong scope — either a micro-task or a programme-level goal',
+      'Imprecise — plausible scope but too vague or too narrow',
+      'Module-appropriate — single assessable outcome at the right granularity',
+      'Precisely calibrated — matches module content and credit weight exactly',
+    ],
   },
   d5: {
     label: 'D5 — Assessability',
-    description: 'Can this LO be directly and fairly assessed?',
-    scores: ['0 — N/A', '1 — Not directly assessable', '2 — Assessable with effort', '3 — Clearly assessable'],
+    question: 'Can a specific, valid assessment be pictured for this outcome?',
+    scores: [
+      'No plausible assessment — describes a state, not a performance',
+      'Requires significant reinterpretation to assess',
+      'Clear assessment method implied (exam, report, presentation, portfolio)',
+      'LO directly signals a specific assessment approach or artefact',
+    ],
   },
   d6: {
     label: 'D6 — NFQ Calibration',
-    description: 'Is the cognitive demand appropriate for the NFQ level?',
-    scores: ['0 — N/A', '1 — Poor NFQ calibration', '2 — Partial alignment', '3 — Well-calibrated to NFQ level'],
+    question: 'Is the cognitive demand appropriate for the stated NFQ level?',
+    scores: [
+      'Substantial mismatch — e.g. recall-only verb at NFQ 8/9',
+      'Mild mismatch — one level below or above expected demand',
+      'Consistent with NFQ level — cognitive demand is appropriate',
+      'Precisely calibrated — verb and content complexity match NFQ level exactly',
+    ],
   },
 };
 
-const SCORE_COLORS: Record<number, string> = {
-  0: 'bg-red-100 text-red-700 border-red-300',
-  1: 'bg-orange-100 text-orange-700 border-orange-300',
-  2: 'bg-green-100 text-green-700 border-green-300',
-  3: 'bg-blue-100 text-blue-700 border-blue-300',
+const CONFIDENCE_LABELS: Record<number, string> = {
+  1: 'Not confident — I am uncertain about this rating',
+  2: 'Somewhat uncertain — some doubt remains',
+  3: 'Moderately confident — reasonable basis for this rating',
+  4: 'Confident — clear application of the rubric',
+  5: 'Very confident — unambiguous case',
 };
 
-function DimRow({ dimKey, value, onChange }: {
+const SLIDER_TRACK_COLORS: Record<number, string> = {
+  0: '#dc3545',
+  1: '#fd7e14',
+  2: '#28a745',
+  3: '#007bff',
+};
+
+function DimSlider({ dimKey, value, onChange }: {
   dimKey: string;
   value: DimState;
   onChange: (v: DimState) => void;
 }) {
-  const meta = DIM_LABELS[dimKey];
+  const meta = DIM_META[dimKey];
+  const score = value.score;
+  const trackColor = score !== null ? SLIDER_TRACK_COLORS[score] : '#d1d5db';
+
   return (
     <div className="py-4 border-b border-gray-100 last:border-0">
       <div className="font-semibold text-gray-800 text-sm mb-0.5">{meta.label}</div>
-      <div className="text-xs text-gray-500 mb-2">{meta.description}</div>
-      <div className="flex flex-wrap gap-2 mb-2">
-        {[0, 1, 2, 3].map(s => (
-          <button
-            key={s}
-            onClick={() => onChange({ ...value, score: s })}
-            className={`px-3 py-1.5 rounded border text-xs font-medium transition-all ${
-              value.score === s
-                ? SCORE_COLORS[s]
-                : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400'
-            }`}
-          >
-            {s} — {meta.scores[s].split(' — ')[1]}
-          </button>
-        ))}
+      <div className="text-xs text-gray-500 mb-3">{meta.question}</div>
+
+      <div className="flex items-center gap-3 mb-2">
+        <span className="text-xs text-gray-400 w-4 text-center shrink-0">0</span>
+        <input
+          type="range"
+          min={0}
+          max={3}
+          step={1}
+          value={score ?? 0}
+          onChange={e => onChange({ ...value, score: Number(e.target.value) })}
+          onClick={() => { if (score === null) onChange({ ...value, score: 0 }); }}
+          className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
+          style={{ accentColor: trackColor }}
+        />
+        <span className="text-xs text-gray-400 w-4 text-center shrink-0">3</span>
+        <span
+          className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 transition-colors"
+          style={{ background: score !== null ? trackColor : '#d1d5db' }}
+        >
+          {score !== null ? score : '·'}
+        </span>
       </div>
+
+      <div
+        className="text-xs rounded px-3 py-2 mb-2 min-h-[32px] transition-all"
+        style={{
+          background: score !== null ? `${trackColor}15` : '#f9fafb',
+          borderLeft: `3px solid ${score !== null ? trackColor : '#e5e7eb'}`,
+          color: score !== null ? '#374151' : '#9ca3af',
+        }}
+      >
+        {score !== null ? meta.scores[score] : 'Move the slider to select a score'}
+      </div>
+
       <textarea
-        className="w-full text-xs border border-gray-200 rounded px-2 py-1.5 text-gray-700 placeholder-gray-300 resize-none focus:outline-none focus:border-gray-400"
+        className="w-full text-xs border border-gray-200 rounded px-2 py-1.5 text-gray-700 placeholder-gray-400 resize-none focus:outline-none focus:border-gray-400 mt-1"
         rows={2}
-        placeholder="Brief rationale (optional)"
+        placeholder="Rationale (optional) — do not include personal information"
         value={value.rationale}
         onChange={e => onChange({ ...value, rationale: e.target.value })}
       />
@@ -84,6 +134,7 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
     d5: { score: null, rationale: '' },
     d6: { score: null, rationale: '' },
   });
+  const [confidence, setConfidence] = useState<number>(3);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -109,6 +160,7 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
         d5_rationale: dims.d5.rationale,
         d6: dims.d6.score!,
         d6_rationale: dims.d6.rationale,
+        confidence,
       });
       onSubmitted();
     } catch (e: any) {
@@ -134,7 +186,7 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
                 {lo.moduleCode}{lo.moduleName ? ` — ${lo.moduleName}` : ''}
               </div>
               {lo.nfqLevel != null && (
-                <div className="text-xs text-gray-400 mt-0.5">NFQ {lo.nfqLevel}</div>
+                <div className="text-xs text-gray-400 mt-0.5">NFQ {lo.nfqLevel} · Anonymous submission</div>
               )}
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none shrink-0">✕</button>
@@ -152,20 +204,49 @@ export default function RatingModal({ lo, previouslyRated, onClose, onSubmitted 
         {/* Dimensions */}
         <div className="px-5 overflow-y-auto flex-1">
           {Object.keys(dims).map(key => (
-            <DimRow
+            <DimSlider
               key={key}
               dimKey={key}
               value={dims[key]}
               onChange={v => setDims(prev => ({ ...prev, [key]: v }))}
             />
           ))}
+
+          {/* Confidence */}
+          <div className="py-4">
+            <div className="font-semibold text-gray-800 text-sm mb-0.5">Confidence in these ratings</div>
+            <div className="text-xs text-gray-500 mb-3">
+              How confident are you in the scores you have given above? This is methodological metadata — it is not personal information.
+            </div>
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-xs text-gray-400 w-4 text-center shrink-0">1</span>
+              <input
+                type="range"
+                min={1}
+                max={5}
+                step={1}
+                value={confidence}
+                onChange={e => setConfidence(Number(e.target.value))}
+                className="flex-1 h-2 rounded-lg appearance-none cursor-pointer"
+                style={{ accentColor: '#1e2d40' }}
+              />
+              <span className="text-xs text-gray-400 w-4 text-center shrink-0">5</span>
+              <span className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0 bg-[#1e2d40]">
+                {confidence}
+              </span>
+            </div>
+            <div className="text-xs rounded px-3 py-2 bg-gray-50 border-l-3 border-gray-300 text-gray-600"
+              style={{ borderLeft: '3px solid #1e2d40' }}>
+              {CONFIDENCE_LABELS[confidence]}
+            </div>
+          </div>
         </div>
 
         {/* Footer */}
         <div className="px-5 py-4 border-t border-gray-200 shrink-0 flex items-center justify-between gap-3">
           {error && <div className="text-xs text-red-600">{error}</div>}
           {!allScored && !error && (
-            <div className="text-xs text-gray-400">Score all four dimensions to submit.</div>
+            <div className="text-xs text-gray-400">Move all four dimension sliders to submit.</div>
           )}
           {allScored && !error && <div className="flex-1" />}
           <div className="flex gap-2 shrink-0">

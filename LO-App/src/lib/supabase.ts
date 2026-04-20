@@ -20,6 +20,7 @@ export type LoRating = {
   d5_rationale: string;
   d6: number;
   d6_rationale: string;
+  confidence: number;
 };
 
 export async function submitRating(rating: LoRating) {
