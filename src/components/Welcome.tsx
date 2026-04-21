@@ -131,18 +131,10 @@ export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, 
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.4 }}
-              className="absolute inset-0 rounded-2xl overflow-hidden cursor-pointer shadow-lg"
+              className="absolute inset-x-0 top-1/2 -translate-y-1/2 rounded-2xl overflow-hidden cursor-pointer shadow-lg"
               onClick={() => setHeroVisible(false)}
             >
-              <img src={muHero} alt="Find your place at Maynooth University" className="w-full h-full object-cover" />
-              <div className="absolute inset-0 flex flex-col items-end justify-end p-5">
-                <button
-                  onClick={(e) => { e.stopPropagation(); setHeroVisible(false); }}
-                  className="bg-white/90 hover:bg-white text-slate-800 text-sm font-semibold px-5 py-2 rounded-full shadow transition-colors flex items-center gap-2"
-                >
-                  Explore programmes <ArrowRight size={16} />
-                </button>
-              </div>
+              <img src={muHero} alt="Find your place at Maynooth University" className="w-full" />
             </motion.div>
           )}
         </AnimatePresence>
