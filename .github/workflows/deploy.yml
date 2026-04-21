@@ -32,19 +32,6 @@ jobs:
 
       - run: npm run build
 
-      - name: Build LO-App (slo-study)
-        working-directory: LO-App
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-        run: npm ci && npm run build
-
-      - name: Copy LO-App build into dist/slo-study
-        run: |
-          mkdir -p dist/slo-study
-          cp -r LO-App/dist/. dist/slo-study/
-          cp slo-study/feedback.html dist/slo-study/feedback.html
-
       - uses: actions/configure-pages@v4
 
       - uses: actions/upload-pages-artifact@v3
