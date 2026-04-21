@@ -18,8 +18,8 @@ Entries are in reverse chronological order (newest first).
 1. **Anonymise institutions** in charts and tables (University A, Institution B, etc.) while retaining full data in methodology descriptions. Shift the narrative to sector-level patterns rather than institutional comparisons.
 2. **Reframe the contribution** — from "measuring LO quality" to "providing a scalable diagnostic tool the sector can use internally." Aligns better with QQI/HEA audience.
 3. **Two-paper split**:
-   - Paper 1: Methods/tool — rubric, corpus, NLP pipeline, human-AI validation model. Target: Irish J.TEL, IICE, or learning analytics venue.
-   - Paper 2: Findings — sector-level patterns, NFQ calibration gaps, verb distribution. Target: SRHE or HE policy journal.
+   - Paper 1: Methods/tool — rubric, corpus, NLP pipeline, human-AI validation model. Target: IICE (Oct 2026, Dún Laoghaire) for first outing; longer term Computers & Education or BJET.
+   - Paper 2: Findings — sector-level patterns, NFQ calibration gaps, verb distribution. Target: Assessment & Evaluation in Higher Education (AECHE) or Studies in Higher Education; SRHE Annual Conference for conference output.
 4. **Foreground AI + Human collaboration** as the centrepiece of Paper 1 — position the confidence slider and IRR design as a human-AI validation framework, not just a data collection tool.
 
 ### Status
@@ -27,6 +27,21 @@ Entries are in reverse chronological order (newest first).
 - [ ] Anonymise institution labels in figures and tables
 - [ ] Draft two-paper structure outline
 - [ ] Await further feedback before implementing paper changes
+
+---
+
+## 2026-04-21 — Publication Venue Discussion
+**Tags:** `General`
+
+### Notes
+- **Irish J.TEL ruled out** — prior poor reviewing experience; perceived bias towards TU sector; also not a strong fit (work uses technology but is not EdTech per se).
+- **AISHE-J** noted as more appropriate Irish outlet for policy-facing work; not Scopus indexed but credible for Irish HE audience.
+- **IICE 2026** (Oct, Dún Laoghaire) under consideration for methods paper — Irish visibility, conference travel funded, good fit. Decision pending discussion with colleagues. Deadline: 1 May 2026.
+- **Target venues agreed**:
+  - Methods paper (journal): Computers & Education or BJET
+  - Findings paper (journal): Assessment & Evaluation in Higher Education (AECHE) — strong fit for NFQ calibration / LO quality angle
+  - Conference: IICE short-term; SRHE Annual for longer cycle
+- No immediate rush — quality of work prioritised over speed to publication.
 
 ---
 
