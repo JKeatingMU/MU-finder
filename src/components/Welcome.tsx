@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, Brain, BookOpen, Compass, X, HelpCircle } from 'lucide-react';
+import muHero from '../assets/mu-hero.jpg';
 
 interface WelcomeProps {
   onStartQuiz: () => void;
@@ -53,16 +54,23 @@ export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, 
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 w-full max-w-5xl mx-auto">
+
+      {/* Hero image */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="w-full mb-10 rounded-2xl overflow-hidden shadow-md"
+      >
+        <img src={muHero} alt="Find your place at Maynooth University" className="w-full object-cover" />
+      </motion.div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         className="mb-12"
       >
-        <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4 tracking-tight leading-tight">
-          Find your place at{' '}
-          <span style={{ color: '#6b1a2b' }}>Maynooth University</span>
-        </h1>
         <p className="text-lg text-slate-600 max-w-2xl mx-auto">
           Three ways to explore 55 undergraduate programmes across all faculties.
         </p>
