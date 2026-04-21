@@ -59,9 +59,10 @@ interface ProgrammeDirectoryProps {
   quizAnswers: Record<number, number>;
   quizQuestions: { id: number; category: StrengthCategory }[];
   quizFaculty: Faculty | null;
+  onViewProgrammeDetail: (caoCode: string) => void;
 }
 
-export default function ProgrammeDirectory({ favourites, onToggleFavourite, quizAnswers, quizQuestions, quizFaculty }: ProgrammeDirectoryProps) {
+export default function ProgrammeDirectory({ favourites, onToggleFavourite, quizAnswers, quizQuestions, quizFaculty, onViewProgrammeDetail }: ProgrammeDirectoryProps) {
   const [facultyFilter, setFacultyFilter] = useState<Faculty | 'all'>('all');
   const [favsOnly, setFavsOnly]           = useState(false);
   const [compareSet, setCompareSet]       = useState<Set<string>>(new Set());
@@ -452,17 +453,26 @@ export default function ProgrammeDirectory({ favourites, onToggleFavourite, quiz
                 className="px-6 py-4 border-t border-slate-100 flex items-center justify-between gap-3 rounded-b-2xl"
                 style={{ background: '#faf9f8' }}
               >
-                {modalCourse.url ? (
-                  <a
-                    href={modalCourse.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <div className="flex items-center gap-3 flex-wrap">
+                  {modalCourse.url && (
+                    <a
+                      href={modalCourse.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold hover:opacity-80 transition-opacity"
+                      style={{ color: FACULTY_COLORS[modalCourse.faculty] }}
+                    >
+                      View on MU website <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                  <button
+                    onClick={() => { setModalCourse(null); onViewProgrammeDetail(modalCourse.code); }}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold hover:opacity-80 transition-opacity"
                     style={{ color: FACULTY_COLORS[modalCourse.faculty] }}
                   >
-                    View on MU website <ExternalLink className="w-4 h-4" />
-                  </a>
-                ) : <span />}
+                    Module detail ↗
+                  </button>
+                </div>
                 <button
                   onClick={() => setModalCourse(null)}
                   className="px-4 py-1.5 text-sm font-medium border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-slate-700"

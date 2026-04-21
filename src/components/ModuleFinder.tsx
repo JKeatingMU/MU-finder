@@ -643,9 +643,12 @@ function ModuleCard({ mod, isSaved, onToggleSave, onViewDetails }: {
   );
 }
 
-export default function ModuleFinder() {
+export default function ModuleFinder({ initialProgrammeCode, onProgrammeCodeConsumed }: {
+  initialProgrammeCode?: string | null;
+  onProgrammeCodeConsumed?: () => void;
+}) {
   const [exportData, setExportData] = useState<ExportData | null>(null);
-  const [activeTab, setActiveTab] = useState<'modules' | 'programmes'>('modules');
+  const [activeTab, setActiveTab] = useState<'modules' | 'programmes'>(initialProgrammeCode ? 'programmes' : 'modules');
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
@@ -889,6 +892,8 @@ export default function ModuleFinder() {
           moduleMap={moduleMapByCode}
           onViewModuleDetails={handleViewFromProgramme}
           moduleAppearances={null}
+          initialCaoCode={initialProgrammeCode ?? null}
+          onInitialCodeConsumed={onProgrammeCodeConsumed}
         />
       )}
 

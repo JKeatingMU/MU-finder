@@ -29,6 +29,7 @@ export default function App() {
   const [answers, setAnswers]     = useState<Record<number, number>>({});
   const [favourites, setFavourites] = useState<Set<string>>(loadFavourites);
   const [showHelp, setShowHelp]   = useState(false);
+  const [pendingProgrammeCode, setPendingProgrammeCode] = useState<string | null>(null);
 
   const toggleFavourite = (id: string) => {
     setFavourites(prev => {
@@ -48,6 +49,7 @@ export default function App() {
   const handleStartCareers   = () => setScreen('careers');
   const handleOpenDirectory  = () => setScreen('directory');
   const handleOpenModules    = () => setScreen('modules');
+  const handleViewProgrammeDetail = (code: string) => { setPendingProgrammeCode(code); setScreen('modules'); };
 
   const handleFacultySelect = (f: Faculty) => {
     setFaculty(f);
@@ -187,12 +189,16 @@ export default function App() {
                 quizAnswers={answers}
                 quizQuestions={currentQuestions}
                 quizFaculty={faculty}
+                onViewProgrammeDetail={handleViewProgrammeDetail}
               />
             </motion.div>
           )}
           {screen === 'modules' && (
             <motion.div key="modules" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
-              <ModuleFinder />
+              <ModuleFinder
+                initialProgrammeCode={pendingProgrammeCode}
+                onProgrammeCodeConsumed={() => setPendingProgrammeCode(null)}
+              />
             </motion.div>
           )}
         </AnimatePresence>

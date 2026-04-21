@@ -77,6 +77,8 @@ interface Props {
   moduleMap: Record<string, ModuleInfo>;
   onViewModuleDetails: (code: string) => void;
   moduleAppearances: Record<string, { qualCode: string; caoCode: string; programmeYear: number; compulsory: boolean; programmeTitle?: string }[]> | null;
+  initialCaoCode?: string | null;
+  onInitialCodeConsumed?: () => void;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -625,7 +627,7 @@ function ProgrammeCard({ prog, onClick }: { prog: Programme; onClick: () => void
 
 // ── Main ProgrammeBrowser ─────────────────────────────────────────────────────
 
-export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails }: Props) {
+export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails, initialCaoCode, onInitialCodeConsumed }: Props) {
   const [progData, setProgData]         = useState<ProgrammeData | null>(null);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState(false);
@@ -635,7 +637,15 @@ export default function ProgrammeBrowser({ moduleMap, onViewModuleDetails }: Pro
   useEffect(() => {
     fetch(`${import.meta.env.BASE_URL}data/programme-data.json`)
       .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
-      .then(d => { setProgData(d); setLoading(false); })
+      .then((d: ProgrammeData) => {
+        setProgData(d);
+        setLoading(false);
+        if (initialCaoCode) {
+          const match = d.programmes.find(p => p.caoCode === initialCaoCode);
+          if (match) setSelectedProg(match);
+          onInitialCodeConsumed?.();
+        }
+      })
       .catch(() => { setError(true); setLoading(false); });
   }, []);
 

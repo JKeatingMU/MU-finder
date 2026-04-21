@@ -51,25 +51,16 @@ function useFirstVisitTip() {
 export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, onOpenDirectory, onOpenModules }: WelcomeProps) {
   const handlers = { quiz: onStartQuiz, subjects: onStartSubjects, careers: onStartCareers };
   const tip = useFirstVisitTip();
+  const [heroVisible, setHeroVisible] = useState(true);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4 w-full max-w-5xl mx-auto">
-
-      {/* Hero image */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="w-full mb-10 rounded-2xl overflow-hidden shadow-md"
-      >
-        <img src={muHero} alt="Find your place at Maynooth University" className="w-full object-cover" />
-      </motion.div>
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-12"
+        className="mb-8 w-full"
       >
         <p className="text-lg text-slate-600 max-w-2xl mx-auto">
           Three ways to explore 55 undergraduate programmes across all faculties.
@@ -97,35 +88,64 @@ export default function Welcome({ onStartQuiz, onStartSubjects, onStartCareers, 
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-        {pathways.map((p, i) => {
-          const Icon = p.icon;
-          return (
+      {/* Cards + hero overlay wrapper */}
+      <div className="relative w-full">
+
+        {/* Pathway cards — always rendered underneath */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+          {pathways.map((p, i) => {
+            const Icon = p.icon;
+            return (
+              <motion.div
+                key={p.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 * i, duration: 0.5 }}
+                className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl transition-all group flex flex-col"
+              >
+                <div
+                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform"
+                  style={{ background: p.bg }}
+                >
+                  <Icon size={28} style={{ color: p.color }} />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">{p.title}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">{p.description}</p>
+                <button
+                  onClick={handlers[p.key]}
+                  className="w-full text-white font-semibold py-3 px-6 rounded-xl transition-opacity hover:opacity-90 flex items-center justify-center gap-2"
+                  style={{ background: p.color }}
+                >
+                  {p.cta} <ArrowRight size={18} />
+                </button>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Hero image overlay */}
+        <AnimatePresence>
+          {heroVisible && (
             <motion.div
-              key={p.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 * i, duration: 0.5 }}
-              className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl transition-all group flex flex-col"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 rounded-2xl overflow-hidden cursor-pointer shadow-lg"
+              onClick={() => setHeroVisible(false)}
             >
-              <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center mb-5 mx-auto group-hover:scale-110 transition-transform"
-                style={{ background: p.bg }}
-              >
-                <Icon size={28} style={{ color: p.color }} />
+              <img src={muHero} alt="Find your place at Maynooth University" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 flex flex-col items-end justify-end p-5">
+                <button
+                  onClick={(e) => { e.stopPropagation(); setHeroVisible(false); }}
+                  className="bg-white/90 hover:bg-white text-slate-800 text-sm font-semibold px-5 py-2 rounded-full shadow transition-colors flex items-center gap-2"
+                >
+                  Explore programmes <ArrowRight size={16} />
+                </button>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">{p.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed mb-6 flex-grow">{p.description}</p>
-              <button
-                onClick={handlers[p.key]}
-                className="w-full text-white font-semibold py-3 px-6 rounded-xl transition-opacity hover:opacity-90 flex items-center justify-center gap-2"
-                style={{ background: p.color }}
-              >
-                {p.cta} <ArrowRight size={18} />
-              </button>
             </motion.div>
-          );
-        })}
+          )}
+        </AnimatePresence>
       </div>
 
       <motion.p
