@@ -10,3 +10,7 @@ html2pdf*.html
 metadata.json
 OPENAI_KEY.txt
 *.key.txt
+*.pdf
+*.webarchive
+jtest/
+mumodulesapp/
