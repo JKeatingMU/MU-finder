@@ -30,6 +30,31 @@ Entries are in reverse chronological order (newest first).
 
 ---
 
+## 2026-04-21 — Dataset Anonymisation & Open Data Strategy
+**Tags:** `General`
+
+### Decision
+Create an anonymised mirror of the full corpus for potential public release as a research dataset (e.g. via Data in Brief, Zenodo, or OSF).
+
+### Anonymisation Approach Agreed
+1. **Institution → sector-coded identifier** (PU-A, TU-B, PS-A etc.) — removes institutional fingerpointing while preserving the sector-gap finding (Δ=0.203)
+2. **Module code → anonymised code** (e.g. `L8-BUS-0042` format: NFQ level + broad discipline + sequential ID) — removes the Google-findable string that, combined with institution, makes LOs trivially attributable
+3. **LO text retained as-is** — it is the research object; anonymising it destroys dataset value
+4. **Full asymmetric "praise by name" approach ruled out** — methodological asymmetry is not defensible; full anonymisation is cleaner and more consistent
+
+### On the Full Dataset
+- Retained internally as the attributed research asset
+- Available to verified researchers on request
+- Not for public release without ethics amendment (DPIA covers original collection, not public redistribution — needs a new processing purpose review)
+
+### Next Steps
+- [ ] Create anonymised mirror dataset (institution + module code substitution)
+- [ ] Draft dataset readme with provenance statement, licence (CC BY), and ethics note
+- [ ] Consult ethics board re: DPIA amendment for public dataset release
+- [ ] Consider Data in Brief submission alongside main findings paper
+
+---
+
 ## 2026-04-21 — Publication Venue Discussion
 **Tags:** `General`
 
