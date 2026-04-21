@@ -1,0 +1,9 @@
+[build]
+  base    = "LO-App"
+  command = "npm run build"
+  publish = "LO-App/dist"
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
