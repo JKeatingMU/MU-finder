@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, HelpCircle } from 'lucide-react';
+import heroBanner from './assets/mu-hero-banner.jpg';
 import Welcome from './components/Welcome';
 import FacultyPicker from './components/FacultyPicker';
 import Quiz from './components/Quiz';
@@ -141,6 +142,12 @@ export default function App() {
           </div>
         </div>
       </header>
+
+      {screen !== 'welcome' && (
+        <div className="w-full">
+          <img src={heroBanner} alt="Find your place at Maynooth University" className="w-full h-auto block" />
+        </div>
+      )}
 
       <main className="flex-grow flex flex-col items-center justify-center py-12">
         <AnimatePresence mode="wait">
